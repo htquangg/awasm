@@ -1,0 +1,8 @@
+yntax = "proto3";
+
+package messages;
+
+option go_package = "github.com/htquangg/a-wasm/internal/grains/messages"
+
+message Empty {
+}
