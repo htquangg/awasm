@@ -13,6 +13,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 )
@@ -34,13 +35,50 @@ func New(
 	e.Use(middleware.Recover())
 	e.Use(middleware.Secure())
 
-	api := e.Group("/api", Transactional(db), Transactional(db))
+	e.HTTPErrorHandler = func(err error, c echo.Context) {
+		if err == nil {
+			return // no error
+		}
 
-	bindHealthApi(api)
-	bindEndpointsApi(api, svc)
+		var apiErr *RespError
+
+		if errors.As(err, &apiErr) {
+			err = c.JSON(http.StatusOK, apiErr)
+			// already an api error...
+		} else if v := new(echo.HTTPError); errors.As(err, &v) {
+			log.Warn().Err(err).Msgf("[API][ECHO] error: %d %T", v.Code, v.Message)
+			apiErr = &RespError{
+				Resp: Resp{
+					Code: RespStatus(v.Code),
+					Data: nil,
+				},
+				Message: "",
+			}
+			err = c.JSON(int(apiErr.Code), apiErr)
+		} else {
+			log.Warn().Err(err).Msgf("[API][UNKNOWN] error: %d %T", v.Code, v.Message)
+			apiErr = &RespError{
+				Resp: Resp{
+					Code: StatusInternalServer,
+					Data: nil,
+				},
+				Message: "",
+			}
+			err = c.JSON(int(apiErr.Code), apiErr)
+		}
+
+		if c.Response().Committed {
+			return
+		}
+	}
+
+	v1 := e.Group("/api/v1", TransactionalMiddleware(db), TransactionalMiddleware(db))
+
+	bindHealthApi(v1)
+	bindEndpointsApi(v1, svc)
 
 	// catch all any route
-	api.Any("/*", func(c echo.Context) error {
+	v1.Any("/*", func(c echo.Context) error {
 		return echo.ErrNotFound
 	}, otelecho.Middleware("a-wasm"))
 

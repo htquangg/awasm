@@ -8,7 +8,7 @@ import (
 )
 
 type (
-	RespStatus uint8
+	RespStatus uint
 	RespData   interface{}
 
 	Resp struct {
@@ -31,8 +31,31 @@ const (
 	StatusNotFound
 	StatusUnauthorized
 	StatusForbidden
-	StatusInternal
+	StatusInternalServer
 )
+
+func (s RespStatus) String() string {
+	switch s {
+	case StatusOK:
+		return "OK"
+	case StatusBadRequest:
+		return "BAD REQUEST"
+	case StatusNotFound:
+		return "NOT FOUND"
+	case StatusUnauthorized:
+		return "UNAUTHORIZED"
+	case StatusForbidden:
+		return "FORBIDDEN"
+	case StatusInternalServer:
+		return "INTERNAL SERVER"
+	}
+
+	return ""
+}
+
+func (e *RespError) Error() string {
+	return string(e.Message)
+}
 
 func handleSuccessResp(ctx echo.Context, data RespData) error {
 	return handleResp(ctx, data, StatusOK, nil, "")
@@ -66,18 +89,18 @@ func handleResp(ctx echo.Context, data RespData, status RespStatus, err error, m
 		return ctx.JSON(http.StatusOK, resp)
 	}
 
-	resp := new(RespError)
-	resp.Message = msg
-	resp.Code = status
+	respErr := new(RespError)
+	respErr.Message = msg
+	respErr.Code = status
 
 	switch status {
 	case StatusBadRequest, StatusNotFound, StatusUnauthorized, StatusForbidden:
-	case StatusInternal:
+	case StatusInternalServer:
 		log.Error().Err(err).Msg("internal server error")
 	default:
-		resp.Code = StatusInternal
+		respErr.Code = StatusInternalServer
 		log.Warn().Err(err).Msgf("unknown resp status code: %T", status)
 	}
 
-	return ctx.JSON(http.StatusOK, resp)
+	return respErr
 }
