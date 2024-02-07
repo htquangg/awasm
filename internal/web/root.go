@@ -32,6 +32,12 @@ func New(
 ) *Server {
 	e := echo.New()
 
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: `{"time":"${time_rfc3339}","latency":"${latency_human}",` +
+			`"method":"${method}","uri":"${uri}",` +
+			`"status":${status},"error":"${error}"}` + "\n",
+	}))
+
 	e.Use(middleware.Recover())
 	e.Use(middleware.Secure())
 
@@ -46,7 +52,6 @@ func New(
 			err = c.JSON(http.StatusOK, apiErr)
 			// already an api error...
 		} else if v := new(echo.HTTPError); errors.As(err, &v) {
-			log.Warn().Err(err).Msgf("[API][ECHO] error: %d %T", v.Code, v.Message)
 			apiErr = &RespError{
 				Resp: Resp{
 					Code: RespStatus(v.Code),
@@ -98,27 +103,27 @@ func (s *Server) ServeHandler() (execute func() error, interrupt func(error)) {
 		Addr:              s.cfg.Addr,
 	}
 
-	if s.cfg.ShowStartBanner {
-		addr := server.Addr
-		schema := "http"
-
-		date := new(strings.Builder)
-		std_log.New(date, "", std_log.LstdFlags).Print()
-
-		bold := color.New(color.Bold).Add(color.FgGreen)
-		bold.Printf(
-			"%s Web server started at %s\n",
-			strings.TrimSpace(date.String()),
-			color.CyanString("%s://%s", schema, addr),
-		)
-
-		regular := color.New()
-		regular.Printf("├─ REST API: %s\n", color.CyanString("%s://%s/api/", schema, addr))
-	}
-
 	return func() error {
+			if s.cfg.ShowStartBanner {
+				addr := server.Addr
+				schema := "http"
+
+				date := new(strings.Builder)
+				std_log.New(date, "", std_log.LstdFlags).Print()
+
+				bold := color.New(color.Bold).Add(color.FgGreen)
+				bold.Printf(
+					"%s Web server started at %s\n",
+					strings.TrimSpace(date.String()),
+					color.CyanString("%s://%s", schema, addr),
+				)
+
+				regular := color.New()
+				regular.Printf("├─ REST API: %s\n", color.CyanString("%s://%s/api/", schema, addr))
+			}
+
 			return server.ListenAndServe()
-		}, func(error) {
+		}, func(err error) {
 			ctx, cancel := context.WithTimeout(context.Background(), constants.ShutdownTimeout)
 			defer cancel()
 			if err := server.Shutdown(ctx); err != nil {

@@ -42,7 +42,7 @@ func LoadConfig() (*Config, error) {
 		configPath = fmt.Sprintf("%s/config.development.yaml", rootPath)
 	}
 
-	fmt.Printf("Load config from %s\n", os.Getenv(constants.ConfigPath))
+	fmt.Printf("Load config from %s\n", configPath)
 
 	viper.SetConfigType(constants.Yaml)
 	viper.SetConfigFile(configPath)
@@ -69,7 +69,7 @@ func getConfigRootPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fmt.Printf("Current working directory is: %s\n", wd)
+	// fmt.Printf("Current working directory is: %s\n", wd)
 
 	// Get the absolute path of the executed project directory
 	absCurrentDir, err := filepath.Abs(wd)

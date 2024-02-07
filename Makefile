@@ -1,5 +1,8 @@
 
 GO_ENV=CGO_ENABLED=0 GO111MODULE=on
+Revision=$(shell git rev-parse --short HEAD 2>/dev/null || echo "")
+GO_FLAGS=-ldflags="-X 'github.com/htquangg/a-wasm/cmd.Revision=$(Revision)' -X 'github.com/apache/incubator-answer/cmd.Time=`date +%s`' -extldflags -static"
+GO=$(GO_ENV) $(shell which go)
 
 ifndef GOPATH
 	GOPATH := $(shell go env GOPATH)
@@ -8,7 +11,7 @@ ifndef GOBIN # derive value from gopath (default to first entry, similar to 'go 
 	GOBIN := $(shell go env GOPATH | sed 's/:.*//')/bin
 endif
 
-SERVICE_NAME=awasm
+BIN=awasm
 
 ###############################################################################
 #
@@ -24,23 +27,45 @@ tidy: ## add missing and remove unused modules
 # Build and testing rules
 #
 ###############################################################################
+# https://copyprogramming.com/howto/how-to-pass-argument-to-makefile-from-command-line
+%:      # thanks to chakrit
+    @:    # thanks to William Pursell
+
 .PHONY: build
 build: ## build the service binary
-	@echo "Building ${SERVICE_NAME} server"
-	@go build -o ./bin/${SERVICE_NAME} main.go
+	@echo "Building $(BIN) server"
+	@$(GO) build $(GO_FLAGS) -o $(BIN) main.go
+
+.PHONY: build
+clean: ## clean all build result
+	@$(GO) clean ./...
+	@rm -f $(BIN)
 
 .PHONY: dev
-dev: ## run dev service
-	@go run main.go
+dev: ## run the dev application
+	@go run main.go $(filter-out $@,$(MAKECMDGOALS))
+
+.PHONY: dev-run
+dev-run: ## run the dev application and serve
+	@go run main.go run
 
 .PHONY: air
-air: ## live reloading dev service
-	@air -c .air.toml
+air: ## live reloading the application
+	@air -c .air.toml -- $(filter-out $@,$(MAKECMDGOALS))
+
+.PHONY: air-run
+air-run: ## live reloading the application and serve
+	@air -c .air.toml -- run
 
 .PHONY: test
 test: ## run the go tests
 	@echo "Running tests"
-	go test -v -coverprofile=coverage.out ./...
+	go test ./... -v --cover
+
+test-report: ## run the go tests and report
+	@echo "Running tests"
+	go test ./... -v --cover -coverprofile=coverage.out
+	@echo "Reporting tests"
 	go tool cover -html=coverage.out
 
 ###############################################################################

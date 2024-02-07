@@ -2,12 +2,14 @@ package endpoint
 
 import "github.com/htquangg/a-wasm/internal/db"
 
-type Endpoint struct {
-	db db.DB
+type EndpoinService struct {
+	db   db.DB
+	repo *endpointRepo
 }
 
-func New(db db.DB) *Endpoint {
-	return &Endpoint{
-		db: db,
+func NewEndpointService(db db.DB) *EndpoinService {
+	return &EndpoinService{
+		db:   db,
+		repo: newEndpointRepo(db),
 	}
 }

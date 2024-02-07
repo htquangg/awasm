@@ -6,11 +6,11 @@ import (
 )
 
 type Service struct {
-	Endpoint *endpoint.Endpoint
+	Endpoint *endpoint.EndpoinService
 }
 
 func New(db db.DB) *Service {
 	return &Service{
-		Endpoint: endpoint.New(db),
+		Endpoint: endpoint.NewEndpointService(db),
 	}
 }

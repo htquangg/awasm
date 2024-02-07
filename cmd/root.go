@@ -1,81 +1,41 @@
 package cmd
 
 import (
-	"context"
 	"os"
 	"strings"
-	"syscall"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/cluster"
 	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/internal/db"
-	"github.com/htquangg/a-wasm/internal/services"
-	"github.com/htquangg/a-wasm/internal/web"
 
-	"github.com/oklog/run"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
 )
 
-var g run.Group
-
-func init() {
-	initLog()
+var rootCmd = &cobra.Command{
+	Use:   "awasm",
+	Short: "Awasm is the application that you can build, deploy, and run your application on the edge.",
+	Long: `Awasm is the application that you can build, deploy, and run your application on the edge.
+To run awasm, use:
+  - 'awasm run' to launch application.
+  - 'awasm endpoints' to manage endpoints.
+		`,
 }
 
 func Execute() {
-	if err := execute(); err != nil {
+	initLog()
+
+	if err := rootCmd.Execute(); err != nil {
 		log.Error().Err(err).Msg("the service exitted abnormally")
 		os.Exit(1)
 	}
 }
 
-func execute() error {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+func init() {
+	cobra.OnInitialize(initLog)
 
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		return err
+	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd} {
+		rootCmd.AddCommand(cmd)
 	}
-
-	db, err := db.New(ctx, cfg.DB)
-	if err != nil {
-		return err
-	}
-
-	svc := services.New(db)
-
-	g.Add(web.
-		New(ctx, &web.Config{
-			ShowStartBanner: true,
-			Addr:            cfg.Server.HTTP.Addr,
-		},
-			svc,
-			db,
-		).
-		ServeHandler(),
-	)
-
-	g.Add(cluster.New(ctx).ServeHandler())
-
-	g.Add(run.SignalHandler(ctx,
-		os.Interrupt,
-		os.Kill,
-		syscall.SIGINT,
-		syscall.SIGTERM,
-		syscall.SIGQUIT,
-		syscall.SIGHUP,
-	))
-
-	var se run.SignalError
-	if err := g.Run(); err != nil && !errors.As(err, &se) {
-		return err
-	}
-
-	return nil
 }
 
 func initLog() {

@@ -1,7 +1,8 @@
 package web
 
 import (
-	"github.com/htquangg/a-wasm/internal/schemas"
+	"github.com/htquangg/a-wasm/internal/services/health"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -15,5 +16,5 @@ func bindHealthApi(g *echo.Group) {
 }
 
 func (api *healthApi) checkHealth(c echo.Context) error {
-	return handleSuccessResp(c, &schemas.CheckHealthResp{Msg: "API is live!!!"})
+	return handleSuccessResp(c, &health.CheckHealthResp{Msg: "API is live!!!"})
 }

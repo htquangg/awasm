@@ -11,6 +11,8 @@ import (
 	"xorm.io/xorm/schemas"
 )
 
+var x *xorm.Engine
+
 type (
 	DB interface {
 		Engine(ctx context.Context) Engine
@@ -49,6 +51,32 @@ func New(ctx context.Context, cfg *Config) (DB, error) {
 		cfg: cfg,
 		e:   engine,
 	}, nil
+}
+
+func SetDefaultEngine(ctx context.Context, eng *xorm.Engine) {
+	x = eng
+	DefaultContext = &Context{
+		Context: ctx,
+		e:       x,
+	}
+}
+
+func GetEngine(ctx context.Context) Engine {
+	if e := getEngine(ctx); e != nil {
+		return e
+	}
+	return x.Context(ctx)
+}
+
+func getEngine(ctx context.Context) Engine {
+	if engined, ok := ctx.(Engined); ok {
+		return engined.Engine()
+	}
+	enginedInterface := ctx.Value(enginedContextKey)
+	if enginedInterface != nil {
+		return enginedInterface.(Engined).Engine()
+	}
+	return nil
 }
 
 func (db *db) Engine(ctx context.Context) Engine {
