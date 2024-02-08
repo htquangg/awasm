@@ -107,7 +107,10 @@ func (db *db) Query(ctx context.Context, sqlAndArgs ...any) ([]map[string][]byte
 	return db.Engine(ctx).Query(sqlAndArgs...)
 }
 
-func (db *db) txWithNoCheck(parentCtx context.Context, f func(ctx context.Context) (interface{}, error)) (interface{}, error) {
+func (db *db) txWithNoCheck(
+	parentCtx context.Context,
+	f func(ctx context.Context) (interface{}, error),
+) (interface{}, error) {
 	sess := db.e.NewSession()
 	defer sess.Close()
 	if err := sess.Begin(); err != nil {

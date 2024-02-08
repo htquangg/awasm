@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"syscall"
@@ -13,10 +14,8 @@ import (
 	"github.com/htquangg/a-wasm/internal/repos"
 	"github.com/htquangg/a-wasm/internal/services"
 	"github.com/htquangg/a-wasm/internal/web"
-	"github.com/htquangg/a-wasm/internal/web/mws"
 
 	"github.com/oklog/run"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -68,7 +67,6 @@ func initApp(ctx context.Context, cfg *config.Config) (run.Group, error) {
 			Addr:            cfg.Server.HTTP.Addr,
 		},
 			handlers,
-			mws.Transactional(db),
 		).
 		ServeHandler(),
 	)

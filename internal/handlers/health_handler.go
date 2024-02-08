@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/htquangg/a-wasm/internal/handlers/resp"
 	"github.com/htquangg/a-wasm/internal/services/health"
 
 	"github.com/labstack/echo/v4"
@@ -17,10 +18,10 @@ func NewHealthHandler(healthService *health.HealthService) *HealthHandler {
 }
 
 func (h *HealthHandler) CheckHealth(c echo.Context) error {
-	resp, err := h.healthService.CheckHealth()
+	result, err := h.healthService.CheckHealth()
 	if err != nil {
-		return handleBadRequestResp(c, err, "")
+		return resp.HandleResponse(c, err, nil)
 	}
 
-	return handleSuccessResp(c, resp)
+	return resp.HandleResponse(c, nil, result)
 }

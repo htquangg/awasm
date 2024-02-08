@@ -2,18 +2,19 @@ package web
 
 import (
 	"context"
+	std_errors "errors"
 	std_log "log"
 	"net/http"
 	"strings"
 
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/handlers"
-	"github.com/htquangg/a-wasm/internal/web/mws"
+	"github.com/htquangg/a-wasm/internal/handlers/resp"
 
 	"github.com/fatih/color"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/pkg/errors"
+
 	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 )
@@ -28,56 +29,29 @@ func New(
 	ctx context.Context,
 	cfg *Config,
 	handlers *handlers.Handlers,
-	transactionalMiddleware mws.TransactionalMiddleware,
+	mws ...echo.MiddlewareFunc,
 ) *Server {
 	e := echo.New()
-
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: `{"time":"${time_rfc3339}","latency":"${latency_human}",` +
-			`"method":"${method}","uri":"${uri}",` +
-			`"status":${status},"error":"${error}"}` + "\n",
-	}))
 
 	e.Use(middleware.Recover())
 	e.Use(middleware.Secure())
 
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
-		if err == nil {
-			return // no error
-		}
-
-		var apiErr *RespError
-
-		if errors.As(err, &apiErr) {
-			err = c.JSON(http.StatusOK, apiErr)
-			// already an api error...
-		} else if v := new(echo.HTTPError); errors.As(err, &v) {
-			apiErr = &RespError{
-				Resp: Resp{
-					Code: RespStatus(v.Code),
-					Data: nil,
-				},
-				Message: "",
-			}
-			err = c.JSON(int(apiErr.Code), apiErr)
-		} else {
-			log.Warn().Err(err).Msgf("[API][UNKNOWN] error: %d %T", v.Code, v.Message)
-			apiErr = &RespError{
-				Resp: Resp{
-					Code: StatusInternalServer,
-					Data: nil,
-				},
-				Message: "",
-			}
-			err = c.JSON(int(apiErr.Code), apiErr)
-		}
-
 		if c.Response().Committed {
 			return
 		}
+
+		if v := new(echo.HTTPError); std_errors.As(err, &v) {
+			err = c.JSON(v.Code, resp.NewRespBody(
+				v.Code,
+				"",
+			))
+		}
+
+		resp.HandleResponse(c, err, nil)
 	}
 
-	v1 := e.Group("/api/v1", transactionalMiddleware)
+	v1 := e.Group("/api/v1", mws...)
 
 	bindHealthApi(v1, handlers)
 	bindEndpointsApi(v1)
