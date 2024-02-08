@@ -11,13 +11,11 @@ import (
 	"xorm.io/xorm/schemas"
 )
 
-var x *xorm.Engine
-
 type (
 	DB interface {
 		Engine(ctx context.Context) Engine
 		TxContext(parentCtx context.Context) (*Context, Committer, error)
-		WithTx(parentCtx context.Context, f func(ctx context.Context) error) error
+		WithTx(parentCtx context.Context, f func(ctx context.Context) (interface{}, error)) (interface{}, error)
 		InTransaction(ctx context.Context) bool
 		Exec(ctx context.Context, sqlAndArgs ...any) (sql.Result, error)
 		Query(ctx context.Context, sqlAndArgs ...any) ([]map[string][]byte, error)
@@ -53,32 +51,6 @@ func New(ctx context.Context, cfg *Config) (DB, error) {
 	}, nil
 }
 
-func SetDefaultEngine(ctx context.Context, eng *xorm.Engine) {
-	x = eng
-	DefaultContext = &Context{
-		Context: ctx,
-		e:       x,
-	}
-}
-
-func GetEngine(ctx context.Context) Engine {
-	if e := getEngine(ctx); e != nil {
-		return e
-	}
-	return x.Context(ctx)
-}
-
-func getEngine(ctx context.Context) Engine {
-	if engined, ok := ctx.(Engined); ok {
-		return engined.Engine()
-	}
-	enginedInterface := ctx.Value(enginedContextKey)
-	if enginedInterface != nil {
-		return enginedInterface.(Engined).Engine()
-	}
-	return nil
-}
-
 func (db *db) Engine(ctx context.Context) Engine {
 	if e := db.engine(ctx); e != nil {
 		return e
@@ -110,14 +82,14 @@ func (db *db) TxContext(parentCtx context.Context) (*Context, Committer, error) 
 	return newContext(db.ctx, sess, true), sess, nil
 }
 
-func (db *db) WithTx(parentCtx context.Context, f func(ctx context.Context) error) error {
+func (db *db) WithTx(parentCtx context.Context, f func(ctx context.Context) (interface{}, error)) (interface{}, error) {
 	if sess, ok := db.inTransaction(parentCtx); ok {
-		err := f(newContext(parentCtx, sess, true))
+		result, err := f(newContext(parentCtx, sess, true))
 		if err != nil {
 			// rollback immediately, in case the caller ignores returned error and tries to commit the transaction.
 			_ = sess.Close()
 		}
-		return err
+		return result, err
 	}
 	return db.txWithNoCheck(parentCtx, f)
 }
@@ -135,18 +107,23 @@ func (db *db) Query(ctx context.Context, sqlAndArgs ...any) ([]map[string][]byte
 	return db.Engine(ctx).Query(sqlAndArgs...)
 }
 
-func (db *db) txWithNoCheck(parentCtx context.Context, f func(ctx context.Context) error) error {
+func (db *db) txWithNoCheck(parentCtx context.Context, f func(ctx context.Context) (interface{}, error)) (interface{}, error) {
 	sess := db.e.NewSession()
 	defer sess.Close()
 	if err := sess.Begin(); err != nil {
-		return err
+		return nil, err
 	}
 
-	if err := f(newContext(parentCtx, sess, true)); err != nil {
-		return err
+	result, err := f(newContext(parentCtx, sess, true))
+	if err != nil {
+		return result, err
 	}
 
-	return sess.Commit()
+	if err := sess.Commit(); err != nil {
+		return result, err
+	}
+
+	return result, nil
 }
 
 func (db *db) inTransaction(ctx context.Context) (*xorm.Session, bool) {

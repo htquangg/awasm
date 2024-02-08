@@ -4,8 +4,6 @@ import (
 	"context"
 )
 
-var DefaultContext context.Context
-
 type contextKey struct {
 	name string
 }
