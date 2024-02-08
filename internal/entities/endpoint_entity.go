@@ -1,8 +1,8 @@
-package endpoint
+package entities
 
 import "time"
 
-type EndpointEntity struct {
+type Endpoint struct {
 	ID        string    `xorm:"not null pk VARCHAR(36) id"`
 	CreatedAt time.Time `xorm:"created TIMESTAMP created_at"`
 	UpdatedAt time.Time `xorm:"updated TIMESTAMP updated_at"`
@@ -13,6 +13,6 @@ type EndpointEntity struct {
 	ActiveDeploymentID string `xorm:"not null default '' VARCHAR(36)"`
 }
 
-func (EndpointEntity) TableName() string {
+func (Endpoint) TableName() string {
 	return "endpoints"
 }

@@ -1,4 +1,4 @@
-package web
+package mws
 
 import (
 	"context"
@@ -12,7 +12,9 @@ const (
 	ContextTxKey string = "tx"
 )
 
-func TransactionalMiddleware(db db_internal.DB) echo.MiddlewareFunc {
+type TransactionalMiddleware = echo.MiddlewareFunc
+
+func Transactional(db db_internal.DB) TransactionalMiddleware {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (err error) {
 			switch c.Request().Method {

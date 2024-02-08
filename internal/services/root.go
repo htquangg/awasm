@@ -1,16 +1,21 @@
 package services
 
 import (
-	"github.com/htquangg/a-wasm/internal/db"
+	"github.com/htquangg/a-wasm/internal/repos"
 	"github.com/htquangg/a-wasm/internal/services/endpoint"
+	"github.com/htquangg/a-wasm/internal/services/health"
 )
 
-type Service struct {
-	Endpoint *endpoint.EndpoinService
+type Sevices struct {
+	repos    *repos.Repos
+	Health   *health.HealthService
+	Endpoint *endpoint.EndpointService
 }
 
-func New(db db.DB) *Service {
-	return &Service{
-		Endpoint: endpoint.NewEndpointService(db),
+func New(repos *repos.Repos) *Sevices {
+	return &Sevices{
+		repos:    repos,
+		Health:   health.NewHealthService(),
+		Endpoint: endpoint.NewEndpointService(repos.Endpoint),
 	}
 }
