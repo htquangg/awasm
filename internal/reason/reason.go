@@ -1,4 +1,4 @@
-package resp
+package reason
 
 const (
 	Success               = "success"

@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/internal/handlers"
-	"github.com/htquangg/a-wasm/internal/handlers/resp"
+	"github.com/htquangg/a-wasm/internal/controllers"
+	"github.com/htquangg/a-wasm/internal/handler"
 
 	"github.com/fatih/color"
 	"github.com/labstack/echo/v4"
@@ -28,7 +28,7 @@ type Server struct {
 func New(
 	ctx context.Context,
 	cfg *Config,
-	handlers *handlers.Handlers,
+	controllers *controllers.Controllers,
 	mws ...echo.MiddlewareFunc,
 ) *Server {
 	e := echo.New()
@@ -49,13 +49,13 @@ func New(
 			err = errors.New(v.Code, reason)
 		}
 
-		resp.HandleResponse(c, err, nil)
+		handler.HandleResponse(c, err, nil)
 	}
 
 	v1Group := e.Group("/api/v1", mws...)
 
-	bindHealthApi(v1Group, handlers)
-	bindEndpointsApi(v1Group, handlers)
+	bindHealthApi(v1Group, controllers)
+	bindEndpointsApi(v1Group, controllers)
 
 	// catch all any route
 	v1Group.Any("/*", func(c echo.Context) error {

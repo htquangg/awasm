@@ -9,8 +9,8 @@ import (
 
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/cluster"
+	"github.com/htquangg/a-wasm/internal/controllers"
 	"github.com/htquangg/a-wasm/internal/db"
-	"github.com/htquangg/a-wasm/internal/handlers"
 	"github.com/htquangg/a-wasm/internal/repos"
 	"github.com/htquangg/a-wasm/internal/services"
 	"github.com/htquangg/a-wasm/internal/web"
@@ -59,14 +59,14 @@ func initApp(ctx context.Context, cfg *config.Config) (run.Group, error) {
 
 	repos := repos.New(db)
 	services := services.New(repos)
-	handlers := handlers.New(services)
+	controllers := controllers.New(services)
 
 	g.Add(web.
 		New(ctx, &web.Config{
 			ShowStartBanner: true,
 			Addr:            cfg.Server.HTTP.Addr,
 		},
-			handlers,
+			controllers,
 		).
 		ServeHandler(),
 	)

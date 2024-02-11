@@ -34,8 +34,8 @@ func (r *EndpointService) Add(ctx context.Context, req *schemas.AddEndpointReq) 
 		return nil, err
 	}
 
-	result := &schemas.AddEndpointResp{}
-	result.SetFromEndpoint(endpoint)
+	resp := &schemas.AddEndpointResp{}
+	resp.SetFromEndpoint(endpoint)
 
-	return result, nil
+	return resp, nil
 }

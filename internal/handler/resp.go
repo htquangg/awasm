@@ -1,4 +1,4 @@
-package resp
+package handler
 
 import (
 	"github.com/segmentfault/pacman/errors"

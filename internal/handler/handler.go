@@ -1,8 +1,10 @@
-package resp
+package handler
 
 import (
 	std_errors "errors"
 	"net/http"
+
+	"github.com/htquangg/a-wasm/internal/reason"
 
 	"github.com/labstack/echo/v4"
 	"github.com/segmentfault/pacman/errors"
@@ -13,7 +15,7 @@ import (
 func HandleResponse(c echo.Context, err error, data interface{}) error {
 	// no error
 	if err == nil {
-		return c.JSON(http.StatusOK, NewRespBodyData(http.StatusOK, Success, data))
+		return c.JSON(http.StatusOK, NewRespBodyData(http.StatusOK, reason.Success, data))
 	}
 
 	var myErr *errors.Error
@@ -24,7 +26,7 @@ func HandleResponse(c echo.Context, err error, data interface{}) error {
 			http.StatusOK,
 			NewRespBody(
 				http.StatusInternalServerError,
-				UnknownError,
+				reason.UnknownError,
 			),
 		)
 	}
