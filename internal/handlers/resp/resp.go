@@ -23,6 +23,10 @@ func NewRespBody(code int, reason string) *RespBody {
 	}
 }
 
+func (r RespBody) Error() string {
+	return r.Reason
+}
+
 // NewRespBodyFromError new response body from error
 func NewRespBodyFromError(e *errors.Error) *RespBody {
 	return &RespBody{

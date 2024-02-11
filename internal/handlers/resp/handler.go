@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/rs/zerolog/log"
 	"github.com/segmentfault/pacman/errors"
+	"github.com/segmentfault/pacman/log"
 )
 
 // HandleResponse Handle response body
@@ -19,7 +19,7 @@ func HandleResponse(c echo.Context, err error, data interface{}) error {
 	var myErr *errors.Error
 	// unknown error
 	if !std_errors.As(err, &myErr) {
-		log.Error().Stack().Err(err)
+		log.Error(err)
 		return c.JSON(
 			http.StatusOK,
 			NewRespBody(
@@ -31,7 +31,8 @@ func HandleResponse(c echo.Context, err error, data interface{}) error {
 
 	// log internal server error
 	if errors.IsInternalServer(myErr) {
-		log.Error().Err(myErr)
+		log.Error(myErr)
+		myErr.Reason = ""
 	}
 
 	respBody := NewRespBodyFromError(myErr)

@@ -14,8 +14,26 @@ CREATE TABLE IF NOT EXISTS endpoints
     active_deployment_id VARCHAR(36)                         NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS deployments
+(
+    id          VARCHAR(36) PRIMARY KEY             NOT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at  TIMESTAMP                           NULL,
+
+    endpoint_id VARCHAR(36)                         NOT NULL,
+    hash        CHAR(32)                            NOT NULL,
+    data        MEDIUMBLOB                          NOT NULL
+);
+
+ALTER TABLE deployments
+    ADD CONSTRAINT fk_deployment_endpoint_id FOREIGN KEY (endpoint_id) REFERENCES endpoints(id) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
 -- +goose Down
 -- +goose StatementBegin
 SELECT 'down SQL query';
 -- +goose StatementEnd
-DROP TABLE if EXISTS endpoints;
+ALTER TABLE deployments DROP FOREIGN KEY fk_deployment_endpoint_id;
+
+DROP TABLE IF EXISTS deployments;
+
+DROP TABLE IF EXISTS endpoints;

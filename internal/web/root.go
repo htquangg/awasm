@@ -14,8 +14,8 @@ import (
 	"github.com/fatih/color"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-
 	"github.com/rs/zerolog/log"
+	"github.com/segmentfault/pacman/errors"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 )
 
@@ -42,22 +42,23 @@ func New(
 		}
 
 		if v := new(echo.HTTPError); std_errors.As(err, &v) {
-			err = c.JSON(v.Code, resp.NewRespBody(
-				v.Code,
-				"",
-			))
+			reason := ""
+			if v.Internal != nil {
+				reason = v.Internal.Error()
+			}
+			err = errors.New(v.Code, reason)
 		}
 
 		resp.HandleResponse(c, err, nil)
 	}
 
-	v1 := e.Group("/api/v1", mws...)
+	v1Group := e.Group("/api/v1", mws...)
 
-	bindHealthApi(v1, handlers)
-	bindEndpointsApi(v1)
+	bindHealthApi(v1Group, handlers)
+	bindEndpointsApi(v1Group, handlers)
 
 	// catch all any route
-	v1.Any("/*", func(c echo.Context) error {
+	v1Group.Any("/*", func(c echo.Context) error {
 		return echo.ErrNotFound
 	}, otelecho.Middleware("a-wasm"))
 
