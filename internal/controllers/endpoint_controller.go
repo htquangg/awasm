@@ -5,7 +5,6 @@ import (
 	"github.com/htquangg/a-wasm/internal/reason"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/internal/services/endpoint"
-	"github.com/htquangg/a-wasm/pkg/uid"
 
 	"github.com/labstack/echo/v4"
 	"github.com/segmentfault/pacman/errors"
@@ -27,9 +26,7 @@ func (h *EndpointController) Add(c echo.Context) error {
 		return errors.BadRequest(reason.RequestFormatError)
 	}
 
-	req.ID = uid.ID()
+	resp, err := h.endpointService.Add(c.Request().Context(), req)
 
-	result, err := h.endpointService.Add(c.Request().Context(), req)
-
-	return handler.HandleResponse(c, err, result)
+	return handler.HandleResponse(c, err, resp)
 }

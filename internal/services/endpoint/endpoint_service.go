@@ -5,6 +5,7 @@ import (
 
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/schemas"
+	"github.com/htquangg/a-wasm/pkg/uid"
 
 	"github.com/jinzhu/copier"
 )
@@ -28,6 +29,8 @@ func NewEndpointService(endpointRepo EndpointRepo) *EndpointService {
 func (r *EndpointService) Add(ctx context.Context, req *schemas.AddEndpointReq) (*schemas.AddEndpointResp, error) {
 	endpoint := &entities.Endpoint{}
 	_ = copier.Copy(endpoint, req)
+
+	endpoint.ID = uid.ID()
 
 	err := r.endpointRepo.Add(ctx, endpoint)
 	if err != nil {

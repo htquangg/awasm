@@ -6,10 +6,18 @@ import (
 	"github.com/jinzhu/copier"
 )
 
+var Runtimes = map[string]bool{
+	"js": true,
+	"go": true,
+}
+
+func ValidRuntime(runtime string) bool {
+	_, ok := Runtimes[runtime]
+	return ok
+}
+
 // AddEndpointReq holds all necesssary fields to create new run application.
 type AddEndpointReq struct {
-	// ID The identifier endpoint
-	ID string `json:"id"`
 	// Name of the endpoint
 	Name string `json:"name"`
 	// Runtime on which the code will be invoked. (go or js for now)

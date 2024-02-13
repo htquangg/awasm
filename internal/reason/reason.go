@@ -9,3 +9,7 @@ const (
 	ForbiddenError        = "forbidden_error"
 	DuplicateRequestError = "duplicate_request_error"
 )
+
+const (
+	EndpointNotFound = "error.endpoint.not_found"
+)

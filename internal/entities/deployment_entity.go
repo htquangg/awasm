@@ -1,6 +1,12 @@
 package entities
 
-import "time"
+import (
+	"crypto/md5"
+	"encoding/hex"
+	"time"
+
+	"github.com/htquangg/a-wasm/pkg/uid"
+)
 
 type Deployment struct {
 	ID        string    `xorm:"not null pk VARCHAR(36) id"`
@@ -12,6 +18,19 @@ type Deployment struct {
 	Data       []byte `xorm:"not null MEDIUMBLOB data"`
 }
 
-func (Deployment) Table() string {
+func (Deployment) TableName() string {
 	return "deployments"
+}
+
+func NewFromEndpoint(endpoint *Endpoint, data []byte) *Deployment {
+	hashBytes := md5.Sum(data)
+	hashstr := hex.EncodeToString(hashBytes[:])
+
+	return &Deployment{
+		ID:         uid.ID(),
+		EndpointID: endpoint.ID,
+		Data:       data,
+		Hash:       hashstr,
+		CreatedAt:  time.Now(),
+	}
 }

@@ -1,0 +1,44 @@
+package deployment
+
+import (
+	"context"
+
+	"github.com/htquangg/a-wasm/internal/db"
+	"github.com/htquangg/a-wasm/internal/entities"
+	"github.com/htquangg/a-wasm/internal/reason"
+	"github.com/htquangg/a-wasm/internal/services/deployment"
+
+	"github.com/segmentfault/pacman/errors"
+)
+
+type deploymentRepo struct {
+	db db.DB
+}
+
+func NewDeploymentRepo(db db.DB) deployment.DeploymentRepo {
+	return &deploymentRepo{
+		db: db,
+	}
+}
+
+func (r *deploymentRepo) Add(ctx context.Context, deployment *entities.Deployment) error {
+	_, err := r.db.Engine(ctx).Insert(deployment)
+	if err != nil {
+		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+
+	return nil
+}
+
+func (r *deploymentRepo) GetByID(
+	ctx context.Context,
+	id string,
+) (deployment *entities.Deployment, exists bool, err error) {
+	deployment = &entities.Deployment{}
+	exists, err = r.db.Engine(ctx).ID(id).Get(deployment)
+	if err != nil {
+		err = errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+
+	return
+}
