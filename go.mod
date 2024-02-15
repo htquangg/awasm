@@ -5,6 +5,7 @@ go 1.21.6
 require (
 	github.com/asynkron/protoactor-go v0.0.0-20240124095531-f36d1cf7f42b
 	github.com/fatih/color v1.16.0
+	github.com/go-resty/resty/v2 v2.11.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/google/uuid v1.6.0
 	github.com/jinzhu/copier v0.4.0

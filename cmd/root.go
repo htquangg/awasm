@@ -33,7 +33,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initLog)
 
-	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd} {
+	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd, deploymentsCmd} {
 		rootCmd.AddCommand(cmd)
 	}
 }
