@@ -29,3 +29,16 @@ func (r *endpointRepo) Add(ctx context.Context, endpoint *entities.Endpoint) err
 
 	return nil
 }
+
+func (r *endpointRepo) GetByID(
+	ctx context.Context,
+	id string,
+) (endpoint *entities.Endpoint, exists bool, err error) {
+	endpoint = &entities.Endpoint{}
+	exists, err = r.db.Engine(ctx).ID(id).Get(endpoint)
+	if err != nil {
+		err = errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+
+	return
+}

@@ -56,6 +56,7 @@ func New(
 
 	bindHealthApi(v1Group, controllers)
 	bindEndpointsApi(v1Group, controllers)
+	bindPreviewApi(v1Group, controllers)
 
 	// catch all any route
 	v1Group.Any("/*", func(c echo.Context) error {

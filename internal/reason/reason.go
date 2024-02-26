@@ -11,5 +11,7 @@ const (
 )
 
 const (
-	EndpointNotFound = "error.endpoint.not_found"
+	EndpointNotFound        = "error.endpoint.not_found"
+	EndpointHasNotPublished = "error.endpoint.has_not_published"
+	DeploymentNotFound      = "error.deployment.not_found"
 )

@@ -6,12 +6,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/htquangg/a-wasm/internal/grains/messages"
+	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
 	"github.com/htquangg/a-wasm/pkg/uid"
 
 	"github.com/stretchr/testify/require"
 	"github.com/tetratelabs/wazero"
-	pb "google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestRuntimeInvoke(t *testing.T) {
@@ -23,7 +23,7 @@ func TestRuntimeInvoke(t *testing.T) {
 		URL:    "/",
 		Body:   nil,
 	}
-	breq, err := pb.Marshal(req)
+	breq, err := proto.Marshal(req)
 	require.Nil(t, err)
 
 	out := &bytes.Buffer{}

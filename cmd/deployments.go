@@ -54,7 +54,9 @@ var createDeploymentCmd = &cobra.Command{
 			R().
 			SetBody(b)
 
-		response, err := httpRequest.Post(fmt.Sprintf("%v/api/v1/endpoints/%s/deployments", "http://127.0.0.1:3000", endpointID))
+		response, err := httpRequest.Post(
+			fmt.Sprintf("%v/api/v1/endpoints/%s/deployments", "http://127.0.0.1:3000", endpointID),
+		)
 		if err != nil {
 			fmt.Printf("CallCreateDeploymentV1: Unable to complete api request [err=%s]\n", err)
 			os.Exit(1)

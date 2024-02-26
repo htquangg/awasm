@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package messages;
+
+option go_package = "github.com/htquangg/a-wasm/internal/grains/messages";
+
+message HTTPRequest {
+  string Method = 1;
+  string URL = 2;
+  bytes Body = 3;
+  map<string, HeaderFields> Header = 4;
+  string DeploymentID = 5;
+  string EndpointID = 6;
+  string ID = 7;
+  string Runtime = 8;
+}
+
+message HeaderFields {
+	repeated string Fields = 1;
+}
+
+message HTTPResponse {
+  string RequestID = 1;
+  bytes Response = 2;
+  int32 StatusCode = 3;
+}

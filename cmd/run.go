@@ -8,9 +8,9 @@ import (
 	"syscall"
 
 	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/cluster"
 	"github.com/htquangg/a-wasm/internal/controllers"
 	"github.com/htquangg/a-wasm/internal/db"
+	"github.com/htquangg/a-wasm/internal/protocluster"
 	"github.com/htquangg/a-wasm/internal/repos"
 	"github.com/htquangg/a-wasm/internal/services"
 	"github.com/htquangg/a-wasm/internal/web"
@@ -57,8 +57,12 @@ func initApp(ctx context.Context, cfg *config.Config) (run.Group, error) {
 		return g, err
 	}
 
+	cluster := protocluster.New(ctx, db)
+
+	g.Add(cluster.ServeHandler())
+
 	repos := repos.New(db)
-	services := services.New(repos)
+	services := services.New(repos, cluster)
 	controllers := controllers.New(services)
 
 	g.Add(web.
@@ -70,8 +74,6 @@ func initApp(ctx context.Context, cfg *config.Config) (run.Group, error) {
 		).
 		ServeHandler(),
 	)
-
-	g.Add(cluster.New(ctx).ServeHandler())
 
 	g.Add(run.SignalHandler(ctx,
 		os.Interrupt,

@@ -16,3 +16,7 @@ type Endpoint struct {
 func (Endpoint) TableName() string {
 	return "endpoints"
 }
+
+func (e Endpoint) HasActiveDeploy() bool {
+	return e.ActiveDeploymentID != ""
+}
