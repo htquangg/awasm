@@ -16,12 +16,12 @@ type TransactionalMiddleware = echo.MiddlewareFunc
 
 func Transactional(db db_internal.DB) TransactionalMiddleware {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) (err error) {
-			switch c.Request().Method {
+		return func(ctx echo.Context) (err error) {
+			switch ctx.Request().Method {
 			case "POST", "PUT", "PATCH", "DELETE":
-				ctxTx := getCtxTxFromContext(c)
+				ctxTx := getCtxTxFromContext(ctx)
 				if ctxTx != nil {
-					return next(c)
+					return next(ctx)
 				}
 
 				var committer db_internal.Committer
@@ -31,35 +31,35 @@ func Transactional(db db_internal.DB) TransactionalMiddleware {
 					return err
 				}
 
-				c.Set(ContextTxKey, ctxTx)
+				ctx.Set(ContextTxKey, ctxTx)
 
 				defer func(committer db_internal.Committer) {
 					err = closeTx(committer, err)
 				}(committer)
 			}
 
-			return next(c)
+			return next(ctx)
 		}
 	}
 }
 
-func GetCtxTxFromContext(c echo.Context) context.Context {
-	ctx := getCtxTxFromContext(c)
-	if ctx == nil {
-		log.Warn().Msgf("has no tx context in route: %s", c.Path())
+func GetCtxTxFromContext(ctx echo.Context) context.Context {
+	ctxTx := getCtxTxFromContext(ctx)
+	if ctxTx == nil {
+		log.Warn().Msgf("has no tx context in route: %s", ctx.Path())
 		return context.Background()
 	}
 
-	return ctx
+	return ctxTx
 }
 
-func getCtxTxFromContext(c echo.Context) context.Context {
-	ctx, _ := c.Get(ContextTxKey).(context.Context)
-	if ctx == nil {
+func getCtxTxFromContext(ctx echo.Context) context.Context {
+	ctxTx, _ := ctx.Get(ContextTxKey).(context.Context)
+	if ctxTx == nil {
 		return nil
 	}
 
-	return ctx
+	return ctxTx
 }
 
 func closeTx(committer db_internal.Committer, err error) error {

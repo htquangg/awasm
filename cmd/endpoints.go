@@ -23,7 +23,12 @@ func init() {
 	_ = createEndpointCmd.MarkFlagRequired("name")
 	createEndpointCmd.Flags().String("runtime", "", "The runtime of your endpoint (go or js)")
 	_ = createEndpointCmd.MarkFlagRequired("runtime")
-	endpointsCmd.AddCommand(createEndpointCmd)
+
+	// add publishEndpointCmd flag here
+	publishEndpointCmd.Flags().String("deployment-id", "", "The id of the deployment that you want to publish LIVE")
+	_ = publishEndpointCmd.MarkFlagRequired("deployment-id")
+
+	endpointsCmd.AddCommand(createEndpointCmd, publishEndpointCmd)
 }
 
 var createEndpointCmd = &cobra.Command{
@@ -72,5 +77,43 @@ var createEndpointCmd = &cobra.Command{
 		}
 
 		fmt.Printf("CallCreateEndpointV1: Successful [response=%s]\n", response.String())
+	},
+}
+
+var publishEndpointCmd = &cobra.Command{
+	Use:   "publish",
+	Short: "Used to publish deployment to an endpoint",
+	Run: func(cmd *cobra.Command, args []string) {
+		deploymentID, err := cmd.Flags().GetString("deployment-id")
+		if err != nil {
+			fmt.Println("unable to parse flag deployment id. --deployment-id <deploymentID>")
+			os.Exit(1)
+		}
+
+		// set up resty client
+		httpClient := resty.New()
+		httpClient.
+			SetHeader("Accept", "application/json").
+			SetHeader("Content-Type", "application/json")
+
+		body := schemas.PublishEndpointReq{
+			DeploymentID: deploymentID,
+		}
+
+		httpRequest := httpClient.
+			R().
+			SetBody(body)
+
+		response, err := httpRequest.Post(fmt.Sprintf("%v/api/v1/live/publish", "http://127.0.0.1:3000"))
+		if err != nil {
+			fmt.Printf("CallPublishEndpointV1: Unable to complete api request [err=%s]\n", err)
+			os.Exit(1)
+		}
+		if response.IsError() {
+			fmt.Printf("CallPublishEndpointV1: Unsuccessful [response=%s]\n", response.String())
+			os.Exit(1)
+		}
+
+		fmt.Printf("CallPublishEndpointV1: Successful [response=%s]\n", response.String())
 	},
 }

@@ -1,6 +1,6 @@
 package schemas
 
-type ServePreviewReq struct {
+type ServeDeploymentReq struct {
 	Method       string              `json:"method"`
 	URL          string              `json:"url"`
 	Body         []byte              `json:"body"`
@@ -8,7 +8,7 @@ type ServePreviewReq struct {
 	DeploymentID string              `json:"deploymentId"`
 }
 
-type ServePreviewResp struct {
+type ServeDeploymentResp struct {
 	RequestID  string `json:"requestId"`
 	Response   []byte `json:"response"`
 	StatusCode int32  `json:"statusCode"`

@@ -20,13 +20,13 @@ func NewEndpointController(endpointService *endpoint.EndpointService) *EndpointC
 	}
 }
 
-func (h *EndpointController) Add(c echo.Context) error {
+func (c *EndpointController) Add(ctx echo.Context) error {
 	req := &schemas.AddEndpointReq{}
-	if err := c.Bind(req); err != nil {
+	if err := ctx.Bind(req); err != nil {
 		return errors.BadRequest(reason.RequestFormatError)
 	}
 
-	resp, err := h.endpointService.Add(c.Request().Context(), req)
+	resp, err := c.endpointService.Add(ctx.Request().Context(), req)
 
-	return handler.HandleResponse(c, err, resp)
+	return handler.HandleResponse(ctx, err, resp)
 }

@@ -17,11 +17,11 @@ func NewHealthController(healthService *health.HealthService) *HealthController 
 	}
 }
 
-func (h *HealthController) CheckHealth(c echo.Context) error {
-	result, err := h.healthService.CheckHealth()
+func (c *HealthController) CheckHealth(ctx echo.Context) error {
+	result, err := c.healthService.CheckHealth()
 	if err != nil {
-		return handler.HandleResponse(c, err, nil)
+		return handler.HandleResponse(ctx, err, nil)
 	}
 
-	return handler.HandleResponse(c, nil, result)
+	return handler.HandleResponse(ctx, nil, result)
 }

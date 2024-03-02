@@ -22,12 +22,12 @@ func NewPreviewController(deploymentService *deployment.DeploymentService) *Prev
 	}
 }
 
-func (h *PreviewController) Serve(c echo.Context) error {
-	deploymentID := c.Param("deploymentID")
+func (c *PreviewController) Serve(ctx echo.Context) error {
+	deploymentID := ctx.Param("deploymentID")
 
-	b, err := io.ReadAll(c.Request().Body)
+	b, err := io.ReadAll(ctx.Request().Body)
 	if err != nil {
-		return handler.HandleResponse(c,
+		return handler.HandleResponse(ctx,
 			errors.
 				InternalServer(reason.UnknownError).
 				WithError(err).
@@ -35,15 +35,15 @@ func (h *PreviewController) Serve(c echo.Context) error {
 			nil)
 	}
 
-	req := &schemas.ServePreviewReq{
+	req := &schemas.ServeDeploymentReq{
 		DeploymentID: deploymentID,
-		URL:          trimmedEndpointFromURL(c.Request().URL),
-		Method:       c.Request().Method,
-		Header:       c.Request().Header,
+		URL:          trimmedEndpointFromURL(ctx.Request().URL),
+		Method:       ctx.Request().Method,
+		Header:       ctx.Request().Header,
 		Body:         b,
 	}
 
-	resp, err := h.deploymentService.Serve(c.Request().Context(), req)
+	resp, err := c.deploymentService.Serve(ctx.Request().Context(), req)
 
-	return handler.HandleResponse(c, err, resp)
+	return handler.HandleResponse(ctx, err, resp)
 }

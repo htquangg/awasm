@@ -1,6 +1,15 @@
 package schemas
 
-type ServeLiveReq struct {
+type PublishEndpointReq struct {
+	DeploymentID string `json:"deploymentId"`
+}
+
+type PublishEndpointResp struct {
+	DeploymentID string `json:"deploymentId"`
+	URL          string `string:"url"`
+}
+
+type ServeEndpointReq struct {
 	Method     string              `json:"method"`
 	URL        string              `json:"url"`
 	Body       []byte              `json:"body"`
@@ -8,7 +17,7 @@ type ServeLiveReq struct {
 	EndpointID string              `json:"endpointId"`
 }
 
-type ServeLiveResp struct {
+type ServeEndpointResp struct {
 	RequestID  string `json:"requestId"`
 	Response   []byte `json:"response"`
 	StatusCode int32  `json:"statusCode"`

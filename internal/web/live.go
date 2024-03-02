@@ -8,5 +8,6 @@ import (
 func bindLiveApi(g *echo.Group, h *controllers.Controllers) {
 	subGroup := g.Group("/live")
 
-	subGroup.GET("/:endpointID", h.Live.Serve)
+	subGroup.POST("/publish", h.Live.Publish)
+	subGroup.GET("/:endpointID/*", h.Live.Serve)
 }

@@ -36,8 +36,8 @@ func New(
 	e.Use(middleware.Recover())
 	e.Use(middleware.Secure())
 
-	e.HTTPErrorHandler = func(err error, c echo.Context) {
-		if c.Response().Committed {
+	e.HTTPErrorHandler = func(err error, ctx echo.Context) {
+		if ctx.Response().Committed {
 			return
 		}
 
@@ -49,7 +49,7 @@ func New(
 			err = errors.New(v.Code, reason)
 		}
 
-		handler.HandleResponse(c, err, nil)
+		handler.HandleResponse(ctx, err, nil)
 	}
 
 	v1Group := e.Group("/api/v1", mws...)
@@ -57,9 +57,10 @@ func New(
 	bindHealthApi(v1Group, controllers)
 	bindEndpointsApi(v1Group, controllers)
 	bindPreviewApi(v1Group, controllers)
+	bindLiveApi(v1Group, controllers)
 
 	// catch all any route
-	v1Group.Any("/*", func(c echo.Context) error {
+	v1Group.Any("/*", func(ctx echo.Context) error {
 		return echo.ErrNotFound
 	}, otelecho.Middleware("a-wasm"))
 
@@ -71,6 +72,8 @@ func New(
 }
 
 func (s *Server) ServeHandler() (execute func() error, interrupt func(error)) {
+	s.e.Server.Addr = s.cfg.Addr
+
 	server := &http.Server{
 		ReadTimeout:       constants.ReadTimeout,
 		ReadHeaderTimeout: constants.ReadHeaderTimeout,

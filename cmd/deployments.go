@@ -30,7 +30,7 @@ var createDeploymentCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		endpointID, err := cmd.Flags().GetString("endpoint-id")
 		if err != nil {
-			fmt.Println("unable to parse flag endpoint id. --endpoint-id <uuid>")
+			fmt.Println("unable to parse flag endpoint id. --endpoint-id <deploymentID>")
 			os.Exit(1)
 		}
 

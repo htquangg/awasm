@@ -22,11 +22,11 @@ func NewDeploymentController(deploymentService *deployment.DeploymentService) *D
 	}
 }
 
-func (h *DeploymentController) Add(c echo.Context) error {
-	endpointID := c.Param("id")
+func (c *DeploymentController) Add(ctx echo.Context) error {
+	endpointID := ctx.Param("id")
 
 	// TODO: validate the contents of the blob and limit maximum blob size
-	b, err := io.ReadAll(c.Request().Body)
+	b, err := io.ReadAll(ctx.Request().Body)
 	if err != nil {
 		return errors.BadRequest(reason.RequestFormatError)
 	}
@@ -40,7 +40,7 @@ func (h *DeploymentController) Add(c echo.Context) error {
 		Data:       b,
 	}
 
-	resp, err := h.deploymentService.Add(c.Request().Context(), req)
+	resp, err := c.deploymentService.Add(ctx.Request().Context(), req)
 
-	return handler.HandleResponse(c, err, resp)
+	return handler.HandleResponse(ctx, err, resp)
 }

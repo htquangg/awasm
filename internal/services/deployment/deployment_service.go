@@ -67,8 +67,8 @@ func (s *DeploymentService) Add(
 
 func (s *DeploymentService) Serve(
 	ctx context.Context,
-	req *schemas.ServePreviewReq,
-) (*schemas.ServePreviewResp, error) {
+	req *schemas.ServeDeploymentReq,
+) (*schemas.ServeDeploymentResp, error) {
 	deployment, exists, err := s.deploymentRepo.GetByID(ctx, req.DeploymentID)
 	if err != nil {
 		return nil, err
@@ -94,7 +94,7 @@ func (s *DeploymentService) Serve(
 
 	result := s.protocluster.Serve(httpRequest)
 
-	resp := &schemas.ServePreviewResp{}
+	resp := &schemas.ServeDeploymentResp{}
 	_ = copier.Copy(resp, result)
 
 	return resp, nil

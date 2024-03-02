@@ -15,16 +15,29 @@ type LiveController struct {
 	endpointService *endpoint.EndpointService
 }
 
-func NewLiveController() *LiveController {
-	return &LiveController{}
+func NewLiveController(endpointService *endpoint.EndpointService) *LiveController {
+	return &LiveController{
+		endpointService: endpointService,
+	}
 }
 
-func (h *LiveController) Serve(c echo.Context) error {
-	endpointID := c.Param("endpointID")
+func (c *LiveController) Publish(ctx echo.Context) error {
+	req := &schemas.PublishEndpointReq{}
+	if err := ctx.Bind(req); err != nil {
+		return errors.BadRequest(reason.RequestFormatError)
+	}
 
-	b, err := io.ReadAll(c.Request().Body)
+	resp, err := c.endpointService.Publish(ctx.Request().Context(), req)
+
+	return handler.HandleResponse(ctx, err, resp)
+}
+
+func (c *LiveController) Serve(ctx echo.Context) error {
+	endpointID := ctx.Param("endpointID")
+
+	b, err := io.ReadAll(ctx.Request().Body)
 	if err != nil {
-		return handler.HandleResponse(c,
+		return handler.HandleResponse(ctx,
 			errors.
 				InternalServer(reason.UnknownError).
 				WithError(err).
@@ -32,15 +45,15 @@ func (h *LiveController) Serve(c echo.Context) error {
 			nil)
 	}
 
-	req := &schemas.ServeLiveReq{
+	req := &schemas.ServeEndpointReq{
 		EndpointID: endpointID,
-		URL:        trimmedEndpointFromURL(c.Request().URL),
-		Method:     c.Request().Method,
-		Header:     c.Request().Header,
+		URL:        trimmedEndpointFromURL(ctx.Request().URL),
+		Method:     ctx.Request().Method,
+		Header:     ctx.Request().Header,
 		Body:       b,
 	}
 
-	resp, err := h.endpointService.Serve(c.Request().Context(), req)
+	resp, err := c.endpointService.Serve(ctx.Request().Context(), req)
 
-	return handler.HandleResponse(c, err, resp)
+	return handler.HandleResponse(ctx, err, resp)
 }

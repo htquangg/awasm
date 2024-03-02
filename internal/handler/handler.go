@@ -12,17 +12,17 @@ import (
 )
 
 // HandleResponse Handle response body
-func HandleResponse(c echo.Context, err error, data interface{}) error {
+func HandleResponse(ctx echo.Context, err error, data interface{}) error {
 	// no error
 	if err == nil {
-		return c.JSON(http.StatusOK, NewRespBodyData(http.StatusOK, reason.Success, data))
+		return ctx.JSON(http.StatusOK, NewRespBodyData(http.StatusOK, reason.Success, data))
 	}
 
 	var myErr *errors.Error
 	// unknown error
 	if !std_errors.As(err, &myErr) {
 		log.Error(err)
-		return c.JSON(
+		return ctx.JSON(
 			http.StatusOK,
 			NewRespBody(
 				http.StatusInternalServerError,
@@ -42,5 +42,5 @@ func HandleResponse(c echo.Context, err error, data interface{}) error {
 		respBody.Data = data
 	}
 
-	return c.JSON(http.StatusOK, respBody)
+	return ctx.JSON(http.StatusOK, respBody)
 }

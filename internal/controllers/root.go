@@ -17,7 +17,7 @@ func New(services *services.Sevices) *Controllers {
 		Health:     NewHealthController(services.Health),
 		Endpoint:   NewEndpointController(services.Endpoint),
 		Deployment: NewDeploymentController(services.Deployment),
-		Live:       NewLiveController(),
+		Live:       NewLiveController(services.Endpoint),
 		Preview:    NewPreviewController(services.Deployment),
 	}
 }
