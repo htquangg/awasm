@@ -13,7 +13,7 @@ import (
 	"github.com/htquangg/a-wasm/internal/runtime"
 
 	"github.com/asynkron/protoactor-go/actor"
-	"github.com/rs/zerolog/log"
+	"github.com/segmentfault/pacman/log"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -40,10 +40,7 @@ func NewRuntimeActor(deploymentRepo *repos.DeploymentRepo) actor.Actor {
 func (r *runtimeActor) Receive(ctx actor.Context) {
 	switch msg := ctx.Message().(type) {
 	case *messages.HTTPRequest:
-		log.Info().
-			Str("request_id", msg.ID).
-			Any("pid", ctx.Self()).
-			Msg("runtime handling request")
+		log.Infof("runtime handling request with request_id %s, pid %v", msg.ID, ctx.Self())
 
 		if r.runtime == nil {
 			r.initialize(msg)
@@ -81,13 +78,13 @@ func (r *runtimeActor) initialize(msg *messages.HTTPRequest) error {
 func (r *runtimeActor) handleHTTPRequest(ctx actor.Context, msg *messages.HTTPRequest) {
 	b, err := proto.Marshal(msg)
 	if err != nil {
-		log.Warn().Err(err).Msg("failed to marshal incoming HTTP request")
+		log.Warnf("failed to marshal incoming HTTP request: %v", err)
 		return
 	}
 
 	req := bytes.NewReader(b)
 	if err := r.runtime.Invoke(req); err != nil {
-		log.Warn().Err(err).Msg("runtime invoke error")
+		log.Warnf("failed to invoke runtime: %v", err)
 		return
 	}
 	_, res, status, err := ParseStdout(r.stdout)

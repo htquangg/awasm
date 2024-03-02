@@ -14,8 +14,8 @@ import (
 	"github.com/fatih/color"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/rs/zerolog/log"
 	"github.com/segmentfault/pacman/errors"
+	"github.com/segmentfault/pacman/log"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 )
 
@@ -106,7 +106,7 @@ func (s *Server) ServeHandler() (execute func() error, interrupt func(error)) {
 			ctx, cancel := context.WithTimeout(context.Background(), constants.ShutdownTimeout)
 			defer cancel()
 			if err := server.Shutdown(ctx); err != nil {
-				log.Warn().Err(err).Msg("Web server failed to stop gracefully")
+				log.Warnf("Web server failed to stop gracefully: %v", err)
 			}
 		}
 }

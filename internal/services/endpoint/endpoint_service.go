@@ -40,7 +40,10 @@ func NewEndpointService(endpointRepo EndpointRepo, deploymentRepo deployment_com
 	}
 }
 
-func (s *EndpointService) Publish(ctx context.Context, req *schemas.PublishEndpointReq) (*schemas.PublishEndpointResp, error) {
+func (s *EndpointService) Publish(
+	ctx context.Context,
+	req *schemas.PublishEndpointReq,
+) (*schemas.PublishEndpointResp, error) {
 	deployment, exists, err := s.deploymentRepo.GetByID(ctx, req.DeploymentID)
 	if err != nil {
 		return nil, err

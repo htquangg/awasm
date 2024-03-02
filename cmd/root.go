@@ -2,12 +2,11 @@ package cmd
 
 import (
 	"os"
-	"strings"
 
 	"github.com/htquangg/a-wasm/internal/constants"
 
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	"github.com/segmentfault/pacman/contrib/log/zap"
+	"github.com/segmentfault/pacman/log"
 	"github.com/spf13/cobra"
 )
 
@@ -25,7 +24,7 @@ func Execute() {
 	initLog()
 
 	if err := rootCmd.Execute(); err != nil {
-		log.Error().Err(err).Msg("the service exitted abnormally")
+		log.Errorf("the service exitted abnormally: %v", err)
 		os.Exit(1)
 	}
 }
@@ -39,23 +38,9 @@ func init() {
 }
 
 func initLog() {
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-
 	logLevel := os.Getenv(constants.LogLevel)
-	switch strings.ToLower(logLevel) {
-	case "trace":
-		zerolog.SetGlobalLevel(zerolog.TraceLevel)
-	case "debug":
-		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	case "info":
-		zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	case "warn":
-		zerolog.SetGlobalLevel(zerolog.WarnLevel)
-	case "err", "error":
-		zerolog.SetGlobalLevel(zerolog.ErrorLevel)
-	case "fatal":
-		zerolog.SetGlobalLevel(zerolog.FatalLevel)
-	default:
-		zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	}
+	logPath := os.Getenv(constants.LogPath)
+
+	log.SetLogger(zap.NewLogger(
+		log.ParseLevel(logLevel), zap.WithName("a-wasm"), zap.WithPath(logPath)))
 }

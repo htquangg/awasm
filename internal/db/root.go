@@ -37,6 +37,7 @@ func New(ctx context.Context, cfg *Config) (DB, error) {
 	}
 
 	engine.SetMapper(names.GonicMapper{})
+	engine.SetLogger(NewXORMLogger(cfg.LogSQL))
 	engine.ShowSQL(cfg.LogSQL)
 	engine.SetMaxOpenConns(cfg.MaxOpenConns)
 	engine.SetMaxIdleConns(cfg.MaxIdleConns)

@@ -5,7 +5,7 @@ import (
 
 	db_internal "github.com/htquangg/a-wasm/internal/db"
 	"github.com/labstack/echo/v4"
-	"github.com/rs/zerolog/log"
+	"github.com/segmentfault/pacman/log"
 )
 
 const (
@@ -46,7 +46,7 @@ func Transactional(db db_internal.DB) TransactionalMiddleware {
 func GetCtxTxFromContext(ctx echo.Context) context.Context {
 	ctxTx := getCtxTxFromContext(ctx)
 	if ctxTx == nil {
-		log.Warn().Msgf("has no tx context in route: %s", ctx.Path())
+		log.Warnf("has no tx context in route: %s", ctx.Path())
 		return context.Background()
 	}
 

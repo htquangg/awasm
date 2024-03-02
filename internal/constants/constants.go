@@ -6,6 +6,7 @@ const (
 	AppEnv     = "APP_ENV"
 	ConfigPath = "CONFIG_PATH"
 	LogLevel   = "LOG_LEVEL"
+	LogPath    = "LOG_PATH"
 
 	Yaml = "yaml"
 
