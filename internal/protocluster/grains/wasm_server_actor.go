@@ -57,7 +57,7 @@ func (s *wasmServerActor) initialize(ctx actor.Context) {
 	s.self = ctx.Self()
 }
 
-func (s *wasmServerActor) requestRuntime(ctx actor.Context, key string) *actor.PID {
+func (s *wasmServerActor) requestRuntime(_ actor.Context, key string) *actor.PID {
 	resp, err := s.c.ActorSystem.Root.RequestFuture(s.runtimeManagerPID, &requestRuntime{
 		key: key,
 	}, time.Second*5).Result()

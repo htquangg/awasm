@@ -1,14 +1,16 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
+	"net/http"
+
+	"github.com/htquangg/a-wasm/sdk"
 )
 
+func handle(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Hello Alex HUYNH!!!"))
+}
+
 func main() {
-	str := "Hello World"
-	dat, _ := json.Marshal(str)
-	fmt.Println(dat)
-	os.Stdout.Write(dat)
+	sdk.Handle(http.HandlerFunc(handle))
 }

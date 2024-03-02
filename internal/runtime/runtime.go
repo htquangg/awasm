@@ -19,9 +19,9 @@ type (
 	}
 
 	Runtime struct {
+		runtime wazero.Runtime
 		ctx     context.Context
 		stdout  io.Writer
-		runtime wazero.Runtime
 		engine  string
 		data    []byte
 		mod     wazero.CompiledModule
