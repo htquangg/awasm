@@ -3,7 +3,7 @@ server:
     addr: 0.0.0.0:3000
 
 db:
-  host: 127.0.0.1
+  host: host.docker.internal
   port: 3306
   user: "root"
   password: "toor"
@@ -16,4 +16,4 @@ db:
   conn_max_lifetime: 300
 
 i18n:
-  bundle_dir: "./i18n"
+  bundle_dir: "/a-wasm/i18n"
