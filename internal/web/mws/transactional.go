@@ -3,7 +3,7 @@ package mws
 import (
 	"context"
 
-	db_internal "github.com/htquangg/a-wasm/internal/db"
+	db_internal "github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/labstack/echo/v4"
 	"github.com/segmentfault/pacman/log"
 )

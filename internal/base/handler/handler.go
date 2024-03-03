@@ -4,7 +4,7 @@ import (
 	std_errors "errors"
 	"net/http"
 
-	"github.com/htquangg/a-wasm/internal/reason"
+	"github.com/htquangg/a-wasm/internal/base/reason"
 
 	"github.com/labstack/echo/v4"
 	"github.com/segmentfault/pacman/errors"

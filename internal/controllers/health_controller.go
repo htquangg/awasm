@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/htquangg/a-wasm/internal/handler"
+	"github.com/htquangg/a-wasm/internal/base/handler"
 	"github.com/htquangg/a-wasm/internal/services/health"
 
 	"github.com/labstack/echo/v4"

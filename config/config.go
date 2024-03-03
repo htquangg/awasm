@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/internal/db"
 	"github.com/htquangg/a-wasm/internal/web"
 
 	"github.com/spf13/viper"

@@ -1,7 +1,7 @@
 package repos
 
 import (
-	"github.com/htquangg/a-wasm/internal/db"
+	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/repos/deployment"
 	"github.com/htquangg/a-wasm/internal/repos/deployment_common"
 	"github.com/htquangg/a-wasm/internal/repos/endpoint"

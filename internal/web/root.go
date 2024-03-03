@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/htquangg/a-wasm/internal/base/handler"
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/controllers"
-	"github.com/htquangg/a-wasm/internal/handler"
 
 	"github.com/fatih/color"
 	"github.com/labstack/echo/v4"

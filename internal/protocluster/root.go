@@ -3,7 +3,7 @@ package protocluster
 import (
 	"context"
 
-	"github.com/htquangg/a-wasm/internal/db"
+	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/protocluster/grains"
 	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
 	"github.com/htquangg/a-wasm/internal/protocluster/repos"

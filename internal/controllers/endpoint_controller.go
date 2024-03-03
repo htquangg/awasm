@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"github.com/htquangg/a-wasm/internal/handler"
-	"github.com/htquangg/a-wasm/internal/reason"
+	"github.com/htquangg/a-wasm/internal/base/handler"
+	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/internal/services/endpoint"
 

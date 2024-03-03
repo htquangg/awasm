@@ -1,6 +1,6 @@
 package repos
 
-import "github.com/htquangg/a-wasm/internal/db"
+import "github.com/htquangg/a-wasm/internal/base/db"
 
 type Repos struct {
 	db         db.DB

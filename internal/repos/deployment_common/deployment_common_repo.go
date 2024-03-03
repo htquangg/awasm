@@ -3,9 +3,9 @@ package deployment_common
 import (
 	"context"
 
-	"github.com/htquangg/a-wasm/internal/db"
+	"github.com/htquangg/a-wasm/internal/base/db"
+	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/entities"
-	"github.com/htquangg/a-wasm/internal/reason"
 	"github.com/htquangg/a-wasm/internal/services/deployment_common"
 
 	"github.com/segmentfault/pacman/errors"

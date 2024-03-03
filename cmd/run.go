@@ -8,8 +8,8 @@ import (
 	"syscall"
 
 	"github.com/htquangg/a-wasm/config"
+	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/controllers"
-	"github.com/htquangg/a-wasm/internal/db"
 	"github.com/htquangg/a-wasm/internal/protocluster"
 	"github.com/htquangg/a-wasm/internal/repos"
 	"github.com/htquangg/a-wasm/internal/services"
