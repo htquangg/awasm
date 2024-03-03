@@ -9,6 +9,7 @@ import (
 
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/db"
+	"github.com/htquangg/a-wasm/internal/base/translator"
 	"github.com/htquangg/a-wasm/internal/controllers"
 	"github.com/htquangg/a-wasm/internal/protocluster"
 	"github.com/htquangg/a-wasm/internal/repos"
@@ -51,6 +52,11 @@ func runApp() {
 
 func initApp(ctx context.Context, cfg *config.Config) (run.Group, error) {
 	var g run.Group
+
+	_, err := translator.NewTranslator(cfg.I18n)
+	if err != nil {
+		return g, err
+	}
 
 	db, err := db.New(ctx, cfg.DB)
 	if err != nil {

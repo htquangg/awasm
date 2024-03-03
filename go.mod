@@ -5,13 +5,18 @@ go 1.21.6
 require (
 	github.com/asynkron/protoactor-go v0.0.0-20240124095531-f36d1cf7f42b
 	github.com/fatih/color v1.16.0
+	github.com/go-playground/locales v0.14.1
+	github.com/go-playground/universal-translator v0.18.1
+	github.com/go-playground/validator/v10 v10.19.0
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/google/uuid v1.6.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/labstack/echo/v4 v4.11.4
+	github.com/microcosm-cc/bluemonday v1.0.26
 	github.com/oklog/run v1.1.0
 	github.com/segmentfault/pacman v1.0.4
+	github.com/segmentfault/pacman/contrib/i18n v0.0.0-20230822083413-c0075a2d401f
 	github.com/segmentfault/pacman/contrib/log/zap v0.0.0-20230822083413-c0075a2d401f
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
@@ -19,17 +24,21 @@ require (
 	github.com/tetratelabs/wazero v1.6.0
 	go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho v0.47.0
 	google.golang.org/protobuf v1.32.0
+	gopkg.in/yaml.v3 v3.0.1
 	xorm.io/xorm v1.3.7
 )
 
 require (
+	github.com/LinkinStars/go-i18n/v2 v2.2.2 // indirect
 	github.com/Workiva/go-datastructures v1.1.1 // indirect
 	github.com/asynkron/gofun v0.0.0-20220329210725-34fed760f4c2 // indirect
+	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
@@ -37,11 +46,13 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/gorilla/css v1.0.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
+	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible // indirect
 	github.com/lestrrat-go/strftime v1.0.6 // indirect
 	github.com/lithammer/shortuuid/v4 v4.0.0 // indirect
@@ -90,6 +101,7 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240125205218-1f4bbc51befe // indirect
 	google.golang.org/grpc v1.61.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
+	sigs.k8s.io/yaml v1.3.0 // indirect
 	xorm.io/builder v0.3.13 // indirect
 )

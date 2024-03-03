@@ -19,9 +19,9 @@ func ValidRuntime(runtime string) bool {
 // AddEndpointReq holds all necesssary fields to create new run application.
 type AddEndpointReq struct {
 	// Name of the endpoint
-	Name string `json:"name"`
+	Name string `validate:"required,gte=8,lte=50" json:"name"`
 	// Runtime on which the code will be invoked. (go or js for now)
-	Runtime string `json:"runtime"`
+	Runtime string `validate:"required,oneof=go js" json:"runtime"`
 }
 
 type AddEndpointResp struct {

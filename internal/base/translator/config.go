@@ -1,0 +1,7 @@
+// https://github.com/apache/incubator-answer/blob/main/internal/base/translator/config.go
+package translator
+
+// I18n i18n config
+type I18n struct {
+	BundleDir string `json:"bundle_dir" mapstructure:"bundle_dir" yaml:"bundle_dir"`
+}

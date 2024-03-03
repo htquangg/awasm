@@ -1,13 +1,13 @@
 package reason
 
 const (
-	Success               = "success"
-	UnknownError          = "unknown"
-	RequestFormatError    = "request_format_error"
-	UnauthorizedError     = "unauthorized_error"
-	DatabaseError         = "database_error"
-	ForbiddenError        = "forbidden_error"
-	DuplicateRequestError = "duplicate_request_error"
+	Success               = "base.success"
+	UnknownError          = "base.unknown"
+	RequestFormatError    = "base.request_format_error"
+	UnauthorizedError     = "base.unauthorized_error"
+	DatabaseError         = "base.database_error"
+	ForbiddenError        = "base.forbidden_error"
+	DuplicateRequestError = "base.duplicate_request_error"
 )
 
 const (

@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/htquangg/a-wasm/internal/base/db"
+	"github.com/htquangg/a-wasm/internal/base/translator"
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/web"
 
@@ -14,8 +15,9 @@ import (
 
 type (
 	Config struct {
-		Server *Server    `json:"server" mapstructure:"server" yaml:"server"`
-		DB     *db.Config `json:"db"     mapstructure:"db"     yaml:"db"`
+		Server *Server          `json:"server" mapstructure:"server" yaml:"server"`
+		DB     *db.Config       `json:"db"     mapstructure:"db"     yaml:"db"`
+		I18n   *translator.I18n `json:"i18n" mapstructure:"i18n" yaml:"i18n"`
 	}
 
 	Server struct {

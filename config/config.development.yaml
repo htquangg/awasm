@@ -14,3 +14,6 @@ db:
   max_idle_conns: 1000
   max_open_conns: 100
   conn_max_lifetime: 300
+
+i18n:
+  bundle_dir: "./i18n"

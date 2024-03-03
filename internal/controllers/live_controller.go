@@ -24,8 +24,8 @@ func NewLiveController(endpointService *endpoint.EndpointService) *LiveControlle
 
 func (c *LiveController) Publish(ctx echo.Context) error {
 	req := &schemas.PublishEndpointReq{}
-	if err := ctx.Bind(req); err != nil {
-		return errors.BadRequest(reason.RequestFormatError)
+	if err, errField := handler.BindAndValidate(ctx, req); err != nil {
+		return handler.HandleResponse(ctx, err, errField)
 	}
 
 	resp, err := c.endpointService.Publish(ctx.Request().Context(), req)

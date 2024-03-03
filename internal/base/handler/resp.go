@@ -1,7 +1,10 @@
 package handler
 
 import (
+	"github.com/htquangg/a-wasm/internal/base/translator"
+
 	"github.com/segmentfault/pacman/errors"
+	"github.com/segmentfault/pacman/i18n"
 )
 
 type RespBody struct {
@@ -21,6 +24,14 @@ func NewRespBody(code int, reason string) *RespBody {
 		Code:   code,
 		Reason: reason,
 	}
+}
+
+// TrMsg translate the reason cause as a message
+func (r *RespBody) TrMsg(lang i18n.Language) *RespBody {
+	if len(r.Message) == 0 {
+		r.Message = translator.Tr(lang, r.Reason)
+	}
+	return r
 }
 
 func (r RespBody) Error() string {
