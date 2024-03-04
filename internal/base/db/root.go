@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql" // Needed for the MySQL driver
+	_ "github.com/lib/pq"
 	"xorm.io/xorm"
 	"xorm.io/xorm/names"
 	"xorm.io/xorm/schemas"
@@ -31,7 +31,7 @@ type (
 func New(ctx context.Context, cfg *Config) (DB, error) {
 	conn := cfg.Address()
 
-	engine, err := xorm.NewEngine(string(schemas.MYSQL), conn)
+	engine, err := xorm.NewEngine(string(schemas.POSTGRES), conn)
 	if err != nil {
 		return nil, err
 	}

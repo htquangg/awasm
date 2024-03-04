@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 
-	_ "github.com/go-sql-driver/mysql" // Needed for the MySQL driver
+	_ "github.com/lib/pq"
 	"xorm.io/xorm"
+	"xorm.io/xorm/schemas"
 )
 
 // Engine represents a xorm engine or session.
@@ -47,7 +48,7 @@ type Engine interface {
 func NewXORMEngine(cfg *Config) (*xorm.Engine, error) {
 	conn := cfg.Address()
 
-	engine, err := xorm.NewEngine("mysql", conn)
+	engine, err := xorm.NewEngine(string(schemas.POSTGRES), conn)
 	if err != nil {
 		return nil, err
 	}

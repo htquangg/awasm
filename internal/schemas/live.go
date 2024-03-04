@@ -6,7 +6,7 @@ type PublishEndpointReq struct {
 
 type PublishEndpointResp struct {
 	DeploymentID string `json:"deploymentId"`
-	URL          string `string:"url"`
+	URL          string `json:"url"`
 }
 
 type ServeEndpointReq struct {

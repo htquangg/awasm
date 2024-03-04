@@ -4,13 +4,13 @@ server:
 
 db:
   host: 127.0.0.1
-  port: 3306
-  user: "root"
-  password: "toor"
+  port: 5432
+  user: "postgres"
+  password: "localdb"
   schema: "dev-local-awasm-001"
   charset: "utf8mb4"
   log_sql: true
-  sll_mode: false
+  ssl_mode: disable
   max_idle_conns: 1000
   max_open_conns: 100
   conn_max_lifetime: 300

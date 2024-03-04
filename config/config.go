@@ -17,7 +17,7 @@ type (
 	Config struct {
 		Server *Server          `json:"server" mapstructure:"server" yaml:"server"`
 		DB     *db.Config       `json:"db"     mapstructure:"db"     yaml:"db"`
-		I18n   *translator.I18n `json:"i18n" mapstructure:"i18n" yaml:"i18n"`
+		I18n   *translator.I18n `json:"i18n"   mapstructure:"i18n"   yaml:"i18n"`
 	}
 
 	Server struct {

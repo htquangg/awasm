@@ -90,29 +90,30 @@ format: ## format
 # Database migration
 #
 ###############################################################################
+DB_DRIVER =  postgres
 DB_NAME = dev-local-awasm-001
-DB_HOST = localhost
-DB_PORT = 3306
-DB_USER = root
-DB_PASS = toor
+DB_HOST = 127.0.0.1
+DB_PORT = 5432
+DB_USER = postgres
+DB_PASS = localdb
 DB_PARSE_TIME = true
 
-# Go migrate mysql https://github.com/pressly/goose
+# Go migrate postgres https://github.com/pressly/goose
 .PHONY: migrate-create
 migrate-create: ## create new migration file
 	@./scripts/goose-migrate.sh -p ./migrations/schemas -c create ${name}
 
 .PHONY: migrate-up
 migrate-up: ## migrate the DB to the most recent version available
-	@./scripts/goose-migrate.sh -p ./migrations/schemas -c up -o "${DB_USER}:${DB_PASS}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}?parseTime=${DB_PARSE_TIME}"
+	@./scripts/goose-migrate.sh -p ./migrations/schemas -c up -o "${DB_DRIVER}://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
 
 .PHONY: migrate-down
 migrate-down: ## roll back the version by 1
-	@./scripts/goose-migrate.sh -p ./migrations/schemas -c down -o "${DB_USER}:${DB_PASS}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}?parseTime=${DB_PARSE_TIME}"
+	@./scripts/goose-migrate.sh -p ./migrations/schemas -c down -o "${DB_DRIVER}://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
 
 .PHONY: migrate-status
 migrate-status: ## check the migration status for the current DB
-	@./scripts/goose-migrate.sh -p ./migrations/schemas -c status -o "${DB_USER}:${DB_PASS}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}?parseTime=${DB_PARSE_TIME}"
+	@./scripts/goose-migrate.sh -p ./migrations/schemas -c status -o "${DB_DRIVER}://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
 
 .PHONY: help
 help: ## print help
