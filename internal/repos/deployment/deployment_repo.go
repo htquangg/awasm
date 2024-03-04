@@ -30,6 +30,15 @@ func (r *deploymentRepo) Add(ctx context.Context, deployment *entities.Deploymen
 	return nil
 }
 
+func (r *deploymentRepo) Remove(ctx context.Context, id string) error {
+	_, err := r.db.Engine(ctx).ID(id).Delete(new(entities.Deployment))
+	if err != nil {
+		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+
+	return nil
+}
+
 func (r *deploymentRepo) GetByID(
 	ctx context.Context,
 	id string,

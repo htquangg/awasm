@@ -1,0 +1,19 @@
+server:
+  http:
+    addr: 0.0.0.0:3000
+
+db:
+  host: 127.0.0.1
+  port: 5432
+  user: "postgres"
+  password: "localdb"
+  schema: "test-local-awasm-001"
+  charset: "utf8mb4"
+  log_sql: false
+  ssl_mode: disable
+  max_idle_conns: 1000
+  max_open_conns: 100
+  conn_max_lifetime: 300
+
+i18n:
+  bundle_dir: "./i18n"

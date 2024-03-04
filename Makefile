@@ -58,7 +58,7 @@ air-run: ## live reloading the application and serve
 	@air -c .air.toml -- run
 
 .PHONY: test
-test: ## run the go tests
+test: migrate-test-down migrate-test-up ## run the go tests
 	@echo "Running tests"
 	go test ./... -v --cover
 
@@ -91,12 +91,18 @@ format: ## format
 #
 ###############################################################################
 DB_DRIVER =  postgres
+
 DB_NAME = dev-local-awasm-001
 DB_HOST = 127.0.0.1
 DB_PORT = 5432
 DB_USER = postgres
 DB_PASS = localdb
-DB_PARSE_TIME = true
+
+TEST_DB_NAME = test-local-awasm-001
+TEST_DB_HOST = 127.0.0.1
+TEST_DB_PORT = 5432
+TEST_DB_USER = postgres
+TEST_DB_PASS = localdb
 
 # Go migrate postgres https://github.com/pressly/goose
 .PHONY: migrate-create
@@ -114,6 +120,18 @@ migrate-down: ## roll back the version by 1
 .PHONY: migrate-status
 migrate-status: ## check the migration status for the current DB
 	@./scripts/goose-migrate.sh -p ./migrations/schemas -c status -o "${DB_DRIVER}://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
+
+.PHONY: migrate-test-up
+migrate-test-up: ## migrate the test DB to the most recent version available
+	@./scripts/goose-migrate.sh -p ./migrations/schemas -c up -o "${DB_DRIVER}://${TEST_DB_USER}:${TEST_DB_PASS}@${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME}?sslmode=disable"
+
+.PHONY: migrate-test-down
+migrate-test-down: ## roll back the version test by 1
+	@./scripts/goose-migrate.sh -p ./migrations/schemas -c down -o "${DB_DRIVER}://${TEST_DB_USER}:${TEST_DB_PASS}@${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME}?sslmode=disable"
+
+.PHONY: migrate-test-status
+migrate-test-status: ## check the migration status for the test DB
+	@./scripts/goose-migrate.sh -p ./migrations/schemas -c status -o "${DB_DRIVER}://${TEST_DB_USER}:${TEST_DB_PASS}@${TEST_DB_HOST}:${TEST_DB_PORT}/${TEST_DB_NAME}?sslmode=disable"
 
 .PHONY: help
 help: ## print help

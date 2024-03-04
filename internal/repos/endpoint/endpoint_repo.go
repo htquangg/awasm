@@ -30,6 +30,15 @@ func (r *endpointRepo) Add(ctx context.Context, endpoint *entities.Endpoint) err
 	return nil
 }
 
+func (r *endpointRepo) Remove(ctx context.Context, id string) error {
+	_, err := r.db.Engine(ctx).ID(id).Delete(new(entities.Endpoint))
+	if err != nil {
+		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+
+	return nil
+}
+
 func (r *endpointRepo) GetByID(
 	ctx context.Context,
 	id string,

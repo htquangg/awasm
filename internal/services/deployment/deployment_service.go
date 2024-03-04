@@ -18,6 +18,7 @@ import (
 type (
 	DeploymentRepo interface {
 		Add(ctx context.Context, deployment *entities.Deployment) error
+		Remove(ctx context.Context, id string) error
 		GetByID(ctx context.Context, id string) (*entities.Deployment, bool, error)
 	}
 

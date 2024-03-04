@@ -19,6 +19,7 @@ import (
 type (
 	EndpointRepo interface {
 		Add(ctx context.Context, endpoint *entities.Endpoint) error
+		Remove(ctx context.Context, id string) error
 		GetByID(ctx context.Context, id string) (*entities.Endpoint, bool, error)
 		UpdateActiveDeployment(ctx context.Context, endpointID, deploymentID string) error
 	}
