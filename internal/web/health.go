@@ -8,7 +8,7 @@ import (
 
 type healthApi struct{}
 
-func bindHealthApi(g *echo.Group, h *controllers.Controllers) {
+func bindHealthApi(g *echo.Group, c *controllers.Controllers) {
 	subGroup := g.Group("/healthz")
-	subGroup.GET("/", h.Health.CheckHealth)
+	subGroup.GET("/", c.Health.CheckHealth)
 }

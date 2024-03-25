@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
@@ -67,8 +68,29 @@ func initApp(ctx context.Context, cfg *config.Config) (run.Group, error) {
 
 	g.Add(cluster.ServeHandler())
 
-	repos := repos.New(db)
-	services := services.New(repos, cluster)
+	secretEncryptionKeyBytes, err := base64.StdEncoding.DecodeString(cfg.Key.Encryption)
+	if err != nil {
+		return g, fmt.Errorf("Could not decode email-encryption-key: %v", err)
+	}
+	hashingKeyBytes, err := base64.StdEncoding.DecodeString(cfg.Key.Hash)
+	if err != nil {
+		return g, fmt.Errorf("Could not decode email-hash-key: %v", err)
+	}
+	repos := repos.New(
+		db,
+		&repos.Config{
+			SecretEncryptionKey: secretEncryptionKeyBytes,
+			HashingKey:          hashingKeyBytes,
+		},
+	)
+	services := services.New(
+		repos,
+		&services.Config{
+			SecretEncryptionKey: secretEncryptionKeyBytes,
+			HashingKey:          hashingKeyBytes,
+		},
+		cluster,
+	)
 	controllers := controllers.New(services)
 
 	g.Add(web.

@@ -17,11 +17,17 @@ type (
 	Config struct {
 		Server *Server          `json:"server" mapstructure:"server" yaml:"server"`
 		DB     *db.Config       `json:"db"     mapstructure:"db"     yaml:"db"`
+		Key    *Key             `json:"key"    mapstructure:"key"    yaml:"key"`
 		I18n   *translator.I18n `json:"i18n"   mapstructure:"i18n"   yaml:"i18n"`
 	}
 
 	Server struct {
 		HTTP *web.Config `json:"http" mapstructure:"http" yaml:"http"`
+	}
+
+	Key struct {
+		Encryption string `json:"encryption" mapstructure:"encryption" yaml:"encryption"`
+		Hash       string `json:"hash"       mapstructure:"hash"       yaml:"hash"`
 	}
 )
 

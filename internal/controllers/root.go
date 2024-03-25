@@ -10,6 +10,7 @@ type Controllers struct {
 	Deployment *DeploymentController
 	Live       *LiveController
 	Preview    *PreviewController
+	User       *UserController
 }
 
 func New(services *services.Sevices) *Controllers {
@@ -19,5 +20,6 @@ func New(services *services.Sevices) *Controllers {
 		Deployment: NewDeploymentController(services.Deployment),
 		Live:       NewLiveController(services.Endpoint),
 		Preview:    NewPreviewController(services.Deployment),
+		User:       NewUserController(services.User),
 	}
 }

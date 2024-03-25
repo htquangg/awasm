@@ -25,3 +25,7 @@ backend:
         other: Deployment do not found.
       already_activated:
         other: Deployment has already activated.
+    email:
+      duplicate:
+        other: Email already exists.
+

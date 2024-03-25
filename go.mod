@@ -3,6 +3,7 @@ module github.com/htquangg/a-wasm
 go 1.21.6
 
 require (
+	github.com/GoKillers/libsodium-go v0.0.0-20171022220152-dd733721c3cb
 	github.com/asynkron/protoactor-go v0.0.0-20240124095531-f36d1cf7f42b
 	github.com/fatih/color v1.16.0
 	github.com/go-playground/locales v0.14.1

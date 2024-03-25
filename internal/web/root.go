@@ -58,6 +58,7 @@ func New(
 	bindEndpointsApi(v1Group, controllers)
 	bindPreviewApi(v1Group, controllers)
 	bindLiveApi(v1Group, controllers)
+	bindUserApi(v1Group, controllers)
 
 	// catch all any route
 	v1Group.Any("/*", func(ctx echo.Context) error {

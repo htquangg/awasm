@@ -54,7 +54,6 @@ func (r *endpointRepo) GetByID(
 
 func (r *endpointRepo) UpdateActiveDeployment(ctx context.Context, endpointID string, deploymentID string) (err error) {
 	_, err = r.db.Engine(ctx).ID(endpointID).Update(&entities.Endpoint{ActiveDeploymentID: deploymentID})
-
 	if err != nil {
 		err = errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}

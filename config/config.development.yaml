@@ -15,5 +15,9 @@ db:
   max_open_conns: 100
   conn_max_lifetime: 300
 
+key:
+  encryption: bASFEEq6OmFvrpYDGgsF7lZn95p8VkuDgPAw93hpad8=
+  hash: lXdxDsEADpazx2V9vR6tjnDa60CVdEaIp2z8jLChTR0oyqpcWm0fQcDq7dKAzq44ttGcN90TvjmsC67llMsz8w==
+
 i18n:
   bundle_dir: "./i18n"

@@ -15,4 +15,5 @@ const (
 	EndpointHasNotPublished    = "error.endpoint.has_not_published"
 	DeploymentNotFound         = "error.deployment.not_found"
 	DeploymentAlreadyActivated = "error.deployment.already_activated"
+	EmailDuplicate             = "error.email.duplicate"
 )
