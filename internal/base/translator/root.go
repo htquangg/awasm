@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/htquangg/a-wasm/config"
+
 	myTran "github.com/segmentfault/pacman/contrib/i18n"
 	"github.com/segmentfault/pacman/i18n"
 	"github.com/segmentfault/pacman/log"
@@ -29,7 +31,7 @@ const DefaultLangOption = "Default"
 var LanguageOptions []*LangOption
 
 // NewTranslator new a translator
-func NewTranslator(c *I18n) (tr i18n.Translator, err error) {
+func NewTranslator(c *config.I18n) (tr i18n.Translator, err error) {
 	entries, err := os.ReadDir(c.BundleDir)
 	if err != nil {
 		return nil, err

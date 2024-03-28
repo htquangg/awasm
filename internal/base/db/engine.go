@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/htquangg/a-wasm/config"
 	_ "github.com/lib/pq"
 	"xorm.io/xorm"
 	"xorm.io/xorm/schemas"
@@ -45,7 +46,7 @@ type Engine interface {
 	Ping() error
 }
 
-func NewXORMEngine(cfg *Config) (*xorm.Engine, error) {
+func NewXORMEngine(cfg *config.DB) (*xorm.Engine, error) {
 	conn := cfg.Address()
 
 	engine, err := xorm.NewEngine(string(schemas.POSTGRES), conn)

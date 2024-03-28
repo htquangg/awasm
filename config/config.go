@@ -1,33 +1,53 @@
 package config
 
 import (
+	"encoding/base64"
 	"fmt"
 	"os"
 	"path/filepath"
 
-	"github.com/htquangg/a-wasm/internal/base/db"
-	"github.com/htquangg/a-wasm/internal/base/translator"
 	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/internal/web"
 
 	"github.com/spf13/viper"
 )
 
 type (
 	Config struct {
-		Server *Server          `json:"server" mapstructure:"server" yaml:"server"`
-		DB     *db.Config       `json:"db"     mapstructure:"db"     yaml:"db"`
-		Key    *Key             `json:"key"    mapstructure:"key"    yaml:"key"`
-		I18n   *translator.I18n `json:"i18n"   mapstructure:"i18n"   yaml:"i18n"`
+		Server *Server `json:"server" mapstructure:"server" yaml:"server"`
+		DB     *DB     `json:"db"     mapstructure:"db"     yaml:"db"`
+		Key    *Key    `json:"key"    mapstructure:"key"    yaml:"key"`
+		I18n   *I18n   `json:"i18n"   mapstructure:"i18n"   yaml:"i18n"`
 	}
 
 	Server struct {
-		HTTP *web.Config `json:"http" mapstructure:"http" yaml:"http"`
+		ShowStartBanner bool `json:"show_start_banner" mapstructure:"show_start_banner" yaml:"show_start_banner"`
+
+		Addr string `json:"addr" mapstructure:"addr" yaml:"addr"`
+	}
+
+	DB struct {
+		Port            uint16 `json:"port"              mapstructure:"port"              yaml:"port"`
+		Host            string `json:"host"              mapstructure:"host"              yaml:"host"`
+		User            string `json:"user"              mapstructure:"user"              yaml:"user"`
+		Password        string `json:"password"          mapstructure:"password"          yaml:"password"`
+		Schema          string `json:"schema"            mapstructure:"schema"            yaml:"schema"`
+		Charset         string `json:"charset"           mapstructure:"charset"           yaml:"charset"`
+		SslMode         string `json:"ssl_mode"          mapstructure:"ssl_mode"          yaml:"ssl_mode"`
+		LogSQL          bool   `json:"log_sql"           mapstructure:"log_sql"           yaml:"log_sql"`
+		MaxIdleConns    int    `json:"mas_idle_conns"    mapstructure:"max_idle_conns"    yaml:"max_idle_conns"`
+		MaxOpenConns    int    `json:"max_open_conns"    mapstructure:"max_open_conns"    yaml:"max_open_conns"`
+		ConnMaxLifetime int    `json:"conn_max_lifetime" mapstructure:"conn_max_lifetime" yaml:"conn_max_lifetime"`
 	}
 
 	Key struct {
-		Encryption string `json:"encryption" mapstructure:"encryption" yaml:"encryption"`
-		Hash       string `json:"hash"       mapstructure:"hash"       yaml:"hash"`
+		Encryption      string `json:"encryption" mapstructure:"encryption" yaml:"encryption"`
+		Hash            string `json:"hash"       mapstructure:"hash"       yaml:"hash"`
+		EncryptionBytes []byte `json:"-"          mapstructure:"-"          yaml:"-"`
+		HashBytes       []byte `json:"-"          mapstructure:"-"          yaml:"-"`
+	}
+
+	I18n struct {
+		BundleDir string `json:"bundle_dir" mapstructure:"bundle_dir" yaml:"bundle_dir"`
 	}
 )
 
@@ -65,7 +85,33 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 
+	secretEncryptionKeyBytes, err := base64.StdEncoding.DecodeString(cfg.Key.Encryption)
+	if err != nil {
+		return nil, fmt.Errorf("Could not decode email-encryption-key: %v", err)
+	}
+	cfg.Key.EncryptionBytes = secretEncryptionKeyBytes
+
+	hashingKeyBytes, err := base64.StdEncoding.DecodeString(cfg.Key.Hash)
+	if err != nil {
+		return nil, fmt.Errorf("Could not decode email-hash-key: %v", err)
+	}
+	cfg.Key.HashBytes = hashingKeyBytes
+
 	return cfg, nil
+}
+
+func (c *DB) Address() string {
+	conn := fmt.Sprintf(
+		"user=%s password=%s dbname=%s host=%s port=%d sslmode=%s",
+		c.User,
+		c.Password,
+		c.Schema,
+		c.Host,
+		c.Port,
+		c.SslMode,
+	)
+
+	return conn
 }
 
 func getConfigRootPath() (string, error) {

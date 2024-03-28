@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/htquangg/a-wasm/config"
+
 	_ "github.com/lib/pq"
 	"xorm.io/xorm"
 	"xorm.io/xorm/names"
@@ -23,12 +25,12 @@ type (
 
 	db struct {
 		ctx context.Context
-		cfg *Config
+		cfg *config.DB
 		e   *xorm.Engine
 	}
 )
 
-func New(ctx context.Context, cfg *Config) (DB, error) {
+func New(ctx context.Context, cfg *config.DB) (DB, error) {
 	conn := cfg.Address()
 
 	engine, err := xorm.NewEngine(string(schemas.POSTGRES), conn)

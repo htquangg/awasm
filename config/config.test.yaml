@@ -1,6 +1,5 @@
 server:
-  http:
-    addr: 0.0.0.0:3000
+  addr: 0.0.0.0:3000
 
 db:
   host: 127.0.0.1

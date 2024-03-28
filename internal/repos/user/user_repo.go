@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 
+	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/entities"
@@ -13,21 +14,17 @@ import (
 )
 
 type userRepo struct {
-	secretEncryptionKey []byte
-	hashingKey          []byte
-
-	db db.DB
+	cfg *config.Config
+	db  db.DB
 }
 
 func NewUserRepo(
+	cfg *config.Config,
 	db db.DB,
-	secretEncryptionKey []byte,
-	hashingKey []byte,
 ) user.UserRepo {
 	return &userRepo{
-		db:                  db,
-		secretEncryptionKey: secretEncryptionKey,
-		hashingKey:          hashingKey,
+		cfg: cfg,
+		db:  db,
 	}
 }
 
@@ -41,7 +38,7 @@ func (r *userRepo) Add(ctx context.Context, user *entities.User) error {
 }
 
 func (r *userRepo) GetUserIDWithEmail(ctx context.Context, email string) (userID string, exists bool, err error) {
-	emailHash, err := crypto.GetHash(email, r.hashingKey)
+	emailHash, err := crypto.GetHash(email, r.cfg.Key.HashBytes)
 	if err != nil {
 		return "", false, err
 	}

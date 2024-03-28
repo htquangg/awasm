@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/handler"
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/controllers"
@@ -21,13 +22,13 @@ import (
 
 type Server struct {
 	ctx context.Context
-	cfg *Config
+	cfg *config.Server
 	e   *echo.Echo
 }
 
 func New(
 	ctx context.Context,
-	cfg *Config,
+	cfg *config.Server,
 	controllers *controllers.Controllers,
 	mws ...echo.MiddlewareFunc,
 ) *Server {

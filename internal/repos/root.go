@@ -1,6 +1,7 @@
 package repos
 
 import (
+	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/repos/deployment"
 	"github.com/htquangg/a-wasm/internal/repos/deployment_common"
@@ -15,7 +16,9 @@ import (
 )
 
 type Repos struct {
-	db               db.DB
+	cfg *config.Config
+	db  db.DB
+
 	Endpoint         endpoint_svc.EndpointRepo
 	EndpointCommon   envpoint_common_svc.EndpointCommonRepo
 	Deployment       deployment_svc.DeploymentRepo
@@ -24,14 +27,14 @@ type Repos struct {
 	UserAuth         user_svc.UserAuthRepo
 }
 
-func New(db db.DB, cfg *Config) *Repos {
+func New(cfg *config.Config, db db.DB) *Repos {
 	return &Repos{
 		db:               db,
 		Endpoint:         endpoint.NewEndpointRepo(db),
 		EndpointCommon:   endpoint_common.NewEndpointCommonRepo(db),
 		Deployment:       deployment.NewDeploymentRepo(db),
 		DeploymentCommon: deployment_common.NewDeploymentCommonRepo(db),
-		User:             user.NewUserRepo(db, cfg.SecretEncryptionKey, cfg.HashingKey),
-		UserAuth:         user.NewUserAuthRepo(db, cfg.SecretEncryptionKey, cfg.HashingKey),
+		User:             user.NewUserRepo(cfg, db),
+		UserAuth:         user.NewUserAuthRepo(cfg, db),
 	}
 }

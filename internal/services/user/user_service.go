@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/schemas"
@@ -28,25 +29,21 @@ type (
 	}
 
 	UserService struct {
-		secretEncryptionKey []byte
-		hashingKey          []byte
-
+		cfg          *config.Config
 		userRepo     UserRepo
 		userAuthRepo UserAuthRepo
 	}
 )
 
 func NewUserService(
+	cfg *config.Config,
 	userRepo UserRepo,
 	userAuthRepo UserAuthRepo,
-	secretEncryptionKey []byte,
-	hashingKey []byte,
 ) *UserService {
 	return &UserService{
-		secretEncryptionKey: secretEncryptionKey,
-		hashingKey:          hashingKey,
-		userRepo:            userRepo,
-		userAuthRepo:        userAuthRepo,
+		cfg:          cfg,
+		userRepo:     userRepo,
+		userAuthRepo: userAuthRepo,
 	}
 }
 
@@ -82,11 +79,11 @@ func (s *UserService) SignUp(ctx context.Context, req *schemas.SignUpReq) (*sche
 }
 
 func (s *UserService) createUser(ctx context.Context, email string) (string, error) {
-	encryptedEmail, err := crypto.Encrypt(email, s.secretEncryptionKey)
+	encryptedEmail, err := crypto.Encrypt(email, s.cfg.Key.EncryptionBytes)
 	if err != nil {
 		return "", err
 	}
-	emailHash, err := crypto.GetHash(email, s.hashingKey)
+	emailHash, err := crypto.GetHash(email, s.cfg.Key.HashBytes)
 	if err != nil {
 		return "", err
 	}

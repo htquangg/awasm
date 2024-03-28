@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/entities"
@@ -13,21 +14,17 @@ import (
 )
 
 type userAuthRepo struct {
-	secretEncryptionKey []byte
-	hashingKey          []byte
-
-	db db.DB
+	cfg *config.Config
+	db  db.DB
 }
 
 func NewUserAuthRepo(
+	cfg *config.Config,
 	db db.DB,
-	secretEncryptionKey []byte,
-	hashingKey []byte,
 ) user.UserAuthRepo {
 	return &userAuthRepo{
-		db:                  db,
-		secretEncryptionKey: secretEncryptionKey,
-		hashingKey:          hashingKey,
+		cfg: cfg,
+		db:  db,
 	}
 }
 

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/protocluster"
 	"github.com/htquangg/a-wasm/internal/repos"
 	"github.com/htquangg/a-wasm/internal/services/deployment"
@@ -10,6 +11,7 @@ import (
 )
 
 type Sevices struct {
+	cfg          *config.Config
 	repos        *repos.Repos
 	protocluster *protocluster.Cluster
 	Health       *health.HealthService
@@ -18,13 +20,14 @@ type Sevices struct {
 	User         *user.UserService
 }
 
-func New(repos *repos.Repos, cfg *Config, protoCluster *protocluster.Cluster) *Sevices {
+func New(cfg *config.Config, repos *repos.Repos, protoCluster *protocluster.Cluster) *Sevices {
 	return &Sevices{
+		cfg:          cfg,
 		repos:        repos,
 		protocluster: protoCluster,
 		Health:       health.NewHealthService(),
 		Endpoint:     endpoint.NewEndpointService(repos.Endpoint, repos.DeploymentCommon, protoCluster),
 		Deployment:   deployment.NewDeploymentService(repos.Deployment, repos.EndpointCommon, protoCluster),
-		User:         user.NewUserService(repos.User, repos.UserAuth, cfg.SecretEncryptionKey, cfg.HashingKey),
+		User:         user.NewUserService(cfg, repos.User, repos.UserAuth),
 	}
 }
