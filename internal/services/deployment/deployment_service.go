@@ -3,7 +3,9 @@ package deployment
 import (
 	"context"
 
+	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/reason"
+	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/protocluster"
 	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
@@ -17,12 +19,13 @@ import (
 
 type (
 	DeploymentRepo interface {
-		Add(ctx context.Context, deployment *entities.Deployment) error
-		Remove(ctx context.Context, id string) error
-		GetByID(ctx context.Context, id string) (*entities.Deployment, bool, error)
+		AddDeployment(ctx context.Context, deployment *entities.Deployment) error
+		RemoveDeploymentByID(ctx context.Context, id string) error
+		GetDeploymentByID(ctx context.Context, id string) (*entities.Deployment, bool, error)
 	}
 
 	DeploymentService struct {
+		cfg            *config.Config
 		protocluster   *protocluster.Cluster
 		deploymentRepo DeploymentRepo
 		endpointRepo   endpoint_common.EndpointCommonRepo
@@ -30,22 +33,24 @@ type (
 )
 
 func NewDeploymentService(
+	cfg *config.Config,
 	deploymentRepo DeploymentRepo,
 	endpointRepo endpoint_common.EndpointCommonRepo,
 	protoCluster *protocluster.Cluster,
 ) *DeploymentService {
 	return &DeploymentService{
+		cfg:            cfg,
 		protocluster:   protoCluster,
 		deploymentRepo: deploymentRepo,
 		endpointRepo:   endpointRepo,
 	}
 }
 
-func (s *DeploymentService) Add(
+func (s *DeploymentService) AddDeployment(
 	ctx context.Context,
 	req *schemas.AddDeploymentReq,
 ) (*schemas.AddDeploymentResp, error) {
-	endpoint, exists, err := s.endpointRepo.GetByID(ctx, req.EndpointID)
+	endpoint, exists, err := s.endpointRepo.GetEndpointByID(ctx, req.EndpointID)
 	if err != nil {
 		return nil, err
 	}
@@ -55,13 +60,14 @@ func (s *DeploymentService) Add(
 
 	deployment := entities.NewFromEndpoint(endpoint, req.Data)
 
-	err = s.deploymentRepo.Add(ctx, deployment)
+	err = s.deploymentRepo.AddDeployment(ctx, deployment)
 	if err != nil {
 		return nil, err
 	}
 
 	resp := &schemas.AddDeploymentResp{}
 	resp.SetFromDeployment(deployment)
+	resp.IngressURL = s.cfg.IngressURL + constants.PreviewIngressPath + resp.ID
 
 	return resp, nil
 }
@@ -70,7 +76,7 @@ func (s *DeploymentService) Serve(
 	ctx context.Context,
 	req *schemas.ServeDeploymentReq,
 ) (*schemas.ServeDeploymentResp, error) {
-	deployment, exists, err := s.deploymentRepo.GetByID(ctx, req.DeploymentID)
+	deployment, exists, err := s.deploymentRepo.GetDeploymentByID(ctx, req.DeploymentID)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +84,7 @@ func (s *DeploymentService) Serve(
 		return nil, errors.BadRequest(reason.DeploymentNotFound)
 	}
 
-	endpoint, exists, err := s.endpointRepo.GetByID(ctx, deployment.EndpointID)
+	endpoint, exists, err := s.endpointRepo.GetEndpointByID(ctx, deployment.EndpointID)
 	if err != nil {
 		return nil, err
 	}

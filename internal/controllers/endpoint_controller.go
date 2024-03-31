@@ -24,7 +24,7 @@ func (c *EndpointController) Add(ctx echo.Context) error {
 		return handler.HandleResponse(ctx, err, errField)
 	}
 
-	resp, err := c.endpointService.Add(ctx.Request().Context(), req)
+	resp, err := c.endpointService.AddEndpoint(ctx.Request().Context(), req)
 
 	return handler.HandleResponse(ctx, err, resp)
 }

@@ -18,4 +18,6 @@ const (
 	WriteTimeout      = 60 * time.Second
 	ReadHeaderTimeout = 30 * time.Second
 	ShutdownTimeout   = 5 * time.Second
+
+	TOKEN_LENGTH = 32
 )

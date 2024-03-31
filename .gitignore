@@ -4,6 +4,7 @@
 
 **/.vscode
 **/__debug*
+**/.DS_Store
 
 /awasm
 

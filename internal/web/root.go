@@ -9,12 +9,13 @@ import (
 
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/handler"
+	"github.com/htquangg/a-wasm/internal/base/middleware"
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/controllers"
 
 	"github.com/fatih/color"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	middleware_echo "github.com/labstack/echo/v4/middleware"
 	"github.com/segmentfault/pacman/errors"
 	"github.com/segmentfault/pacman/log"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
@@ -30,12 +31,12 @@ func New(
 	ctx context.Context,
 	cfg *config.Server,
 	controllers *controllers.Controllers,
-	mws ...echo.MiddlewareFunc,
+	mws *middleware.Middleware,
 ) *Server {
 	e := echo.New()
 
-	e.Use(middleware.Recover())
-	e.Use(middleware.Secure())
+	e.Use(middleware_echo.Recover())
+	e.Use(middleware_echo.Secure())
 
 	e.HTTPErrorHandler = func(err error, ctx echo.Context) {
 		if ctx.Response().Committed {
@@ -53,13 +54,13 @@ func New(
 		handler.HandleResponse(ctx, err, nil)
 	}
 
-	v1Group := e.Group("/api/v1", mws...)
+	v1Group := e.Group("/api/v1")
 
 	bindHealthApi(v1Group, controllers)
-	bindEndpointsApi(v1Group, controllers)
-	bindPreviewApi(v1Group, controllers)
-	bindLiveApi(v1Group, controllers)
-	bindUserApi(v1Group, controllers)
+	bindEndpointsApi(v1Group, controllers, mws)
+	bindPreviewApi(v1Group, controllers, mws)
+	bindLiveApi(v1Group, controllers, mws)
+	bindUserApi(v1Group, controllers, mws)
 
 	// catch all any route
 	v1Group.Any("/*", func(ctx echo.Context) error {

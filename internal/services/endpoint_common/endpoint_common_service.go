@@ -7,7 +7,7 @@ import (
 )
 
 type EndpointCommonRepo interface {
-	GetByID(ctx context.Context, id string) (*entities.Endpoint, bool, error)
+	GetEndpointByID(ctx context.Context, id string) (*entities.Endpoint, bool, error)
 }
 
 type EndpointCommonService struct {

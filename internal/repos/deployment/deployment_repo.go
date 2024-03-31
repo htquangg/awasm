@@ -21,7 +21,7 @@ func NewDeploymentRepo(db db.DB) deployment.DeploymentRepo {
 	}
 }
 
-func (r *deploymentRepo) Add(ctx context.Context, deployment *entities.Deployment) error {
+func (r *deploymentRepo) AddDeployment(ctx context.Context, deployment *entities.Deployment) error {
 	_, err := r.db.Engine(ctx).Insert(deployment)
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
@@ -30,7 +30,7 @@ func (r *deploymentRepo) Add(ctx context.Context, deployment *entities.Deploymen
 	return nil
 }
 
-func (r *deploymentRepo) Remove(ctx context.Context, id string) error {
+func (r *deploymentRepo) RemoveDeploymentByID(ctx context.Context, id string) error {
 	_, err := r.db.Engine(ctx).ID(id).Delete(new(entities.Deployment))
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
@@ -39,7 +39,7 @@ func (r *deploymentRepo) Remove(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *deploymentRepo) GetByID(
+func (r *deploymentRepo) GetDeploymentByID(
 	ctx context.Context,
 	id string,
 ) (deployment *entities.Deployment, exists bool, err error) {

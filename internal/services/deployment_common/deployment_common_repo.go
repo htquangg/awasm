@@ -7,7 +7,7 @@ import (
 )
 
 type DeploymentCommonRepo interface {
-	GetByID(ctx context.Context, id string) (*entities.Deployment, bool, error)
+	GetDeploymentByID(ctx context.Context, id string) (*entities.Deployment, bool, error)
 }
 
 type DeploymentCommonService struct {

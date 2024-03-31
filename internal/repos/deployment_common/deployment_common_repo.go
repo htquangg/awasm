@@ -21,7 +21,7 @@ func NewDeploymentCommonRepo(db db.DB) deployment_common.DeploymentCommonRepo {
 	}
 }
 
-func (r *deploymentCommonRepo) GetByID(
+func (r *deploymentCommonRepo) GetDeploymentByID(
 	ctx context.Context,
 	id string,
 ) (deployment *entities.Deployment, exists bool, err error) {

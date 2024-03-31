@@ -16,6 +16,7 @@ type AddDeploymentResp struct {
 	EndpointID string `json:"endpointId"`
 	Hash       string `json:"hash"`
 	CreatedAt  int64  `json:"createdAt"`
+	IngressURL string `json:"ingressUrl"`
 }
 
 func (r *AddDeploymentResp) SetFromDeployment(deployment *entities.Deployment) {

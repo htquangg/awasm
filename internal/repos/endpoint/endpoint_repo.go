@@ -21,7 +21,7 @@ func NewEndpointRepo(db db.DB) endpoint.EndpointRepo {
 	}
 }
 
-func (r *endpointRepo) Add(ctx context.Context, endpoint *entities.Endpoint) error {
+func (r *endpointRepo) AddEndpoint(ctx context.Context, endpoint *entities.Endpoint) error {
 	_, err := r.db.Engine(ctx).Insert(endpoint)
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
@@ -30,7 +30,7 @@ func (r *endpointRepo) Add(ctx context.Context, endpoint *entities.Endpoint) err
 	return nil
 }
 
-func (r *endpointRepo) Remove(ctx context.Context, id string) error {
+func (r *endpointRepo) RemoveEndpointByID(ctx context.Context, id string) error {
 	_, err := r.db.Engine(ctx).ID(id).Delete(new(entities.Endpoint))
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
@@ -39,7 +39,7 @@ func (r *endpointRepo) Remove(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *endpointRepo) GetByID(
+func (r *endpointRepo) GetEndpointByID(
 	ctx context.Context,
 	id string,
 ) (endpoint *entities.Endpoint, exists bool, err error) {

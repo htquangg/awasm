@@ -4,7 +4,9 @@ import (
 	"context"
 	"strings"
 
+	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/reason"
+	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/protocluster"
 	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
@@ -18,23 +20,25 @@ import (
 
 type (
 	EndpointRepo interface {
-		Add(ctx context.Context, endpoint *entities.Endpoint) error
-		Remove(ctx context.Context, id string) error
-		GetByID(ctx context.Context, id string) (*entities.Endpoint, bool, error)
+		AddEndpoint(ctx context.Context, endpoint *entities.Endpoint) error
+		RemoveEndpointByID(ctx context.Context, id string) error
+		GetEndpointByID(ctx context.Context, id string) (*entities.Endpoint, bool, error)
 		UpdateActiveDeployment(ctx context.Context, endpointID, deploymentID string) error
 	}
 
 	EndpointService struct {
+		cfg            *config.Config
 		protocluster   *protocluster.Cluster
 		endpointRepo   EndpointRepo
 		deploymentRepo deployment_common.DeploymentCommonRepo
 	}
 )
 
-func NewEndpointService(endpointRepo EndpointRepo, deploymentRepo deployment_common.DeploymentCommonRepo,
+func NewEndpointService(cfg *config.Config, endpointRepo EndpointRepo, deploymentRepo deployment_common.DeploymentCommonRepo,
 	protoCluster *protocluster.Cluster,
 ) *EndpointService {
 	return &EndpointService{
+		cfg:            cfg,
 		protocluster:   protoCluster,
 		endpointRepo:   endpointRepo,
 		deploymentRepo: deploymentRepo,
@@ -45,7 +49,7 @@ func (s *EndpointService) Publish(
 	ctx context.Context,
 	req *schemas.PublishEndpointReq,
 ) (*schemas.PublishEndpointResp, error) {
-	deployment, exists, err := s.deploymentRepo.GetByID(ctx, req.DeploymentID)
+	deployment, exists, err := s.deploymentRepo.GetDeploymentByID(ctx, req.DeploymentID)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +57,7 @@ func (s *EndpointService) Publish(
 		return nil, errors.BadRequest(reason.DeploymentNotFound)
 	}
 
-	endpoint, exists, err := s.endpointRepo.GetByID(ctx, deployment.EndpointID)
+	endpoint, exists, err := s.endpointRepo.GetEndpointByID(ctx, deployment.EndpointID)
 	if err != nil {
 		return nil, err
 	}
@@ -73,16 +77,17 @@ func (s *EndpointService) Publish(
 
 	return &schemas.PublishEndpointResp{
 		DeploymentID: deployment.ID,
+		IngressURL:   s.cfg.IngressURL + constants.LiveIngressPath + deployment.EndpointID,
 	}, nil
 }
 
-func (s *EndpointService) Add(ctx context.Context, req *schemas.AddEndpointReq) (*schemas.AddEndpointResp, error) {
+func (s *EndpointService) AddEndpoint(ctx context.Context, req *schemas.AddEndpointReq) (*schemas.AddEndpointResp, error) {
 	endpoint := &entities.Endpoint{}
 	_ = copier.Copy(endpoint, req)
 
 	endpoint.ID = uid.ID()
 
-	err := s.endpointRepo.Add(ctx, endpoint)
+	err := s.endpointRepo.AddEndpoint(ctx, endpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +102,7 @@ func (s *EndpointService) Serve(
 	ctx context.Context,
 	req *schemas.ServeEndpointReq,
 ) (*schemas.ServeEndpointResp, error) {
-	endpoint, exists, err := s.endpointRepo.GetByID(ctx, req.EndpointID)
+	endpoint, exists, err := s.endpointRepo.GetEndpointByID(ctx, req.EndpointID)
 	if err != nil {
 		return nil, err
 	}

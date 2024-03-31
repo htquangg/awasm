@@ -1,5 +1,8 @@
+ingress_url: http://127.0.0.1:3000
+
 server:
   addr: 0.0.0.0:3000
+  show_start_banner: true
 
 db:
   host: 127.0.0.1
@@ -13,6 +16,18 @@ db:
   max_idle_conns: 1000
   max_open_conns: 100
   conn_max_lifetime: 300
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  require_tls: false
+  password:
+  db: 1
+  pool_size: 50
+
+jwt:
+  secret: lLTQ-5romlnVEOVdq6gCwEpCCKeypoKvuugm2GDfjzs=
+  Exp: 86400
 
 key:
   encryption: kUbSxDDI/zFES4GW/HM5FB8ue9qdBwrzi6PJ75ZeOO0=

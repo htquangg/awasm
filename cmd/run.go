@@ -8,7 +8,9 @@ import (
 	"syscall"
 
 	"github.com/htquangg/a-wasm/config"
+	"github.com/htquangg/a-wasm/internal/base/cache"
 	"github.com/htquangg/a-wasm/internal/base/db"
+	"github.com/htquangg/a-wasm/internal/base/middleware"
 	"github.com/htquangg/a-wasm/internal/base/translator"
 	"github.com/htquangg/a-wasm/internal/controllers"
 	"github.com/htquangg/a-wasm/internal/protocluster"
@@ -63,16 +65,23 @@ func initApp(ctx context.Context, cfg *config.Config) (run.Group, error) {
 		return g, err
 	}
 
+	cache, err := cache.New(ctx, cfg.Redis)
+	if err != nil {
+		return g, err
+	}
+
 	cluster := protocluster.New(ctx, db)
 
 	g.Add(cluster.ServeHandler())
 
-	repos := repos.New(cfg, db)
+	repos := repos.New(cfg, db, cache)
 	services := services.New(cfg, repos, cluster)
+
+	mws := middleware.NewMiddleware(cfg, repos)
 	controllers := controllers.New(services)
 
 	g.Add(web.
-		New(ctx, cfg.Server, controllers).
+		New(ctx, cfg.Server, controllers, mws).
 		ServeHandler(),
 	)
 

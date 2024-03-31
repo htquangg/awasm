@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS users
     last_login_at          TIMESTAMPTZ               NULL
 );
 
+CREATE INDEX IF NOT EXISTS idx_users_email_hash ON users (email_hash);
+
 CREATE TABLE IF NOT EXISTS endpoints
 (
     id                   VARCHAR(36) PRIMARY KEY   NOT NULL,
@@ -44,6 +46,8 @@ CREATE TABLE IF NOT EXISTS deployments
             REFERENCES endpoints (id)
             ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS idx_deployments_endpoint_id ON deployments (endpoint_id);
 
 CREATE TABLE IF NOT EXISTS srp_auth
 (
@@ -94,42 +98,128 @@ CREATE TABLE IF NOT EXISTS srp_challenges
             ON DELETE CASCADE
 );
 
-CREATE TYPE aal_level_enum AS ENUM ('aal0','aal1', 'aal2', 'aal3');
+-- +goose StatementBegin
+DO
+$$
+    BEGIN
+        CREATE TYPE factor_type AS ENUM ('totp', 'webauthn');
+        CREATE TYPE factor_status AS ENUM ('unverified', 'verified');
+        CREATE TYPE aal_level_enum AS ENUM ('aal0','aal1', 'aal2', 'aal3');
+    EXCEPTION
+        WHEN duplicate_object then null;
+    END
+$$
+language plpgsql;
+-- +goose StatementEnd
 
-CREATE TABLE IF NOT EXISTS tokens
+
+CREATE TABLE IF NOT EXISTS mfa_factors
 (
-    created_at   TIMESTAMPTZ DEFAULT NOW() NOT NULL,
-    deleted_at   TIMESTAMPTZ               NULL,
-    last_used_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    id            VARCHAR(36) PRIMARY KEY   NOT NULL,
+    created_at    TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    last_used_at  TIMESTAMPTZ               NULL,
 
-    user_id      VARCHAR(36)               NOT NULL,
-    token        TEXT UNIQUE               NOT NULL,
-    aal          aal_level_enum            NOT NULL DEFAULT 'aal0',
-    ip           TEXT                      NULL,
-    user_agent   TEXT                      NULL,
-    CONSTRAINT fk_tokens_user_id
+    user_id       VARCHAR(36)               NOT NULL,
+    status        factor_status             NOT NULL,
+    friendly_name TEXT                      NULL,
+    factor_type   factor_type               NOT NULL,
+    secret        text                      NULL,
+    CONSTRAINT fk_mfa_factors_user_id
         FOREIGN KEY (user_id)
             REFERENCES users (id)
             ON DELETE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS idx_users_email_hash ON users (email_hash);
+CREATE TABLE IF NOT EXISTS mfa_challenges
+(
+    id          VARCHAR(36) PRIMARY KEY   NOT NULL,
+    created_at  TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    verified_at TIMESTAMPTZ               NULL,
 
-CREATE INDEX IF NOT EXISTS idx_deployments_endpoint_id ON deployments (endpoint_id);
+    factor_id   VARCHAR(36)               NOT NULL,
+    ip          TEXT                      NULL,
+    CONSTRAINT fk_mfa_challenges_factor_id
+        FOREIGN KEY (factor_id)
+            REFERENCES mfa_factors (id)
+            ON DELETE CASCADE
+);
 
-CREATE INDEX IF NOT EXISTS idx_tokens_user_id ON tokens (user_id);
+CREATE TABLE IF NOT EXISTS sessions
+(
+    id           VARCHAR(36) PRIMARY KEY NOT NULL,
+    created_at   TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    deleted_at   TIMESTAMPTZ             NULL,
+    last_used_at TIMESTAMPTZ             NULL,
+
+    user_id      VARCHAR(36)             NOT NULL,
+    factor_id    VARCHAR(36)             NULL,
+    aal          aal_level_enum          NOT NULL DEFAULT 'aal0',
+    ip           TEXT                    NULL,
+    user_agent   TEXT                    NULL,
+    not_after    TIMESTAMPTZ             NULL,
+    CONSTRAINT fk_sessions_user_id
+        FOREIGN KEY (user_id)
+            REFERENCES users (id)
+            ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions (user_id);
+
+
+CREATE TABLE IF NOT EXISTS mfa_amr_claims
+(
+    created_at            TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    updated_at            TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+
+    session_id            VARCHAR(36)               NOT NULL,
+    authentication_method text                      not null,
+    CONSTRAINT pk_mfa_amr_claims_session_id_authentication_method UNIQUE (session_id, authentication_method),
+    CONSTRAINT fk_mfa_amr_claims_session_id
+        FOREIGN KEY (session_id)
+            REFERENCES sessions (id)
+            ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS refresh_tokens
+(
+    id         VARCHAR(36) PRIMARY KEY   NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    token      varchar(255)              NOT NULL,
+    user_id    varchar(36)               NOT NULL,
+    session_id varchar(36)               NOT NULL,
+    revoked    bool                      NULL,
+    CONSTRAINT fk_refresh_tokens_user_id
+        FOREIGN KEY (user_id)
+            REFERENCES users (id)
+            ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON refresh_tokens (token);
 
 -- +goose Down
 -- +goose StatementBegin
 SELECT 'down SQL query';
 -- +goose StatementEnd
-DROP TABLE IF EXISTS srp_challenges;
+DROP INDEX IF EXISTS idx_refresh_tokens_token;
 
-DROP INDEX IF EXISTS idx_tokens_user_id;
+DROP TABLE IF EXISTS refresh_tokens;
 
-DROP TABLE IF EXISTS tokens;
+DROP TABLE IF EXISTS mfa_amr_claims;
 
+DROP INDEX IF EXISTS idx_sessions_user_id;
+
+DROP TABLE IF EXISTS sessions;
+
+DROP TABLE IF EXISTS mfa_challenges;
+
+DROP TABLE IF EXISTS mfa_factors;
+
+DROP TYPE IF EXISTS factor_type;
+DROP TYPE IF EXISTS factor_status;
 DROP TYPE IF EXISTS aal_level_enum;
+
+DROP TABLE IF EXISTS srp_challenges;
 
 ALTER TABLE srp_auth_temp
     DROP CONSTRAINT fk_srp_auth_temp_user_id;

@@ -6,7 +6,7 @@ import (
 
 type User struct {
 	ID                   string `xorm:"not null pk VARCHAR(36) id"`
-	Name                 string `xorm:"name"`
+	Name                 string `xorm:"not null TEXT default '' name"`
 	Email                string `xorm:"-"`
 	EmailHash            string `xorm:"not null TEXT email_hash"`
 	EncryptedEmail       []byte `xorm:"not null BYTEA encrypted_email"`

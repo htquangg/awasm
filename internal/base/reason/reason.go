@@ -16,4 +16,7 @@ const (
 	DeploymentNotFound         = "error.deployment.not_found"
 	DeploymentAlreadyActivated = "error.deployment.already_activated"
 	EmailDuplicate             = "error.email.duplicate"
+	RequiredSession            = "error.access_token.session_required"
+	SessionNotFound            = "error.session.not_found"
+	UserNotFound               = "error.user.not_found"
 )

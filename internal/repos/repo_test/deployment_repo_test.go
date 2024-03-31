@@ -26,17 +26,17 @@ func Test_deploymentRepo_Add(t *testing.T) {
 	deploymentRepo := deployment.NewDeploymentRepo(testDB)
 
 	testEndpointEntity := buildEndpointEntity()
-	err := endpointRepo.Add(context.TODO(), testEndpointEntity)
+	err := endpointRepo.AddEndpoint(context.TODO(), testEndpointEntity)
 	assert.NoError(t, err)
 
 	testDeploymentEntity := buildDeploymentEntity()
 	testDeploymentEntity.EndpointID = testEndpointEntity.ID
-	err = deploymentRepo.Add(context.TODO(), testDeploymentEntity)
+	err = deploymentRepo.AddDeployment(context.TODO(), testDeploymentEntity)
 	assert.NoError(t, err)
 
-	err = deploymentRepo.Remove(context.TODO(), testDeploymentEntity.ID)
+	err = deploymentRepo.RemoveDeploymentByID(context.TODO(), testDeploymentEntity.ID)
 	assert.NoError(t, err)
 
-	err = endpointRepo.Remove(context.TODO(), testEndpointEntity.ID)
+	err = endpointRepo.RemoveEndpointByID(context.TODO(), testEndpointEntity.ID)
 	assert.NoError(t, err)
 }

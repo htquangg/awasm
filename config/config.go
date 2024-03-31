@@ -13,41 +13,57 @@ import (
 
 type (
 	Config struct {
-		Server *Server `json:"server" mapstructure:"server" yaml:"server"`
-		DB     *DB     `json:"db"     mapstructure:"db"     yaml:"db"`
-		Key    *Key    `json:"key"    mapstructure:"key"    yaml:"key"`
-		I18n   *I18n   `json:"i18n"   mapstructure:"i18n"   yaml:"i18n"`
+		IngressURL string  `json:"ingressURL,omitempty" mapstructure:"ingress_url" yaml:"ingress_url,omitempty"`
+		Server     *Server `json:"server,omitempty" mapstructure:"server" yaml:"server,omitempty"`
+		DB         *DB     `json:"db,omitempty"     mapstructure:"db"     yaml:"db,omitempty"`
+		Redis      *Redis  `json:"redis,omitempty"  mapstructure:"redis"  yaml:"redis,omitempty"`
+		JWT        *JWT    `json:"jwt,omitempty"    mapstructure:"jwt"    yaml:"jwt,omitempty"`
+		Key        *Key    `json:"key,omitempty"    mapstructure:"key"    yaml:"key,omitempty"`
+		I18n       *I18n   `json:"i18n,omitempty"   mapstructure:"i18n"   yaml:"i18n,omitempty"`
 	}
 
 	Server struct {
-		ShowStartBanner bool `json:"show_start_banner" mapstructure:"show_start_banner" yaml:"show_start_banner"`
-
-		Addr string `json:"addr" mapstructure:"addr" yaml:"addr"`
+		Addr            string `json:"addr,omitempty" mapstructure:"addr" yaml:"addr,omitempty"`
+		ShowStartBanner bool   `json:"showStartBanner" mapstructure:"show_start_banner" yaml:"show_start_banner"`
 	}
 
 	DB struct {
-		Port            uint16 `json:"port"              mapstructure:"port"              yaml:"port"`
-		Host            string `json:"host"              mapstructure:"host"              yaml:"host"`
-		User            string `json:"user"              mapstructure:"user"              yaml:"user"`
-		Password        string `json:"password"          mapstructure:"password"          yaml:"password"`
-		Schema          string `json:"schema"            mapstructure:"schema"            yaml:"schema"`
-		Charset         string `json:"charset"           mapstructure:"charset"           yaml:"charset"`
-		SslMode         string `json:"ssl_mode"          mapstructure:"ssl_mode"          yaml:"ssl_mode"`
-		LogSQL          bool   `json:"log_sql"           mapstructure:"log_sql"           yaml:"log_sql"`
-		MaxIdleConns    int    `json:"mas_idle_conns"    mapstructure:"max_idle_conns"    yaml:"max_idle_conns"`
-		MaxOpenConns    int    `json:"max_open_conns"    mapstructure:"max_open_conns"    yaml:"max_open_conns"`
-		ConnMaxLifetime int    `json:"conn_max_lifetime" mapstructure:"conn_max_lifetime" yaml:"conn_max_lifetime"`
+		Port            uint16 `json:"port,omitempty"     mapstructure:"port"              yaml:"port,omitempty"`
+		Host            string `json:"host,omitempty"     mapstructure:"host"              yaml:"host,omitempty"`
+		User            string `json:"user,omitempty"     mapstructure:"user"              yaml:"user,omitempty"`
+		Password        string `json:"password,omitempty" mapstructure:"password"          yaml:"password,omitempty"`
+		Schema          string `json:"schema,omitempty"   mapstructure:"schema"            yaml:"schema,omitempty"`
+		Charset         string `json:"charset"            mapstructure:"charset"           yaml:"charset"`
+		SslMode         string `json:"sslMode"            mapstructure:"ssl_mode"          yaml:"ssl_mode"`
+		LogSQL          bool   `json:"logSql"             mapstructure:"log_sql"           yaml:"log_sql"`
+		MaxIdleConns    int    `json:"maxIdleConns"       mapstructure:"max_idle_conns"    yaml:"max_idle_conns"`
+		MaxOpenConns    int    `json:"maxOpenConns"       mapstructure:"max_open_conns"    yaml:"max_open_conns"`
+		ConnMaxLifetime int    `json:"connMaxLifetime"    mapstructure:"conn_max_lifetime" yaml:"conn_max_lifetime"`
+	}
+
+	Redis struct {
+		Host       string `json:"host,omitempty"       mapstructure:"host"               yaml:"host,omitempty"`
+		Port       int    `json:"port,omitempty"       mapstructure:"port"               yaml:"port,omitempty"`
+		RequireTLS bool   `json:"requireTLS,omitempty" mapstructure:"require_tls"        yaml:"require_tls,omitempty"`
+		Password   string `json:"password"             mapstructure:"password"           yaml:"password"`
+		DB         int    `json:"db,omitempty"         mapstructure:"db"                 yaml:"db,omitempty"`
+		PoolSize   int    `json:"poolSize" mapstructure:"pool_size" yaml:"pool_size"`
+	}
+
+	JWT struct {
+		Secret string `json:"secret,omitempty" mapstructure:"secret" yaml:"secret,omitempty"`
+		Exp    int    `json:"exp,omitempty"    mapstructure:"exp"    yaml:"exp,omitempty"`
 	}
 
 	Key struct {
-		Encryption      string `json:"encryption" mapstructure:"encryption" yaml:"encryption"`
-		Hash            string `json:"hash"       mapstructure:"hash"       yaml:"hash"`
-		EncryptionBytes []byte `json:"-"          mapstructure:"-"          yaml:"-"`
-		HashBytes       []byte `json:"-"          mapstructure:"-"          yaml:"-"`
+		Encryption      string `json:"encryption,omitempty" mapstructure:"encryption"       yaml:"encryption,omitempty"`
+		Hash            string `json:"hash,omitempty"       mapstructure:"hash"             yaml:"hash,omitempty"`
+		EncryptionBytes []byte `json:"-"          mapstructure:"encryption_bytes" yaml:"-"`
+		HashBytes       []byte `json:"-"          mapstructure:"hash_bytes"       yaml:"-"`
 	}
 
 	I18n struct {
-		BundleDir string `json:"bundle_dir" mapstructure:"bundle_dir" yaml:"bundle_dir"`
+		BundleDir string `json:"bundle_dir,omitempty" mapstructure:"bundle_dir" yaml:"bundle_dir,omitempty"`
 	}
 )
 

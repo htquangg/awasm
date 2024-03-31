@@ -40,7 +40,7 @@ func (c *DeploymentController) Add(ctx echo.Context) error {
 		Data:       b,
 	}
 
-	resp, err := c.deploymentService.Add(ctx.Request().Context(), req)
+	resp, err := c.deploymentService.AddDeployment(ctx.Request().Context(), req)
 
 	return handler.HandleResponse(ctx, err, resp)
 }

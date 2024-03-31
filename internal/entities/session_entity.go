@@ -1,18 +1,20 @@
 package entities
 
+import (
+	"sort"
+	"time"
+)
+
 type AuthenticatorAssuranceLevel int
 
 const (
-	AAL0 AuthenticatorAssuranceLevel = iota
-	AAL1
+	AAL1 AuthenticatorAssuranceLevel = iota
 	AAL2
 	AAL3
 )
 
 func (aal AuthenticatorAssuranceLevel) String() string {
 	switch aal {
-	case AAL0:
-		return "aal0"
 	case AAL1:
 		return "aal1"
 	case AAL2:
@@ -22,4 +24,69 @@ func (aal AuthenticatorAssuranceLevel) String() string {
 	default:
 		return ""
 	}
+}
+
+type AMREntry struct {
+	Method    string `json:"method"`
+	Timestamp int64  `json:"timestamp"`
+	Provider  string `json:"provider,omitempty"`
+}
+
+type sortAMREntries struct {
+	Array []AMREntry
+}
+
+func (s sortAMREntries) Len() int {
+	return len(s.Array)
+}
+
+func (s sortAMREntries) Less(i, j int) bool {
+	return s.Array[i].Timestamp < s.Array[j].Timestamp
+}
+
+func (s sortAMREntries) Swap(i, j int) {
+	s.Array[j], s.Array[i] = s.Array[i], s.Array[j]
+}
+
+type Session struct {
+	ID        string         `xorm:"not null pk VARCHAR(36) id"`
+	UserID    string         `xorm:"not null VARCHAR(36) user_id"`
+	AAL       string         `xorm:"not null TEXT aal"`
+	IP        string         `xorm:"not null TEXT default '' ip"`
+	UserAgent string         `xorm:"not null TEXT default '' user_agent"`
+	FactorID  string         `xorm:"not null VARCHAR(36) default '' factor_id"`
+	AMRClaims []*MFAAMRClaim `xorm:"-"`
+
+	NotAfter *time.Time `xorm:"not null TIMESTAMPZ not_after"`
+
+	CreatedAt time.Time  `xorm:"created TIMESTAMPZ created_at"`
+	DeletedAt *time.Time `xorm:"TIMESTAMPZ deleted_at"`
+}
+
+func (Session) TableName() string {
+	return "sessions"
+}
+
+func (s *Session) CalculateAALAndAMR(user *User) (aal AuthenticatorAssuranceLevel, amr []AMREntry, err error) {
+	amr, aal = []AMREntry{}, AAL1
+	for _, claim := range s.AMRClaims {
+		if claim.AuthenticationMethod == TOTPSignIn.String() {
+			aal = AAL2
+		}
+		amr = append(amr, AMREntry{Method: claim.GetAuthenticationMethod(), Timestamp: claim.UpdatedAt.Unix()})
+	}
+
+	// makes sure that the AMR claims are always ordered most-recent first
+
+	// sort in ascending order
+	sort.Sort(sortAMREntries{
+		Array: amr,
+	})
+
+	// now reverse for descending order
+	_ = sort.Reverse(sortAMREntries{
+		Array: amr,
+	})
+
+	return aal, amr, nil
 }

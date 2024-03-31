@@ -41,7 +41,7 @@ func TestMain(t *testing.M) {
 	}
 }
 
-func initTestDB(ctx context.Context, cfg *db.Config) error {
+func initTestDB(ctx context.Context, cfg *config.DB) error {
 	db, err := db.New(ctx, cfg)
 	if err != nil {
 		return err

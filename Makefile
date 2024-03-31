@@ -1,7 +1,7 @@
 
-GO_ENV=CGO_ENABLED=0 GO111MODULE=on
+GO_ENV=CGO_ENABLED=1 GO111MODULE=on
 Revision=$(shell git rev-parse --short HEAD 2>/dev/null || echo "")
-GO_FLAGS=-ldflags="-X 'github.com/htquangg/a-wasm/cmd.Revision=$(Revision)' -X 'github.com/apache/incubator-answer/cmd.Time=`date +%s`' -extldflags -static"
+GO_FLAGS=-ldflags="-X 'github.com/htquangg/a-wasm/cmd.Revision=$(Revision)' -X 'github.com/htquangg/a-wasm/cmd.Time=`date +%s`' -extldflags -static"
 GO=$(GO_ENV) $(shell which go)
 
 ifndef GOPATH

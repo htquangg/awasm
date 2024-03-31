@@ -21,7 +21,7 @@ func NewEndpointCommonRepo(db db.DB) endpoint_common.EndpointCommonRepo {
 	}
 }
 
-func (r *endpointCommonRepo) GetByID(
+func (r *endpointCommonRepo) GetEndpointByID(
 	ctx context.Context,
 	id string,
 ) (endpoint *entities.Endpoint, exists bool, err error) {

@@ -19,7 +19,7 @@ func NewUserController(userService *user.UserService) *UserController {
 	}
 }
 
-func (c *UserController) SignUp(ctx echo.Context) error {
+func (c *UserController) VerifyEmail(ctx echo.Context) error {
 	req := &schemas.SignUpReq{}
 	if err, errField := handler.BindAndValidate(ctx, req); err != nil {
 		return handler.HandleResponse(ctx, err, errField)
@@ -27,7 +27,7 @@ func (c *UserController) SignUp(ctx echo.Context) error {
 	req.IP = network.GetClientIP(ctx)
 	req.UserAgent = ctx.Request().UserAgent()
 
-	resp, err := c.userService.SignUp(ctx.Request().Context(), req)
+	resp, err := c.userService.VerifyEmail(ctx.Request().Context(), req)
 
 	return handler.HandleResponse(ctx, err, resp)
 }
