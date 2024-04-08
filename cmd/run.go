@@ -18,6 +18,7 @@ import (
 	"github.com/htquangg/a-wasm/internal/services"
 	"github.com/htquangg/a-wasm/internal/web"
 
+	"github.com/GoKillers/libsodium-go/sodium"
 	"github.com/oklog/run"
 	"github.com/spf13/cobra"
 )
@@ -25,7 +26,6 @@ import (
 var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run the application",
-	Long:  "Run the application",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Awasm is starting..........................")
 		runApp()
@@ -93,6 +93,8 @@ func initApp(ctx context.Context, cfg *config.Config) (run.Group, error) {
 		syscall.SIGQUIT,
 		syscall.SIGHUP,
 	))
+
+	sodium.Init()
 
 	return g, nil
 }

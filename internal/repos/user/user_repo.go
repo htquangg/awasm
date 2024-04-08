@@ -28,8 +28,8 @@ func NewUserRepo(
 	}
 }
 
-func (r *userRepo) AddUser(ctx context.Context, user *entities.User) error {
-	_, err := r.db.Engine(ctx).Insert(user)
+func (r *userRepo) AddUser(ctx context.Context, user *entities.User) (err error) {
+	_, err = r.db.Engine(ctx).Insert(user)
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
@@ -38,7 +38,8 @@ func (r *userRepo) AddUser(ctx context.Context, user *entities.User) error {
 }
 
 func (r *userRepo) GetUserWithEmail(ctx context.Context, email string) (user *entities.User, exists bool, err error) {
-	emailHash, err := crypto.GetHash(email, r.cfg.Key.HashBytes)
+	var emailHash string
+	emailHash, err = crypto.GetHash(email, r.cfg.Key.HashBytes)
 	if err != nil {
 		return nil, false, err
 	}

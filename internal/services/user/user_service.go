@@ -2,14 +2,18 @@ package user
 
 import (
 	"context"
+	"encoding/base64"
 	"strings"
 
 	"github.com/htquangg/a-wasm/config"
+	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/internal/services/session"
 	"github.com/htquangg/a-wasm/pkg/crypto"
 	"github.com/htquangg/a-wasm/pkg/uid"
+
+	"github.com/segmentfault/pacman/errors"
 )
 
 type (
@@ -19,9 +23,21 @@ type (
 		GetUserWithEmail(ctx context.Context, email string) (*entities.User, bool, error)
 	}
 
+	UserAuthRepo interface {
+		AddSRPChallenge(ctx context.Context, srpChallege *entities.SrpChallenge) error
+		AddSrpAuthTemp(ctx context.Context, srpAuthTemp *entities.SrpAuthTemp) error
+		CompleteEmailAccountSignup(ctx context.Context, accountInfo *schemas.CompleteEmailSignupInfo) error
+		GetTempSRPSetupByID(ctx context.Context, id string) (*entities.SrpAuthTemp, bool, error)
+		GetSRPChallengeByID(ctx context.Context, id string) (*entities.SrpChallenge, bool, error)
+		IncrementSrpChallengeAttemptCount(ctx context.Context, id string) error
+		SetSrpChallengeVerified(ctx context.Context, challengeID string) error
+		GetKeyAttributeWithUserID(ctx context.Context, userID string) (*entities.KeyAttribute, bool, error)
+	}
+
 	UserService struct {
 		cfg            *config.Config
 		userRepo       UserRepo
+		userAuthRepo   UserAuthRepo
 		sessionService *session.SessionService
 	}
 )
@@ -29,39 +45,149 @@ type (
 func NewUserService(
 	cfg *config.Config,
 	userRepo UserRepo,
+	userAuthRepo UserAuthRepo,
 	sessionService *session.SessionService,
 ) *UserService {
 	return &UserService{
 		cfg:            cfg,
 		userRepo:       userRepo,
+		userAuthRepo:   userAuthRepo,
 		sessionService: sessionService,
 	}
 }
 
-func (s *UserService) VerifyEmail(ctx context.Context, req *schemas.SignUpReq) (*schemas.AccessTokenResp, error) {
+func (s *UserService) BeginEmailSignupProcess(ctx context.Context, req *schemas.BeginEmailSignupProcessReq) error {
 	email := strings.ToLower(req.Email)
-	// TODO: verify email OTT
+	_, exists, err := s.userRepo.GetUserWithEmail(ctx, email)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		_, err = s.createUser(ctx, email)
+		if err != nil {
+			return err
+		}
+	}
+
+	// TODO: send email with OTP
+	return nil
+}
+
+func (s *UserService) VerifyEmailSignup(
+	ctx context.Context,
+	req *schemas.VerifyEmailSignupReq,
+) (*schemas.CommonTokenResp, error) {
+	email := strings.ToLower(req.Email)
+	// TODO: verify email OTP
 
 	user, exists, err := s.userRepo.GetUserWithEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
-
-	authenticationMethod := entities.OTP
 	if !exists {
-		authenticationMethod = entities.EmailSignup
-		user, err = s.createUser(ctx, email)
-		if err != nil {
-			return nil, err
-		}
+		return nil, errors.BadRequest(reason.EmailNotFound)
+	}
+	if user.EmailAcceptedAt != nil {
+		return nil, errors.BadRequest(reason.EmailDuplicate)
 	}
 
-	accessTokenResp, err := s.sessionService.IssueRefreshToken(ctx, user, authenticationMethod, &entities.GrantParams{
+	accessTokenResp, err := s.sessionService.IssueSignupToken(ctx, user, &entities.GrantParams{
 		IP:        req.IP,
 		UserAgent: req.UserAgent,
 	})
 
 	return accessTokenResp, err
+}
+
+func (s *UserService) SetupSRPAccountSignup(
+	ctx context.Context,
+	userID string,
+	req *schemas.SetupSRPAccountSignupReq,
+) (*schemas.SetupSRPAccountSignupResp, error) {
+	srpB, challengeID, err := s.createAndInsertSRPChallenge(ctx, req.SrpUserID, req.SRPVerifier, req.SRPA)
+	if err != nil {
+		return nil, err
+	}
+
+	srpAuthTemp := &entities.SrpAuthTemp{}
+	srpAuthTemp.ID = uid.ID()
+	srpAuthTemp.UserID = userID
+	srpAuthTemp.SrpUserID = req.SrpUserID
+	srpAuthTemp.Salt = req.SRPSalt
+	srpAuthTemp.Verifier = req.SRPVerifier
+	srpAuthTemp.SrpChallengeID = challengeID
+	err = s.userAuthRepo.AddSrpAuthTemp(ctx, srpAuthTemp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &schemas.SetupSRPAccountSignupResp{
+		SetupID: srpAuthTemp.ID,
+		SRPB:    *srpB,
+	}, nil
+}
+
+func (s *UserService) CompleteEmailAccountSignup(
+	ctx context.Context,
+	user *entities.User,
+	req *schemas.CompleteEmailSignupReq,
+) (*schemas.CompleteEmailSignupResp, error) {
+	tempSRP, exists, err := s.userAuthRepo.GetTempSRPSetupByID(ctx, req.SetupID)
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		return nil, errors.BadRequest(reason.SRPNotFound)
+	}
+
+	srpM2, err := s.verifySRPChallenge(ctx, tempSRP.Verifier, tempSRP.SrpChallengeID, req.SRPM1)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.userAuthRepo.CompleteEmailAccountSignup(ctx, &schemas.CompleteEmailSignupInfo{
+		UserID:       user.ID,
+		SrpUserID:    tempSRP.SrpUserID,
+		Salt:         tempSRP.Salt,
+		Verifier:     tempSRP.Verifier,
+		KeyAttribute: req.KeyAttribute,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	keyAttribute, exists, err := s.userAuthRepo.GetKeyAttributeWithUserID(ctx, user.ID)
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		return nil, errors.BadRequest(reason.KeyAttributeNotFound)
+	}
+
+	accessTokenResp, err := s.sessionService.IssueRefreshToken(ctx, user, entities.EmailSignup, &entities.GrantParams{
+		IP:        req.IP,
+		UserAgent: req.UserAgent,
+	})
+	if err != nil {
+		return nil, err
+	}
+	accessTokenResp.EncryptedToken, err = crypto.GetEncryptedToken(
+		base64.StdEncoding.EncodeToString([]byte(accessTokenResp.CommonTokenResp.AccessToken)),
+		keyAttribute.PublicKey,
+	)
+	if err != nil {
+		return nil, err
+	}
+	accessTokenResp.CommonTokenResp.AccessToken = ""
+
+	keyAttributeInfo := &schemas.KeyAttributeInfo{}
+	keyAttributeInfo.ConvertFromKeyAttributeEntity(keyAttribute)
+
+	return &schemas.CompleteEmailSignupResp{
+		AccessTokenResp: accessTokenResp,
+		KeyAttribute:    keyAttributeInfo,
+		SRPM2:           *srpM2,
+	}, nil
 }
 
 func (s *UserService) createUser(ctx context.Context, email string) (*entities.User, error) {
@@ -79,7 +205,6 @@ func (s *UserService) createUser(ctx context.Context, email string) (*entities.U
 	user.EncryptedEmail = encryptedEmail.Cipher
 	user.EmailDecryptionNonce = encryptedEmail.Nonce
 	user.EmailHash = emailHash
-
 	err = s.userRepo.AddUser(ctx, user)
 
 	return user, err

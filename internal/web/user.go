@@ -12,17 +12,13 @@ func bindUserApi(g *echo.Group, c *controllers.Controllers, mws *middleware.Midd
 
 	authGroup := subGroup.Group("/auth")
 
-	publicAuthGroup := authGroup.Group("")
-	publicAuthGroup.POST("/verify-email", c.User.VerifyEmail)
-	publicAuthGroup.POST("/create-session", c.User.CreateSRPSession)
-	publicAuthGroup.POST("/verify-session", c.User.VerifySRPSession)
+	publicAuthEmailGroup := authGroup.Group("/email")
+	publicAuthEmailGroup.POST("/signup", c.User.BeginEmailSignupProcess)
+	publicAuthEmailGroup.POST("/verify", c.User.VerifyEmailSignup)
+	publicAuthEmailGroup.POST("/create-session", c.User.CreateSRPSession, mws.Auth.RequireAuthentication)
+	publicAuthEmailGroup.POST("/verify-session", c.User.VerifySRPSession)
 
-	srpGroup := subGroup.Group("/srp")
-
-	publicSrpGroup := srpGroup.Group("")
-	publicSrpGroup.GET("/attributes", c.User.GetSRPAttributes)
-
-	privateSrpGroup := srpGroup.Group("", mws.Auth.RequireAuthentication)
-	privateSrpGroup.POST("/setup", c.User.SetupSRP)
-	privateSrpGroup.POST("/complete", c.User.CompleteSRPSetup)
+	privateAuthEmailGroup := authGroup.Group("/email", mws.Auth.RequireAuthentication)
+	privateAuthEmailGroup.POST("/setup-srp", c.User.SetupSRPAccountSignup, mws.Auth.RequireSignupToken)
+	privateAuthEmailGroup.POST("/complete", c.User.CompleteEmailAccountSignup, mws.Auth.RequireSignupToken)
 }

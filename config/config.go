@@ -14,16 +14,16 @@ import (
 type (
 	Config struct {
 		IngressURL string  `json:"ingressURL,omitempty" mapstructure:"ingress_url" yaml:"ingress_url,omitempty"`
-		Server     *Server `json:"server,omitempty" mapstructure:"server" yaml:"server,omitempty"`
-		DB         *DB     `json:"db,omitempty"     mapstructure:"db"     yaml:"db,omitempty"`
-		Redis      *Redis  `json:"redis,omitempty"  mapstructure:"redis"  yaml:"redis,omitempty"`
-		JWT        *JWT    `json:"jwt,omitempty"    mapstructure:"jwt"    yaml:"jwt,omitempty"`
-		Key        *Key    `json:"key,omitempty"    mapstructure:"key"    yaml:"key,omitempty"`
-		I18n       *I18n   `json:"i18n,omitempty"   mapstructure:"i18n"   yaml:"i18n,omitempty"`
+		Server     *Server `json:"server,omitempty"     mapstructure:"server"      yaml:"server,omitempty"`
+		DB         *DB     `json:"db,omitempty"         mapstructure:"db"          yaml:"db,omitempty"`
+		Redis      *Redis  `json:"redis,omitempty"      mapstructure:"redis"       yaml:"redis,omitempty"`
+		JWT        *JWT    `json:"jwt,omitempty"        mapstructure:"jwt"         yaml:"jwt,omitempty"`
+		Key        *Key    `json:"key,omitempty"        mapstructure:"key"         yaml:"key,omitempty"`
+		I18n       *I18n   `json:"i18n,omitempty"       mapstructure:"i18n"        yaml:"i18n,omitempty"`
 	}
 
 	Server struct {
-		Addr            string `json:"addr,omitempty" mapstructure:"addr" yaml:"addr,omitempty"`
+		Addr            string `json:"addr,omitempty"  mapstructure:"addr"              yaml:"addr,omitempty"`
 		ShowStartBanner bool   `json:"showStartBanner" mapstructure:"show_start_banner" yaml:"show_start_banner"`
 	}
 
@@ -42,12 +42,12 @@ type (
 	}
 
 	Redis struct {
-		Host       string `json:"host,omitempty"       mapstructure:"host"               yaml:"host,omitempty"`
-		Port       int    `json:"port,omitempty"       mapstructure:"port"               yaml:"port,omitempty"`
-		RequireTLS bool   `json:"requireTLS,omitempty" mapstructure:"require_tls"        yaml:"require_tls,omitempty"`
-		Password   string `json:"password"             mapstructure:"password"           yaml:"password"`
-		DB         int    `json:"db,omitempty"         mapstructure:"db"                 yaml:"db,omitempty"`
-		PoolSize   int    `json:"poolSize" mapstructure:"pool_size" yaml:"pool_size"`
+		Host       string `json:"host,omitempty"       mapstructure:"host"        yaml:"host,omitempty"`
+		Port       int    `json:"port,omitempty"       mapstructure:"port"        yaml:"port,omitempty"`
+		RequireTLS bool   `json:"requireTLS,omitempty" mapstructure:"require_tls" yaml:"require_tls,omitempty"`
+		Password   string `json:"password"             mapstructure:"password"    yaml:"password"`
+		DB         int    `json:"db,omitempty"         mapstructure:"db"          yaml:"db,omitempty"`
+		PoolSize   int    `json:"poolSize"             mapstructure:"pool_size"   yaml:"pool_size"`
 	}
 
 	JWT struct {
@@ -58,8 +58,8 @@ type (
 	Key struct {
 		Encryption      string `json:"encryption,omitempty" mapstructure:"encryption"       yaml:"encryption,omitempty"`
 		Hash            string `json:"hash,omitempty"       mapstructure:"hash"             yaml:"hash,omitempty"`
-		EncryptionBytes []byte `json:"-"          mapstructure:"encryption_bytes" yaml:"-"`
-		HashBytes       []byte `json:"-"          mapstructure:"hash_bytes"       yaml:"-"`
+		EncryptionBytes []byte `json:"-"                    mapstructure:"encryption_bytes" yaml:"-"`
+		HashBytes       []byte `json:"-"                    mapstructure:"hash_bytes"       yaml:"-"`
 	}
 
 	I18n struct {

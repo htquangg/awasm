@@ -4,11 +4,13 @@ import (
 	"context"
 	"time"
 
-	"github.com/golang-jwt/jwt"
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/reason"
+	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/schemas"
+
+	"github.com/golang-jwt/jwt"
 	"github.com/segmentfault/pacman/errors"
 )
 
@@ -50,11 +52,42 @@ func (s *SessionService) IssueRefreshToken(
 	accessToken, expiresAt, err := s.generateAccessToken(ctx, user, refreshToken.SessionID)
 
 	return &schemas.AccessTokenResp{
-		Token:        accessToken,
-		TokenType:    "bearer",
-		ExpiresIn:    s.cfg.JWT.Exp,
-		ExpiresAt:    expiresAt,
+		CommonTokenResp: schemas.CommonTokenResp{
+			AccessToken: accessToken,
+			TokenType:   "bearer",
+			ExpiresIn:   s.cfg.JWT.Exp,
+			ExpiresAt:   expiresAt,
+		},
 		RefreshToken: refreshToken.Token,
+	}, nil
+}
+
+func (s *SessionService) IssueSignupToken(
+	ctx context.Context,
+	user *entities.User,
+	params *entities.GrantParams,
+) (*schemas.CommonTokenResp, error) {
+	issuedAt := time.Now().UTC()
+	expiresAt := issuedAt.Add(constants.ExpiresInSignup).Unix()
+
+	claims := &entities.CommonTokenClaims{
+		StandardClaims: jwt.StandardClaims{Subject: user.ID, IssuedAt: issuedAt.Unix(), ExpiresAt: expiresAt},
+		Email:          user.Email,
+		Scope:          entities.SignupTokenScope.Ptr(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	signed, err := token.SignedString([]byte(s.cfg.JWT.Secret))
+	if err != nil {
+		return nil, err
+	}
+
+	return &schemas.CommonTokenResp{
+		AccessToken: signed,
+		TokenType:   "bearer",
+		ExpiresIn:   int(constants.ExpiresInSignup.Seconds()),
+		ExpiresAt:   expiresAt,
 	}, nil
 }
 
@@ -84,15 +117,14 @@ func (s *SessionService) generateAccessToken(
 	expiresAt := issuedAt.Add(time.Second * time.Duration(s.cfg.JWT.Exp)).Unix()
 
 	claims := &entities.AccessTokenClaims{
-		StandardClaims: jwt.StandardClaims{
-			Subject:   user.ID,
-			IssuedAt:  issuedAt.Unix(),
-			ExpiresAt: expiresAt,
+		CommonTokenClaims: entities.CommonTokenClaims{
+			StandardClaims: jwt.StandardClaims{Subject: user.ID, IssuedAt: issuedAt.Unix(), ExpiresAt: expiresAt},
+			Email:          user.Email,
+			Scope:          entities.AccessTokenScope.Ptr(),
 		},
-		Email:                         user.Email,
-		SessionID:                     sessionID,
 		AuthenticatorAssuranceLevel:   aal.String(),
 		AuthenticationMethodReference: amr,
+		SessionID:                     sessionID,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

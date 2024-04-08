@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users
     email_hash             TEXT UNIQUE               NOT NULL,
     encrypted_email        BYTEA                     NOT NULL,
     email_decryption_nonce BYTEA                     NOT NULL,
-    email_confirmed_at     TIMESTAMPTZ               NULL,
+    email_accepted_at      TIMESTAMPTZ               NULL,
 
     last_login_at          TIMESTAMPTZ               NULL
 );
@@ -67,13 +67,14 @@ CREATE TABLE IF NOT EXISTS srp_auth
 
 CREATE TABLE IF NOT EXISTS srp_auth_temp
 (
-    id          VARCHAR(36) PRIMARY KEY   NOT NULL,
-    created_at  TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    id               VARCHAR(36) PRIMARY KEY   NOT NULL,
+    created_at       TIMESTAMPTZ DEFAULT NOW() NOT NULL,
 
-    user_id     VARCHAR(36)               NOT NULL,
-    srp_user_id VARCHAR(36)               NOT NULL,
-    salt        TEXT                      NOT NULL,
-    verifier    TEXT                      NOT NULL,
+    user_id          VARCHAR(36)               NOT NULL,
+    srp_user_id      VARCHAR(36)               NOT NULL,
+    salt             TEXT                      NOT NULL,
+    verifier         TEXT                      NOT NULL,
+    srp_challenge_id VARCHAR(36)               NOT NULL,
     CONSTRAINT fk_srp_auth_temp_user_id
         FOREIGN KEY (user_id)
             REFERENCES users (id)
@@ -84,18 +85,12 @@ CREATE TABLE IF NOT EXISTS srp_challenges
 (
     id               VARCHAR(36) PRIMARY KEY   NOT NULL,
     created_at       TIMESTAMPTZ DEFAULT NOW() NOT NULL,
-    updated_at       TIMESTAMPTZ DEFAULT NOW() NOT NULL,
 
-    srp_auth_temp_id VARCHAR(36)               NOT NULL,
     srp_user_id      VARCHAR(36)               NOT NULL,
     server_key       TEXT                      NOT NULL,
     srp_a            TEXT                      NOT NULL,
     verified_at      TIMESTAMPTZ               NULL,
-    attempt_count    INT                       NOT NULL DEFAULT 0,
-    CONSTRAINT fk_srp_challenges_srp_auth_temp_id
-        FOREIGN KEY (srp_auth_temp_id)
-            REFERENCES srp_auth_temp (id)
-            ON DELETE CASCADE
+    attempt_count    INT                       NOT NULL DEFAULT 0
 );
 
 -- +goose StatementBegin
@@ -147,7 +142,7 @@ CREATE TABLE IF NOT EXISTS mfa_challenges
 CREATE TABLE IF NOT EXISTS sessions
 (
     id           VARCHAR(36) PRIMARY KEY NOT NULL,
-    created_at   TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    created_at   TIMESTAMPTZ                      DEFAULT NOW() NOT NULL,
     deleted_at   TIMESTAMPTZ             NULL,
     last_used_at TIMESTAMPTZ             NULL,
 
@@ -197,10 +192,33 @@ CREATE TABLE IF NOT EXISTS refresh_tokens
 
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON refresh_tokens (token);
 
+CREATE TABLE IF NOT EXISTS key_attributes
+(
+    user_id                                VARCHAR(36) PRIMARY KEY,
+    kek_salt                               TEXT                 NOT NULL,
+    encrypted_key                          TEXT                 NOT NULL,
+    key_decryption_nonce                   TEXT                 NOT NULL,
+    public_key                             TEXT                 NOT NULL,
+    encrypted_secret_key                   TEXT                 NOT NULL,
+    secret_key_decryption_nonce            TEXT                 NOT NULL,
+    master_key_encrypted_with_recovery_key TEXT                 NOT NULL,
+    master_key_decryption_nonce            TEXT                 NOT NULL,
+    recovery_key_encrypted_with_master_key TEXT                 NOT NULL,
+    recovery_key_decryption_nonce          TEXT                 NOT NULL,
+    mem_limit                              INT DEFAULT 67108864 NOT NULL, -- crypto_pwhash_MEMLIMIT_INTERACTIVE
+    ops_limit                              INT DEFAULT 2        NOT NULL, -- crypto_pwhash_OPSLIMIT_INTERACTIVE
+    CONSTRAINT fk_key_attributes_user_id
+        FOREIGN KEY (user_id)
+            REFERENCES users (id)
+            ON DELETE CASCADE
+);
+
 -- +goose Down
 -- +goose StatementBegin
 SELECT 'down SQL query';
 -- +goose StatementEnd
+DROP TABLE IF EXISTS key_attributes;
+
 DROP INDEX IF EXISTS idx_refresh_tokens_token;
 
 DROP TABLE IF EXISTS refresh_tokens;

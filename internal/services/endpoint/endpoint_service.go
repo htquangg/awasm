@@ -34,7 +34,10 @@ type (
 	}
 )
 
-func NewEndpointService(cfg *config.Config, endpointRepo EndpointRepo, deploymentRepo deployment_common.DeploymentCommonRepo,
+func NewEndpointService(
+	cfg *config.Config,
+	endpointRepo EndpointRepo,
+	deploymentRepo deployment_common.DeploymentCommonRepo,
 	protoCluster *protocluster.Cluster,
 ) *EndpointService {
 	return &EndpointService{
@@ -81,7 +84,10 @@ func (s *EndpointService) Publish(
 	}, nil
 }
 
-func (s *EndpointService) AddEndpoint(ctx context.Context, req *schemas.AddEndpointReq) (*schemas.AddEndpointResp, error) {
+func (s *EndpointService) AddEndpoint(
+	ctx context.Context,
+	req *schemas.AddEndpointReq,
+) (*schemas.AddEndpointResp, error) {
 	endpoint := &entities.Endpoint{}
 	_ = copier.Copy(endpoint, req)
 

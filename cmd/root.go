@@ -10,6 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const AWASM_URL = "http://127.0.0.1:3000"
+
 var rootCmd = &cobra.Command{
 	Use:   "awasm",
 	Short: "Awasm is the application that you can build, deploy, and run your application on the edge.",
@@ -32,7 +34,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initLog)
 
-	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd, deploymentsCmd} {
+	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd, deploymentsCmd, signupCmd} {
 		rootCmd.AddCommand(cmd)
 	}
 }

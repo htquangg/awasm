@@ -15,26 +15,37 @@ type (
 	}
 
 	SrpAuthTemp struct {
-		ID        string `xorm:"not null pk VARCHAR(36) id"`
-		UserID    string `xorm:"not null VARCHAR(36) user_id"`
-		SrpUserID string `xorm:"not null VARCHAR(36) srp_user_id"`
-		Salt      string `xorm:"not null TEXT salt"`
-		Verifier  string `xorm:"not null TEXT verifier"`
+		ID             string `xorm:"not null pk VARCHAR(36) id"`
+		UserID         string `xorm:"not null VARCHAR(36) user_id"`
+		SrpUserID      string `xorm:"not null VARCHAR(36) srp_user_id"`
+		Salt           string `xorm:"not null TEXT salt"`
+		Verifier       string `xorm:"not null TEXT verifier"`
+		SrpChallengeID string `xorm:"not null VARCHAR(36) srp_challenge_id"`
 
 		CreatedAt time.Time `xorm:"created TIMESTAMPZ created_at"`
 	}
 
 	SrpChallenge struct {
-		ID            string `xorm:"not null pk VARCHAR(36) id"`
-		SrpAuthTempID string `xorm:"not null VARCHAR(36) srp_auth_temp_id"`
-		SrpUserID     string `xorm:"not null VARCHAR(36) srp_user_id"`
-		ServerKey     string `xorm:"not null TEXT server_key"`
-		SrpA          string `xorm:"not null TEXT srp_a"`
-		AttemptCount  int32  `xorm:"not null INT default 0 attempt_count"`
+		ID           string `xorm:"not null pk VARCHAR(36) id"`
+		SrpUserID    string `xorm:"not null VARCHAR(36) srp_user_id"`
+		ServerKey    string `xorm:"not null TEXT server_key"`
+		SrpA         string `xorm:"not null TEXT srp_a"`
+		AttemptCount int32  `xorm:"not null INT default 0 attempt_count"`
 
-		VerifiedAt time.Time `xorm:"TIMESTAMPZ verified_at"`
+		VerifiedAt *time.Time `xorm:"TIMESTAMPZ verified_at"`
 
 		CreatedAt time.Time `xorm:"created TIMESTAMPZ created_at"`
-		UpdatedAt time.Time `xorm:"updated TIMESTAMPZ updated_at"`
 	}
 )
+
+func (SrpAuth) TableName() string {
+	return "srp_auth"
+}
+
+func (SrpAuthTemp) TableName() string {
+	return "srp_auth_temp"
+}
+
+func (SrpChallenge) TableName() string {
+	return "srp_challenges"
+}

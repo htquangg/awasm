@@ -1,1 +1,1 @@
-<h1 align=center>AWasm: Build, deploy, and run your application on the edge.</h1>
+<h1 align=center>Awasm: Build, deploy, and run your application on the edge.</h1>

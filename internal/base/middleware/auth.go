@@ -47,7 +47,22 @@ func (m *AuthMiddleware) RequireAuthentication(next echo.HandlerFunc) echo.Handl
 			return err
 		}
 
-		return nil
+		return next(ctx)
+	}
+}
+
+func (m *AuthMiddleware) RequireSignupToken(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		claims := getClaims(ctx)
+		if claims == nil {
+			return errors.Unauthorized(reason.InvalidTokenError)
+		}
+
+		if claims.CommonTokenClaims.GetScope() != entities.SignupTokenScope {
+			return errors.Forbidden(reason.InvalidScopeError)
+		}
+
+		return next(ctx)
 	}
 }
 
@@ -59,7 +74,7 @@ func (m *AuthMiddleware) extractBearerToken(ctx echo.Context) (string, error) {
 
 	matches := bearerRegexp.FindStringSubmatch(token)
 	if len(matches) != 2 {
-		return "", errors.Unauthorized(reason.UnauthorizedError).WithMsg("This endpoint requires a Bearer token")
+		return "", errors.Unauthorized(reason.InvalidTokenError)
 	}
 
 	return matches[1], nil
@@ -73,9 +88,7 @@ func (m *AuthMiddleware) parseJWTClaims(echoCtx echo.Context, bearer string) err
 		return []byte(m.cfg.JWT.Secret), nil
 	})
 	if err != nil {
-		return errors.Forbidden(reason.ForbiddenError).
-			WithError(err).
-			WithMsg("invalid JWT: unable to parse or verify signature")
+		return errors.Unauthorized(reason.InvalidTokenError)
 	}
 
 	withToken(echoCtx, token)
@@ -87,11 +100,11 @@ func (m *AuthMiddleware) maybeLoadUserOrSession(ctx echo.Context) error {
 	claims := getClaims(ctx)
 
 	if claims == nil {
-		return errors.Forbidden(reason.ForbiddenError).WithMsg("invalid token: missing claims")
+		return errors.Unauthorized(reason.InvalidTokenError)
 	}
 
 	if claims.Subject == "" {
-		return errors.Forbidden(reason.ForbiddenError).WithMsg("invalid claim: missing sub claim")
+		return errors.Unauthorized(reason.InvalidTokenError)
 	}
 
 	if claims.Subject != "" {

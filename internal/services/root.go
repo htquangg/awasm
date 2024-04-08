@@ -30,7 +30,7 @@ func New(cfg *config.Config, repos *repos.Repos, protoCluster *protocluster.Clus
 	deploymentService := deployment.NewDeploymentService(cfg, repos.Deployment, repos.EndpointCommon, protoCluster)
 	authService := auth.NewAuthService(repos.Auth)
 	sessionService := session.NewSessionService(cfg, repos.Session)
-	userService := user.NewUserService(cfg, repos.User, sessionService)
+	userService := user.NewUserService(cfg, repos.User, repos.UserAuth, sessionService)
 
 	return &Sevices{
 		cfg:          cfg,

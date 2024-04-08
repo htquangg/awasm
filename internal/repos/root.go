@@ -31,6 +31,7 @@ type Repos struct {
 	Auth             auth_svc.AuthRepo
 	Session          session_svc.SessionRepo
 	User             user_svc.UserRepo
+	UserAuth         user_svc.UserAuthRepo
 }
 
 func New(cfg *config.Config, db db.DB, cache cache.Cacher) *Repos {
@@ -43,5 +44,6 @@ func New(cfg *config.Config, db db.DB, cache cache.Cacher) *Repos {
 		Auth:             auth.NewAuthRepo(db, cache),
 		Session:          session.NewSessionRepo(db),
 		User:             user.NewUserRepo(cfg, db),
+		UserAuth:         user.NewUserAuthRepo(cfg, db),
 	}
 }

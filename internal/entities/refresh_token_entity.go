@@ -10,6 +10,19 @@ const (
 	TokenLength = 32
 )
 
+type ClaimScope string
+
+const (
+	UnknownTokenScope ClaimScope = "unknown-token"
+	AccessTokenScope  ClaimScope = "access-token"
+	RefreshTokenScope ClaimScope = "refresh-token"
+	SignupTokenScope  ClaimScope = "signup-token"
+)
+
+func (c ClaimScope) Ptr() *ClaimScope {
+	return &c
+}
+
 type RefreshToken struct {
 	ID        string `xorm:"not null pk VARCHAR(36) id"`
 	UserID    string `xorm:"not null VARCHAR(36) user_id"`
@@ -32,9 +45,21 @@ type GrantParams struct {
 	UserAgent string
 }
 
-type AccessTokenClaims struct {
+type CommonTokenClaims struct {
 	jwt.StandardClaims
-	Email                         string     `json:"email"`
+	Email string      `json:"email"`
+	Scope *ClaimScope `json:"scope"`
+}
+
+func (w *CommonTokenClaims) GetScope() ClaimScope {
+	if w.Scope == nil {
+		return UnknownTokenScope
+	}
+	return *w.Scope
+}
+
+type AccessTokenClaims struct {
+	CommonTokenClaims
 	AuthenticatorAssuranceLevel   string     `json:"aal,omitempty"`
 	AuthenticationMethodReference []AMREntry `json:"amr,omitempty"`
 	SessionID                     string     `json:"session_id,omitempty"`

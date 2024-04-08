@@ -52,6 +52,15 @@ func GetUser(ctx echo.Context) *entities.User {
 	return getUser(ctx)
 }
 
+func GetUserID(ctx echo.Context) string {
+	user := getUser(ctx)
+	if user == nil {
+		return ""
+	}
+
+	return user.ID
+}
+
 func getUser(ctx echo.Context) *entities.User {
 	if ctx == nil {
 		return nil
