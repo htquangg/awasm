@@ -1,4 +1,8 @@
-package cli
+package api
+
+const (
+	USER_AGENT = "cli"
+)
 
 type AwasmResp[T any] struct {
 	Code   int    `json:"code"`

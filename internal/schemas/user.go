@@ -23,18 +23,6 @@ type VerifyEmailSignupResp struct {
 	Token string `json:"token"`
 }
 
-type SetupSRPAccountSignupReq struct {
-	SrpUserID   string `validate:"required" json:"srpUserId"`
-	SRPSalt     string `validate:"required" json:"srpSalt"`
-	SRPVerifier string `validate:"required" json:"srpVerifier"`
-	SRPA        string `validate:"required" json:"srpA"`
-}
-
-type SetupSRPAccountSignupResp struct {
-	SetupID string `json:"setupId"`
-	SRPB    string `json:"srpB"`
-}
-
 type CompleteEmailSignupReq struct {
 	SetupID      string           `validate:"required" json:"setupId"`
 	SRPM1        string           `validate:"required" json:"srpM1"`
@@ -45,13 +33,35 @@ type CompleteEmailSignupReq struct {
 
 type CompleteEmailSignupInfo struct {
 	UserID       string
-	SrpUserID    string
+	SRPUserID    string
 	Salt         string
 	Verifier     string
 	KeyAttribute KeyAttributeInfo
 }
 
 type CompleteEmailSignupResp struct {
+	*AccessTokenResp
+	KeyAttribute *KeyAttributeInfo `json:"keyAttribute"`
+	SRPM2        string            `json:"srpM2"`
+}
+
+type ChallengeEmailLoginReq struct {
+	SRPUserID string `validate:"required" json:"srpUserId"`
+	SRPA      string `validate:"required" json:"srpA"`
+}
+
+type ChallengeEmailLoginResp struct {
+	ChallengeID string `json:"challengeId" binding:"required"`
+	SRPB        string `json:"srpB" binding:"required"`
+}
+
+type VerifyEmailLoginReq struct {
+	ChallengeID string `validate:"required" json:"challengeId"`
+	SRPUserID   string `validate:"required" json:"srpUserId"`
+	SRPM1       string `validate:"required" json:"srpM1"`
+}
+
+type VerifyEmailLoginResp struct {
 	*AccessTokenResp
 	KeyAttribute *KeyAttributeInfo `json:"keyAttribute"`
 	SRPM2        string            `json:"srpM2"`

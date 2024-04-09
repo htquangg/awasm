@@ -1,17 +1,13 @@
-package cli
+package api
 
 import (
 	"fmt"
 	"net/http"
 
+	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/schemas"
 
 	"github.com/go-resty/resty/v2"
-)
-
-const (
-	USER_AGENT = "cli"
-	AWASM_URL  = "http://127.0.0.1:3000"
 )
 
 func CallBeginEmailSignupProcess(
@@ -24,7 +20,7 @@ func CallBeginEmailSignupProcess(
 		SetResult(&result).
 		SetHeader("User-Agent", USER_AGENT).
 		SetBody(req).
-		Post(fmt.Sprintf("%s/api/v1/users/auth/email/signup", AWASM_URL))
+		Post(fmt.Sprintf("%s/v1/users/auth/email/signup/challenge", config.AWASM_URL))
 	if err != nil {
 		return nil, fmt.Errorf("CallBeginEmailSignupProcess: Unable to complete api request [err=%s]", err)
 	}
@@ -45,7 +41,7 @@ func CallVerifyEmailSignup(
 		SetResult(&result).
 		SetHeader("User-Agent", USER_AGENT).
 		SetBody(req).
-		Post(fmt.Sprintf("%s/api/v1/users/auth/email/verify", AWASM_URL))
+		Post(fmt.Sprintf("%s/v1/users/auth/email/signup/verify", config.AWASM_URL))
 	if err != nil {
 		return nil, fmt.Errorf("CallVerifyEmailSignup: Unable to complete api request [err=%s]", err)
 	}
@@ -66,7 +62,7 @@ func CallSetupSRPAccountSignup(
 		SetResult(&result).
 		SetHeader("User-Agent", USER_AGENT).
 		SetBody(req).
-		Post(fmt.Sprintf("%s/api/v1/users/auth/email/setup-srp", AWASM_URL))
+		Post(fmt.Sprintf("%s/v1/users/srp/setup", config.AWASM_URL))
 	if err != nil {
 		return nil, fmt.Errorf("CallSetupSRPAccountSignup: Unable to complete api request [err=%s]", err)
 	}
@@ -87,7 +83,7 @@ func CallCompleteEmailAccountSignup(
 		SetResult(&result).
 		SetHeader("User-Agent", USER_AGENT).
 		SetBody(req).
-		Post(fmt.Sprintf("%s/api/v1/users/auth/email/complete", AWASM_URL))
+		Post(fmt.Sprintf("%s/v1/users/auth/email/signup/complete", config.AWASM_URL))
 	if err != nil {
 		return nil, fmt.Errorf("CallCompleteEmailAccountSignup: Unable to complete api request [err=%s]", err)
 	}

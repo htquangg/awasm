@@ -3,6 +3,7 @@ package cmd
 import (
 	"os"
 
+	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/constants"
 
 	"github.com/segmentfault/pacman/contrib/log/zap"
@@ -25,6 +26,16 @@ To run awasm, use:
 func Execute() {
 	initLog()
 
+	rootCmd.PersistentFlags().StringVar(&config.AWASM_URL, "domain", constants.AWASM_DEFAULT_API_URL, "Point the CLI to your own backend [can also set via environment variable name: AWASM_API_URL]")
+
+	// if config.AWASM_URL is set to the default value, check if AWASM_URL is set in the environment
+	// this is used to allow overrides of the default value
+	if !rootCmd.Flag("domain").Changed {
+		if envInfisicalBackendUrl, ok := os.LookupEnv("AWASM_API_URL"); ok {
+			config.AWASM_URL = envInfisicalBackendUrl
+		}
+	}
+
 	if err := rootCmd.Execute(); err != nil {
 		log.Errorf("the service exitted abnormally: %v", err)
 		os.Exit(1)
@@ -34,7 +45,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initLog)
 
-	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd, deploymentsCmd, signupCmd} {
+	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd, deploymentsCmd, loginCmd, signupCmd} {
 		rootCmd.AddCommand(cmd)
 	}
 }

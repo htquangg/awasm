@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var AWASM_URL string
+
 type (
 	Config struct {
 		IngressURL string  `json:"ingressURL,omitempty" mapstructure:"ingress_url" yaml:"ingress_url,omitempty"`

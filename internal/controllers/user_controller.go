@@ -20,6 +20,17 @@ func NewUserController(userService *user.UserService) *UserController {
 	}
 }
 
+func (c *UserController) GetSRPAttribute(ctx echo.Context) error {
+	req := &schemas.GetSRPAttributeReq{}
+	if err, errField := handler.BindAndValidate(ctx, req); err != nil {
+		return handler.HandleResponse(ctx, err, errField)
+	}
+
+	resp, err := c.userService.GetSRPAttribute(ctx.Request().Context(), req)
+
+	return handler.HandleResponse(ctx, err, resp)
+}
+
 func (c *UserController) BeginEmailSignupProcess(ctx echo.Context) error {
 	req := &schemas.BeginEmailSignupProcessReq{}
 	if err, errField := handler.BindAndValidate(ctx, req); err != nil {
@@ -67,10 +78,25 @@ func (c *UserController) CompleteEmailAccountSignup(ctx echo.Context) error {
 	return handler.HandleResponse(ctx, err, resp)
 }
 
-func (c *UserController) CreateSRPSession(ctx echo.Context) error {
-	return nil
+func (c *UserController) ChallengeEmailLogin(ctx echo.Context) error {
+	req := &schemas.ChallengeEmailLoginReq{}
+	if err, errField := handler.BindAndValidate(ctx, req); err != nil {
+		return handler.HandleResponse(ctx, err, errField)
+	}
+
+	resp, err := c.userService.ChallengeEmailLogin(ctx.Request().Context(), req)
+
+	return handler.HandleResponse(ctx, err, resp)
 }
 
-func (c *UserController) VerifySRPSession(ctx echo.Context) error {
-	return nil
+func (c *UserController) VerifyEmailLogin(ctx echo.Context) error {
+	req := &schemas.VerifyEmailLoginReq{}
+	if err, errField := handler.BindAndValidate(ctx, req); err != nil {
+		return handler.HandleResponse(ctx, err, errField)
+	}
+
+	resp, err := c.userService.VerifyEmailLogin(ctx.Request().Context(), req)
+
+	return handler.HandleResponse(ctx, err, resp)
+
 }

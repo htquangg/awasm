@@ -7,8 +7,9 @@ import (
 	"regexp"
 	"runtime"
 
+	"github.com/htquangg/a-wasm/internal/cli"
+	"github.com/htquangg/a-wasm/internal/cli/api"
 	"github.com/htquangg/a-wasm/internal/schemas"
-	"github.com/htquangg/a-wasm/pkg/cli"
 	"github.com/htquangg/a-wasm/pkg/crypto"
 	"github.com/htquangg/a-wasm/pkg/uid"
 
@@ -31,7 +32,7 @@ var signupCmd = &cobra.Command{
 	Short:   "Signup into your Awasm account",
 	Run: func(cmd *cobra.Command, args []string) {
 		var userCredentialToBeStored schemas.UserCredential
-		signupCredentials(&userCredentialToBeStored)
+		signupCredential(&userCredentialToBeStored)
 
 		fmt.Printf(">>>> Welcome to Awasm!\n")
 	},
@@ -40,8 +41,8 @@ var signupCmd = &cobra.Command{
 func init() {
 }
 
-func signupCredentials(userCredential *schemas.UserCredential) {
-	email, password, err := askForSignupCredentials()
+func signupCredential(userCredential *schemas.UserCredential) {
+	email, password, err := askForCredential()
 	if err != nil {
 		cli.HandleError(err, "Unable to parse email and password for authentication")
 	}
@@ -52,7 +53,7 @@ func signupCredentials(userCredential *schemas.UserCredential) {
 		SetHeader("Content-Type", "application/json")
 
 	// [1]. Send verification code to email
-	_, err = cli.CallBeginEmailSignupProcess(httpClient, &schemas.BeginEmailSignupProcessReq{
+	_, err = api.CallBeginEmailSignupProcess(httpClient, &schemas.BeginEmailSignupProcessReq{
 		Email: email,
 	})
 	if err != nil {
@@ -74,7 +75,7 @@ func signupCredentials(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	verifyEmailSignupResp, err := cli.CallVerifyEmailSignup(httpClient, &schemas.VerifyEmailSignupReq{
+	verifyEmailSignupResp, err := api.CallVerifyEmailSignup(httpClient, &schemas.VerifyEmailSignupReq{
 		Email: email,
 		OTP:   otp,
 	})
@@ -97,13 +98,13 @@ func signupCredentials(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	srpClient, err := generateSRPClient(srpAttribute.SRPSalt, srpAttribute.SrpUserID, loginSubKey)
+	srpClient, err := generateSRPClient(srpAttribute.SRPSalt, srpAttribute.SRPUserID, loginSubKey)
 	if err != nil {
 		cli.HandleError(err)
 	}
 
-	setupSRPAccountSignupResp, err := cli.CallSetupSRPAccountSignup(httpClient, &schemas.SetupSRPAccountSignupReq{
-		SrpUserID:   srpAttribute.SrpUserID,
+	setupSRPAccountSignupResp, err := api.CallSetupSRPAccountSignup(httpClient, &schemas.SetupSRPAccountSignupReq{
+		SRPUserID:   srpAttribute.SRPUserID,
 		SRPSalt:     srpAttribute.SRPSalt,
 		SRPVerifier: srpAttribute.SRPVerifier,
 		SRPA:        convertBytesToString(srpClient.ComputeA()),
@@ -116,7 +117,7 @@ func signupCredentials(userCredential *schemas.UserCredential) {
 	}
 	srpClient.SetB(srpBBytes)
 	srpM1 := convertBytesToString(srpClient.ComputeM1())
-	completeEmailAccountSignupResp, err := cli.CallCompleteEmailAccountSignup(
+	completeEmailAccountSignupResp, err := api.CallCompleteEmailAccountSignup(
 		httpClient,
 		&schemas.CompleteEmailSignupReq{
 			SetupID:      setupSRPAccountSignupResp.SetupID,
@@ -149,7 +150,7 @@ func signupCredentials(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	tokenEncBytes, err := base64.StdEncoding.DecodeString(tokenEnc)
+	tokenEncBytes, err := convertStringToBytes(tokenEnc)
 	if err != nil {
 		cli.HandleError(err)
 	}
@@ -169,7 +170,7 @@ func signupCredentials(userCredential *schemas.UserCredential) {
 	userCredential.KekEncrypted = &kekEncrypted
 }
 
-func askForSignupCredentials() (email string, password string, err error) {
+func askForCredential() (email string, password string, err error) {
 	validateEmail := func(input string) error {
 		matched, err := regexp.MatchString("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", input)
 		if err != nil || !matched {
@@ -294,7 +295,7 @@ func generateSRPSetupAttribute(loginSubKey string) (*schemas.SetupSRPAccountSign
 	srpVerifierBytes := srp.ComputeVerifier(srpParams, srpSaltBytes, []byte(srpUserID), loginSubKeyBytes)
 
 	return &schemas.SetupSRPAccountSignupReq{
-		SrpUserID:   srpUserID,
+		SRPUserID:   srpUserID,
 		SRPSalt:     convertBytesToString(srpSaltBytes),
 		SRPVerifier: convertBytesToString(srpVerifierBytes),
 	}, nil
