@@ -98,3 +98,14 @@ type UserCredential struct {
 	KeyAttribute *KeyAttributeInfo `json:"keyAttribute"`
 	KekEncrypted *EncryptionResult `json:"kekEncrypted"`
 }
+
+type ConfigFile struct {
+	LoggedInUserEmail  string          `json:"loggedInUserEmail"`
+	LoggedInUserDomain string          `json:"LoggedInUserDomain,omitempty"`
+	LoggedInUsers      []*LoggedInUser `json:"loggedInUsers,omitempty"`
+}
+
+type LoggedInUser struct {
+	Email  string `json:"email"`
+	Domain string `json:"domain"`
+}

@@ -13,6 +13,8 @@ func bindUserApi(g *echo.Group, c *controllers.Controllers, mws *middleware.Midd
 	// auth group
 	authGroup := subGroup.Group("/auth")
 
+	authGroup.POST("/check", c.User.CheckAuth, mws.Auth.RequireAuthentication)
+
 	emailAuthGroup := authGroup.Group("/email")
 	signupEmailGroup := emailAuthGroup.Group("/signup")
 

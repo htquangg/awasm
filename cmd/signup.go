@@ -15,6 +15,7 @@ import (
 
 	generichash "github.com/GoKillers/libsodium-go/cryptogenerichash"
 	secretbox "github.com/GoKillers/libsodium-go/cryptosecretbox"
+	"github.com/fatih/color"
 	"github.com/go-resty/resty/v2"
 	"github.com/kong/go-srp"
 	"github.com/manifoldco/promptui"
@@ -34,7 +35,10 @@ var signupCmd = &cobra.Command{
 		var userCredentialToBeStored schemas.UserCredential
 		signupCredential(&userCredentialToBeStored)
 
-		fmt.Printf(">>>> Welcome to Awasm!\n")
+		magenta := color.New(color.FgHiMagenta)
+		boldMagenta := magenta.Add(color.Bold)
+		boldMagenta.Printf(">>>> Welcome to Awasm!\n")
+		boldMagenta.Printf("You are now signup as %v <<<< \n", userCredentialToBeStored.Email)
 	},
 }
 

@@ -7,6 +7,7 @@ import (
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/schemas"
 
+	"github.com/segmentfault/pacman/log"
 	"github.com/go-resty/resty/v2"
 )
 
@@ -71,4 +72,24 @@ func CallVerifyEmailLogin(
 	}
 
 	return result.Data, nil
+}
+
+func CallIsAuthenticated(
+	httpClient *resty.Client,
+) bool {
+	var result AwasmResp[any]
+	resp, err := httpClient.
+		R().
+		SetResult(&result).
+		SetHeader("User-Agent", USER_AGENT).
+		Post(fmt.Sprintf("%s/v1/users/auth/check", config.AWASM_URL))
+	if err != nil {
+		return false
+	}
+	if resp.IsError() || result.Code != http.StatusOK {
+		log.Debugf("CallVerifyEmailLogin: Unsuccessful response [response=%s]", resp)
+		return false
+	}
+
+	return true
 }

@@ -2,14 +2,25 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
-	"github.com/go-resty/resty/v2"
+	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/cli"
 	"github.com/htquangg/a-wasm/internal/cli/api"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/pkg/crypto"
 
+	"github.com/fatih/color"
+	"github.com/go-resty/resty/v2"
+	"github.com/manifoldco/promptui"
+	"github.com/segmentfault/pacman/log"
 	"github.com/spf13/cobra"
+)
+
+const (
+	ADD_USER       = "Add a new account login"
+	REPLACE_USER   = "Override current logged in user"
+	EXIT_USER_MENU = "Exit"
 )
 
 var loginCmd = &cobra.Command{
@@ -17,10 +28,46 @@ var loginCmd = &cobra.Command{
 	Use:     "login",
 	Short:   "Login into your Awasm account",
 	Run: func(cmd *cobra.Command, args []string) {
+		currentLoggedInUserDetails, err := cli.GetCurrentLoggedInUserDetails()
+		if err != nil && (strings.Contains(err.Error(), "we couldn't find your logged in details")) {
+			log.Debug(err)
+		} else if err != nil {
+			cli.HandleError(err)
+		}
+
+		if currentLoggedInUserDetails != nil {
+			shouldOverride, err := userLoginMenu(currentLoggedInUserDetails.UserCredentials.Email)
+			if err != nil {
+				cli.HandleError(err)
+			}
+
+			if err != nil {
+				cli.HandleError(err)
+			}
+
+			if !shouldOverride {
+				return
+			}
+		}
+
 		var userCredentialToBeStored schemas.UserCredential
 		loginCredential(&userCredentialToBeStored)
 
-		fmt.Printf(">>>> Welcome to Awasm!\n")
+		err = cli.StoreUserCredsInKeyRing(&userCredentialToBeStored)
+		if err != nil {
+			log.Errorf("Unable to store your credential in system [%s]", err)
+			cli.HandleError(err)
+		}
+
+		err = cli.WriteInitalConfig(&userCredentialToBeStored)
+		if err != nil {
+			cli.HandleError(err, "Unable to write write to Awasm Config file. Please try again")
+		}
+
+		green := color.New(color.FgGreen)
+		boldGreen := green.Add(color.Bold)
+		boldGreen.Printf(">>>> Welcome to Awasm!\n")
+		boldGreen.Printf("You are now logged in as %v <<<< \n", userCredentialToBeStored.Email)
 	},
 }
 
@@ -139,4 +186,18 @@ func loginCredential(userCredential *schemas.UserCredential) {
 	userCredential.AccessToken = token
 	userCredential.KeyAttribute = verifyEmailLoginResp.KeyAttribute
 	userCredential.KekEncrypted = &kekEncrypted
+}
+
+func userLoginMenu(currentLoggedInUserEmail string) (bool, error) {
+	label := fmt.Sprintf("Current logged in user email: %s on domain: %s", currentLoggedInUserEmail, config.AWASM_URL)
+
+	prompt := promptui.Select{
+		Label: label,
+		Items: []string{ADD_USER, REPLACE_USER, EXIT_USER_MENU},
+	}
+	_, result, err := prompt.Run()
+	if err != nil {
+		return false, err
+	}
+	return result != EXIT_USER_MENU, err
 }

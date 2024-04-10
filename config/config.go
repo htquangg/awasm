@@ -12,6 +12,7 @@ import (
 )
 
 var AWASM_URL string
+var AWASM_URL_MANUAL_OVERRIDE string
 
 type (
 	Config struct {

@@ -28,6 +28,7 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.8.4
 	github.com/tetratelabs/wazero v1.6.0
+	github.com/zalando/go-keyring v0.2.4
 	go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho v0.47.0
 	golang.org/x/crypto v0.19.0
 	google.golang.org/protobuf v1.32.0
@@ -38,11 +39,13 @@ require (
 require (
 	github.com/LinkinStars/go-i18n/v2 v2.2.2 // indirect
 	github.com/Workiva/go-datastructures v1.1.1 // indirect
+	github.com/alessio/shellescape v1.4.1 // indirect
 	github.com/asynkron/gofun v0.0.0-20220329210725-34fed760f4c2 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
+	github.com/danieljoos/wincred v1.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
@@ -52,6 +55,7 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
