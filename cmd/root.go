@@ -11,8 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const AWASM_URL = "http://127.0.0.1:3000"
-
 var rootCmd = &cobra.Command{
 	Use:   "awasm",
 	Short: "Awasm is the application that you can build, deploy, and run your application on the edge.",
@@ -21,6 +19,8 @@ To run awasm, use:
   - 'awasm run' to launch application.
   - 'awasm endpoints' to manage endpoints.
 		`,
+	CompletionOptions: cobra.CompletionOptions{HiddenDefaultCmd: true},
+	Version:           constants.CLI_VERSION,
 }
 
 func Execute() {
@@ -45,7 +45,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initLog)
 
-	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd, deploymentsCmd, loginCmd, signupCmd} {
+	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd, deploymentsCmd, loginCmd, signupCmd, resetCmd} {
 		rootCmd.AddCommand(cmd)
 	}
 }

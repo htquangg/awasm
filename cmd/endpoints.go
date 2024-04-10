@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/htquangg/a-wasm/internal/cli"
 	"github.com/htquangg/a-wasm/internal/schemas"
 
 	"github.com/go-resty/resty/v2"
@@ -11,10 +12,15 @@ import (
 )
 
 var endpointsCmd = &cobra.Command{
-	Example: "awasm endpoints",
-	Use:     "endpoints",
-	Short:   "Used to manage endpoints",
-	Run:     func(cmd *cobra.Command, args []string) {},
+	Example:               "awasm endpoints",
+	Use:                   "endpoints",
+	Short:                 "Used to manage endpoints",
+	DisableFlagsInUseLine: true,
+	Args:                  cobra.NoArgs,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		cli.CheckAuthentication()
+	},
+	Run: func(cmd *cobra.Command, args []string) {},
 }
 
 func init() {

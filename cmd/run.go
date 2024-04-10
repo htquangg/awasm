@@ -24,8 +24,10 @@ import (
 )
 
 var runCmd = &cobra.Command{
-	Use:   "run",
-	Short: "Run the application",
+	Use:                   "run",
+	Short:                 "Run the application",
+	DisableFlagsInUseLine: true,
+	Args:                  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Awasm is starting..........................")
 		runApp()

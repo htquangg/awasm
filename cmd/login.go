@@ -24,9 +24,11 @@ const (
 )
 
 var loginCmd = &cobra.Command{
-	Example: "awasm login",
-	Use:     "login",
-	Short:   "Login into your Awasm account",
+	Example:               "awasm login",
+	Use:                   "login",
+	Short:                 "Login into your Awasm account",
+	DisableFlagsInUseLine: true,
+	Args:                  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		currentLoggedInUserDetails, err := cli.GetCurrentLoggedInUserDetails()
 		if err != nil && (strings.Contains(err.Error(), "we couldn't find your logged in details")) {

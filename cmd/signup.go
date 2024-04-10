@@ -28,9 +28,11 @@ const (
 )
 
 var signupCmd = &cobra.Command{
-	Example: "awasm signup",
-	Use:     "signup",
-	Short:   "Signup into your Awasm account",
+	Example:               "awasm signup",
+	Use:                   "signup",
+	Short:                 "Signup into your Awasm account",
+	DisableFlagsInUseLine: true,
+	Args:                  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		var userCredentialToBeStored schemas.UserCredential
 		signupCredential(&userCredentialToBeStored)

@@ -4,15 +4,22 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/htquangg/a-wasm/internal/cli"
+
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
 )
 
 var deploymentsCmd = &cobra.Command{
-	Example: "awasm deployments",
-	Use:     "deployments",
-	Short:   "Used to manage deployments",
-	Run:     func(cmd *cobra.Command, args []string) {},
+	Example:               "awasm deployments",
+	Use:                   "deployments",
+	Short:                 "Used to manage deployments",
+	DisableFlagsInUseLine: true,
+	Args:                  cobra.NoArgs,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		cli.CheckAuthentication()
+	},
+	Run: func(cmd *cobra.Command, args []string) {},
 }
 
 func init() {
