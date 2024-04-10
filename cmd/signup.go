@@ -125,6 +125,9 @@ func signupCredential(userCredential *schemas.UserCredential) {
 			KeyAttribute: *keyAttribute,
 		},
 	)
+	if err != nil {
+		cli.HandleError(err)
+	}
 
 	masterKeyBytes, err := convertStringToBytes(masterKey)
 	if err != nil {

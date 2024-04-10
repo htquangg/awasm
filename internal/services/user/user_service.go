@@ -81,7 +81,7 @@ func (s *UserService) GetSRPAttribute(ctx context.Context, req *schemas.GetSRPAt
 
 func (s *UserService) BeginEmailSignupProcess(ctx context.Context, req *schemas.BeginEmailSignupProcessReq) error {
 	email := strings.ToLower(req.Email)
-	_, exists, err := s.userRepo.GetUserWithEmail(ctx, email)
+	user, exists, err := s.userRepo.GetUserWithEmail(ctx, email)
 	if err != nil {
 		return err
 	}
@@ -90,6 +90,9 @@ func (s *UserService) BeginEmailSignupProcess(ctx context.Context, req *schemas.
 		if err != nil {
 			return err
 		}
+	}
+	if user.EmailAcceptedAt != nil {
+		return errors.BadRequest(reason.EmailDuplicate)
 	}
 
 	// TODO: send email with OTP

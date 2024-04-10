@@ -121,6 +121,14 @@ func (r *userAuthRepo) CompleteEmailAccountSignup(
 			return nil, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 		}
 
+		now := time.Now()
+		_, errTx = r.db.Engine(ctx).ID(accountInfo.UserID).Update(&entities.User{
+			EmailAcceptedAt: &now,
+		})
+		if errTx != nil {
+			return nil, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+		}
+
 		return nil, nil
 	})
 
