@@ -46,6 +46,10 @@ func HandleResponse(ctx echo.Context, err error, data interface{}) error {
 		respBody.Data = data
 	}
 
+	if http.StatusText(respBody.Code) == respBody.Reason {
+		return ctx.JSON(respBody.Code, respBody)
+	}
+
 	return ctx.JSON(http.StatusOK, respBody)
 }
 

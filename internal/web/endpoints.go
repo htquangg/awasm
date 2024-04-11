@@ -11,6 +11,6 @@ func bindEndpointsApi(g *echo.Group, c *controllers.Controllers, mws *middleware
 	subGroup := g.Group("/endpoints")
 
 	privateGroup := subGroup.Group("", mws.Auth.RequireAuthentication)
-	privateGroup.POST("/", c.Endpoint.Add)
+	privateGroup.POST("", c.Endpoint.Add)
 	privateGroup.POST("/:id/deployments", c.Deployment.Add)
 }

@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	std_errors "errors"
+	"fmt"
 	std_log "log"
 	"net/http"
 	"strings"
@@ -18,7 +19,6 @@ import (
 	middleware_echo "github.com/labstack/echo/v4/middleware"
 	"github.com/segmentfault/pacman/errors"
 	"github.com/segmentfault/pacman/log"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
 )
 
 type Server struct {
@@ -35,6 +35,12 @@ func New(
 ) *Server {
 	e := echo.New()
 
+	e.Pre(middleware_echo.RemoveTrailingSlashWithConfig(middleware_echo.TrailingSlashConfig{
+		Skipper: func(c echo.Context) bool {
+			// enable by default only for the API routes
+			return !strings.HasPrefix(c.Request().URL.Path, "/api/")
+		},
+	}))
 	e.Use(middleware_echo.Recover())
 	e.Use(middleware_echo.Secure())
 
@@ -46,7 +52,9 @@ func New(
 		if v := new(echo.HTTPError); std_errors.As(err, &v) {
 			reason := ""
 			if v.Internal != nil {
-				reason = v.Internal.Error()
+				reason = v.Error()
+			} else {
+				reason = fmt.Sprintf("%v", v.Message)
 			}
 			err = errors.New(v.Code, reason)
 		}
@@ -65,7 +73,7 @@ func New(
 	// catch all any route
 	v1Group.Any("/*", func(ctx echo.Context) error {
 		return echo.ErrNotFound
-	}, otelecho.Middleware("a-wasm"))
+	}, middleware_echo.Logger())
 
 	return &Server{
 		ctx: ctx,

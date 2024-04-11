@@ -10,5 +10,5 @@ type healthApi struct{}
 
 func bindHealthApi(g *echo.Group, c *controllers.Controllers) {
 	subGroup := g.Group("/healthz")
-	subGroup.GET("/", c.Health.CheckHealth)
+	subGroup.GET("", c.Health.CheckHealth)
 }
