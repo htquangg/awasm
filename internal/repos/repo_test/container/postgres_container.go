@@ -32,7 +32,14 @@ func NewPostgresContainer(ctx context.Context, cfg *config.DB) (*PostgresContain
 		Image:        "postgres:12.2-alpine",
 		ExposedPorts: []string{fmt.Sprintf("%d/tcp", cfg.Port)},
 		WaitingFor: wait.ForSQL(port, "postgres", func(host string, port nat.Port) string {
-			return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", cfg.User, cfg.Password, host, port.Port(), cfg.Schema)
+			return fmt.Sprintf(
+				"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+				cfg.User,
+				cfg.Password,
+				host,
+				port.Port(),
+				cfg.Schema,
+			)
 		}),
 		Env: map[string]string{
 			"POSTGRES_USER":     cfg.User,

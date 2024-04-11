@@ -26,4 +26,3 @@ type SetupSRPAccountSignupResp struct {
 	SetupID string `json:"setupId"`
 	SRPB    string `json:"srpB"`
 }
-

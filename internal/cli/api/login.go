@@ -7,8 +7,8 @@ import (
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/schemas"
 
-	"github.com/segmentfault/pacman/log"
 	"github.com/go-resty/resty/v2"
+	"github.com/segmentfault/pacman/log"
 )
 
 func CallGetSRPAttribute(

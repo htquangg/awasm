@@ -58,7 +58,10 @@ func NewUserService(
 	}
 }
 
-func (s *UserService) GetSRPAttribute(ctx context.Context, req *schemas.GetSRPAttributeReq) (*schemas.GetSRPAttributeResp, error) {
+func (s *UserService) GetSRPAttribute(
+	ctx context.Context,
+	req *schemas.GetSRPAttributeReq,
+) (*schemas.GetSRPAttributeResp, error) {
 	email := strings.ToLower(req.Email)
 	user, exists, err := s.userRepo.GetUserWithEmail(ctx, email)
 	if err != nil {
@@ -216,7 +219,10 @@ func (s *UserService) CompleteEmailAccountSignup(
 	}, nil
 }
 
-func (s *UserService) ChallengeEmailLogin(ctx context.Context, req *schemas.ChallengeEmailLoginReq) (*schemas.ChallengeEmailLoginResp, error) {
+func (s *UserService) ChallengeEmailLogin(
+	ctx context.Context,
+	req *schemas.ChallengeEmailLoginReq,
+) (*schemas.ChallengeEmailLoginResp, error) {
 	srpAuth, exists, err := s.userAuthRepo.GetSRPAuthWithSRPUserID(ctx, req.SRPUserID)
 	if err != nil {
 		return nil, err
@@ -236,7 +242,10 @@ func (s *UserService) ChallengeEmailLogin(ctx context.Context, req *schemas.Chal
 	}, nil
 }
 
-func (s *UserService) VerifyEmailLogin(ctx context.Context, req *schemas.VerifyEmailLoginReq) (*schemas.VerifyEmailLoginResp, error) {
+func (s *UserService) VerifyEmailLogin(
+	ctx context.Context,
+	req *schemas.VerifyEmailLoginReq,
+) (*schemas.VerifyEmailLoginResp, error) {
 	srpAuth, exists, err := s.userAuthRepo.GetSRPAuthWithSRPUserID(ctx, req.SRPUserID)
 	if err != nil {
 		return nil, err

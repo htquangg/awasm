@@ -52,7 +52,7 @@ type ChallengeEmailLoginReq struct {
 
 type ChallengeEmailLoginResp struct {
 	ChallengeID string `json:"challengeId" binding:"required"`
-	SRPB        string `json:"srpB" binding:"required"`
+	SRPB        string `json:"srpB"        binding:"required"`
 }
 
 type VerifyEmailLoginReq struct {

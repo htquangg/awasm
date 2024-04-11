@@ -38,7 +38,9 @@ func New(
 	e.Pre(middleware_echo.RemoveTrailingSlashWithConfig(middleware_echo.TrailingSlashConfig{
 		Skipper: func(c echo.Context) bool {
 			// enable by default only for the API routes
-			return !strings.HasPrefix(c.Request().URL.Path, "/api/")
+			return !strings.HasPrefix(c.Request().URL.Path, constants.LiveIngressPath) ||
+				!strings.HasPrefix(c.Request().URL.Path, constants.PreviewIngressPath) ||
+				!strings.HasPrefix(c.Request().URL.Path, "/api/")
 		},
 	}))
 	e.Use(middleware_echo.Recover())

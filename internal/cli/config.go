@@ -61,7 +61,7 @@ func WriteInitalConfig(userCredentials *schemas.UserCredential) error {
 		return err
 	}
 
-	err = WriteToFile(fullConfigFilePath, configFileMarshalled, 0600)
+	err = WriteToFile(fullConfigFilePath, configFileMarshalled, 0o600)
 	if err != nil {
 		return err
 	}
@@ -121,12 +121,18 @@ func GetConfigFile() (*schemas.ConfigFile, error) {
 func WriteConfigFile(configFile *schemas.ConfigFile) error {
 	fullConfigFilePath, fullConfigFileDirPath, err := GetFullConfigFilePath()
 	if err != nil {
-		return fmt.Errorf("writeConfigFile: unable to write config file because an error occurred when getting config file path [err=%s]", err)
+		return fmt.Errorf(
+			"writeConfigFile: unable to write config file because an error occurred when getting config file path [err=%s]",
+			err,
+		)
 	}
 
 	configFileMarshalled, err := json.Marshal(configFile)
 	if err != nil {
-		return fmt.Errorf("writeConfigFile: unable to write config file because an error occurred when marshalling the config file [err=%s]", err)
+		return fmt.Errorf(
+			"writeConfigFile: unable to write config file because an error occurred when marshalling the config file [err=%s]",
+			err,
+		)
 	}
 
 	if _, err := os.Stat(fullConfigFileDirPath); errors.Is(err, os.ErrNotExist) {
@@ -136,9 +142,12 @@ func WriteConfigFile(configFile *schemas.ConfigFile) error {
 		}
 	}
 
-	err = os.WriteFile(fullConfigFilePath, configFileMarshalled, 0600)
+	err = os.WriteFile(fullConfigFilePath, configFileMarshalled, 0o600)
 	if err != nil {
-		return fmt.Errorf("writeConfigFile: unable to write config file because an error occurred when write the config to file [err=%s]", err)
+		return fmt.Errorf(
+			"writeConfigFile: unable to write config file because an error occurred when write the config to file [err=%s]",
+			err,
+		)
 	}
 
 	return nil

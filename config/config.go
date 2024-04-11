@@ -11,9 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	AWASM_URL                 string
-)
+var AWASM_URL string
 
 type (
 	Config struct {
@@ -43,7 +41,7 @@ type (
 		MaxIdleConns    int    `json:"maxIdleConns"       mapstructure:"max_idle_conns"    yaml:"max_idle_conns"`
 		MaxOpenConns    int    `json:"maxOpenConns"       mapstructure:"max_open_conns"    yaml:"max_open_conns"`
 		ConnMaxLifetime int    `json:"connMaxLifetime"    mapstructure:"conn_max_lifetime" yaml:"conn_max_lifetime"`
-		MigrationDir    string `json:"migrationDir" mapstructure:"migration_dir" yaml:"migration_dir"`
+		MigrationDir    string `json:"migrationDir"       mapstructure:"migration_dir"     yaml:"migration_dir"`
 	}
 
 	Redis struct {

@@ -36,7 +36,9 @@ func GetUserCredsFromKeyRing(userEmail string) (credentials *schemas.UserCredent
 	credentialsValue, err := GetValueInKeyring(userEmail)
 	if err != nil {
 		if err == keyring.ErrUnsupportedPlatform {
-			return nil, errors.New("your OS does not support keyring. Consider using a service token https://infisical.com/docs/documentation/platform/token")
+			return nil, errors.New(
+				"your OS does not support keyring. Consider using a service token https://infisical.com/docs/documentation/platform/token",
+			)
 		} else if err == keyring.ErrNotFound {
 			return nil, errors.New("credentials not found in system keyring")
 		} else {
@@ -48,7 +50,10 @@ func GetUserCredsFromKeyRing(userEmail string) (credentials *schemas.UserCredent
 
 	err = json.Unmarshal([]byte(credentialsValue), &userCredentials)
 	if err != nil {
-		return nil, fmt.Errorf("getUserCredsFromKeyRing: Something went wrong when unmarshalling user creds [err=%s]", err)
+		return nil, fmt.Errorf(
+			"getUserCredsFromKeyRing: Something went wrong when unmarshalling user creds [err=%s]",
+			err,
+		)
 	}
 
 	return &userCredentials, err
@@ -58,7 +63,10 @@ func GetCurrentLoggedInUserDetails() (*LoggedInUserDetails, error) {
 	if ConfigFileExists() {
 		configFile, err := GetConfigFile()
 		if err != nil {
-			return nil, fmt.Errorf("getCurrentLoggedInUserDetails: unable to get logged in user from config file [err=%s]", err)
+			return nil, fmt.Errorf(
+				"getCurrentLoggedInUserDetails: unable to get logged in user from config file [err=%s]",
+				err,
+			)
 		}
 		if configFile.LoggedInUserEmail == "" {
 			return nil, nil
@@ -67,7 +75,9 @@ func GetCurrentLoggedInUserDetails() (*LoggedInUserDetails, error) {
 		userCreds, err := GetUserCredsFromKeyRing(configFile.LoggedInUserEmail)
 		if err != nil {
 			if strings.Contains(err.Error(), "credentials not found in system keyring") {
-				return nil, errors.New("we couldn't find your logged in details, try running [infisical login] then try again")
+				return nil, errors.New(
+					"we couldn't find your logged in details, try running [infisical login] then try again",
+				)
 			} else {
 				return nil, fmt.Errorf("failed to fetch creditnals from keyring because [err=%s]", err)
 			}

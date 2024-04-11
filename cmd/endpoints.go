@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/htquangg/a-wasm/internal/cli"
+	"github.com/htquangg/a-wasm/internal/cli/api"
 	"github.com/htquangg/a-wasm/internal/schemas"
 
 	"github.com/go-resty/resty/v2"
@@ -17,7 +18,7 @@ var endpointsCmd = &cobra.Command{
 	Short:                 "Used to manage endpoints",
 	DisableFlagsInUseLine: true,
 	Args:                  cobra.NoArgs,
-	PreRun: func(cmd *cobra.Command, args []string) {
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		cli.CheckAuthentication()
 	},
 	Run: func(cmd *cobra.Command, args []string) {},
@@ -57,32 +58,28 @@ var createEndpointCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		loggedInUserDetails, err := cli.GetCurrentLoggedInUserDetails()
+		if err != nil {
+			cli.HandleError(err, "Unable to authenticate")
+		}
+
 		// set up resty client
 		httpClient := resty.New()
 		httpClient.
+			SetAuthToken(loggedInUserDetails.UserCredentials.AccessToken).
 			SetHeader("Accept", "application/json").
 			SetHeader("Content-Type", "application/json")
 
-		body := schemas.AddEndpointReq{
+		addEndpointResp, err := api.CallAddEndpoint(httpClient, &schemas.AddEndpointReq{
 			Name:    name,
 			Runtime: runtime,
-		}
-
-		httpRequest := httpClient.
-			R().
-			SetBody(body)
-
-		response, err := httpRequest.Post(fmt.Sprintf("%v/api/v1/endpoints/", "http://127.0.0.1:3000"))
+		})
 		if err != nil {
-			fmt.Printf("CallCreateEndpointV1: Unable to complete api request [err=%s]\n", err)
-			os.Exit(1)
-		}
-		if response.IsError() {
-			fmt.Printf("CallCreateEndpointV1: Unsuccessful [response=%s]\n", response.String())
-			os.Exit(1)
+			cli.HandleError(err)
 		}
 
-		fmt.Printf("CallCreateEndpointV1: Successful [response=%s]\n", response.String())
+		fmt.Println("Successful!!!")
+		fmt.Printf("Your endpoint id: %s\n", addEndpointResp.ID)
 	},
 }
 
@@ -96,30 +93,26 @@ var publishEndpointCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		loggedInUserDetails, err := cli.GetCurrentLoggedInUserDetails()
+		if err != nil {
+			cli.HandleError(err, "Unable to authenticate")
+		}
+
 		// set up resty client
 		httpClient := resty.New()
 		httpClient.
+			SetAuthToken(loggedInUserDetails.UserCredentials.AccessToken).
 			SetHeader("Accept", "application/json").
 			SetHeader("Content-Type", "application/json")
 
-		body := schemas.PublishEndpointReq{
+		publicEndpointResp, err := api.CallPublishEndpoint(httpClient, &schemas.PublishEndpointReq{
 			DeploymentID: deploymentID,
-		}
-
-		httpRequest := httpClient.
-			R().
-			SetBody(body)
-
-		response, err := httpRequest.Post(fmt.Sprintf("%v/api/v1/live/publish", "http://127.0.0.1:3000"))
+		})
 		if err != nil {
-			fmt.Printf("CallPublishEndpointV1: Unable to complete api request [err=%s]\n", err)
-			os.Exit(1)
-		}
-		if response.IsError() {
-			fmt.Printf("CallPublishEndpointV1: Unsuccessful [response=%s]\n", response.String())
-			os.Exit(1)
+			cli.HandleError(err)
 		}
 
-		fmt.Printf("CallPublishEndpointV1: Successful [response=%s]\n", response.String())
+		fmt.Println("Successful!!!")
+		fmt.Printf("Your ingress url: %s\n", publicEndpointResp.IngressURL)
 	},
 }

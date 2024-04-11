@@ -31,7 +31,10 @@ func NewUserAuthRepo(
 	}
 }
 
-func (r *userAuthRepo) GetSRPAuthWithSRPUserID(ctx context.Context, srpUserID string) (srpAuth *entities.SrpAuth, exists bool, err error) {
+func (r *userAuthRepo) GetSRPAuthWithSRPUserID(
+	ctx context.Context,
+	srpUserID string,
+) (srpAuth *entities.SrpAuth, exists bool, err error) {
 	srpAuth = &entities.SrpAuth{}
 	exists, err = r.db.Engine(ctx).Where("srp_user_id = $1", srpUserID).Get(srpAuth)
 	if err != nil {
@@ -49,7 +52,13 @@ func (r *userAuthRepo) GetSRPAttribute(ctx context.Context, userID string) (*sch
 		OpsLimit  int    `json:"opsLimit"`
 		KekSalt   string `json:"kekSalt"`
 	}, 0, 1)
-	err := r.db.Engine(ctx).Join("INNER", "key_attributes", "`key_attributes`.user_id =`srp_auth`.user_id").Select("srp_user_id, salt, mem_limit, ops_limit, kek_salt").Table("srp_auth").Where("`key_attributes`.user_id = $1", userID).Limit(1).Find(&respFromDB)
+	err := r.db.Engine(ctx).
+		Join("INNER", "key_attributes", "`key_attributes`.user_id =`srp_auth`.user_id").
+		Select("srp_user_id, salt, mem_limit, ops_limit, kek_salt").
+		Table("srp_auth").
+		Where("`key_attributes`.user_id = $1", userID).
+		Limit(1).
+		Find(&respFromDB)
 	if err != nil {
 		return nil, false, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}

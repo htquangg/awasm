@@ -79,7 +79,8 @@ func initTestDB(ctx context.Context, cfg *config.DB) (*Database, error) {
 		return nil, fmt.Errorf("creating migrate instance: %w", err)
 	}
 	// run drop to clear target DB (incase we're reusing)
-	if err := goose.RunContext(ctx, "reset", dbMigrate, cfg.MigrationDir); err != nil && !strings.Contains(err.Error(), "\"goose_db_version\" does not exist") {
+	if err := goose.RunContext(ctx, "reset", dbMigrate, cfg.MigrationDir); err != nil &&
+		!strings.Contains(err.Error(), "\"goose_db_version\" does not exist") {
 		return nil, fmt.Errorf("running drop: %w, %s", err, err.Error())
 	}
 	if err := dbMigrate.Close(); err != nil {
@@ -92,7 +93,8 @@ func initTestDB(ctx context.Context, cfg *config.DB) (*Database, error) {
 		return nil, fmt.Errorf("creating migrate instance: %w", err)
 	}
 	// run drop to clear target DB (incase we're reusing)
-	if err := goose.RunContext(ctx, "up", dbMigrate, cfg.MigrationDir); err != nil && !strings.Contains(err.Error(), "\"goose_db_version\" does not exist") {
+	if err := goose.RunContext(ctx, "up", dbMigrate, cfg.MigrationDir); err != nil &&
+		!strings.Contains(err.Error(), "\"goose_db_version\" does not exist") {
 		return nil, fmt.Errorf("running drop: %w, %s", err, err.Error())
 	}
 	if err := dbMigrate.Close(); err != nil {

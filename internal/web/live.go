@@ -10,9 +10,6 @@ import (
 func bindLiveApi(g *echo.Group, c *controllers.Controllers, mws *middleware.Middleware) {
 	subGroup := g.Group("/live")
 
-	privateGroup := subGroup.Group("", mws.Auth.RequireAuthentication)
-	privateGroup.POST("/publish", c.Live.Publish)
-
-	publicGroup := subGroup.Group("")
-	publicGroup.Any("/:endpointID/*", c.Live.Serve)
+	subGroup.POST("/publish", c.Live.Publish, mws.Auth.RequireAuthentication)
+	subGroup.Any("/:endpointID/*", c.Live.Serve)
 }

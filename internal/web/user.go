@@ -16,14 +16,16 @@ func bindUserApi(g *echo.Group, c *controllers.Controllers, mws *middleware.Midd
 	authGroup.POST("/check", c.User.CheckAuth, mws.Auth.RequireAuthentication)
 
 	emailAuthGroup := authGroup.Group("/email")
+
 	signupEmailGroup := emailAuthGroup.Group("/signup")
-
-	publicSignupEmailGroup := signupEmailGroup.Group("")
-	publicSignupEmailGroup.POST("/challenge", c.User.BeginEmailSignupProcess)
-	publicSignupEmailGroup.POST("/verify", c.User.VerifyEmailSignup)
-
-	privateAuthEmailGroup := signupEmailGroup.Group("", mws.Auth.RequireAuthentication)
-	privateAuthEmailGroup.POST("/complete", c.User.CompleteEmailAccountSignup, mws.Auth.RequireSignupToken)
+	signupEmailGroup.POST("/challenge", c.User.BeginEmailSignupProcess)
+	signupEmailGroup.POST("/verify", c.User.VerifyEmailSignup)
+	signupEmailGroup.POST(
+		"/complete",
+		c.User.CompleteEmailAccountSignup,
+		mws.Auth.RequireAuthentication,
+		mws.Auth.RequireSignupToken,
+	)
 
 	loginEmailGroup := emailAuthGroup.Group("/login")
 	loginEmailGroup.POST("/challenge", c.User.ChallengeEmailLogin)
@@ -31,10 +33,6 @@ func bindUserApi(g *echo.Group, c *controllers.Controllers, mws *middleware.Midd
 
 	// srp group
 	srpGroup := subGroup.Group("/srp")
-
-	publicSrpGroup := srpGroup.Group("")
-	publicSrpGroup.GET("/attributes", c.User.GetSRPAttribute)
-
-	privateSrpGroup := srpGroup.Group("", mws.Auth.RequireAuthentication)
-	privateSrpGroup.POST("/setup", c.User.SetupSRPAccountSignup, mws.Auth.RequireSignupToken)
+	srpGroup.GET("/attributes", c.User.GetSRPAttribute)
+	srpGroup.POST("/setup", c.User.SetupSRPAccountSignup, mws.Auth.RequireAuthentication, mws.Auth.RequireSignupToken)
 }

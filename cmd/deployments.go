@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/htquangg/a-wasm/internal/cli"
+	"github.com/htquangg/a-wasm/internal/cli/api"
+	"github.com/htquangg/a-wasm/internal/schemas"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
@@ -51,28 +53,29 @@ var createDeploymentCmd = &cobra.Command{
 			fmt.Println("unable to read file")
 		}
 
+		loggedInUserDetails, err := cli.GetCurrentLoggedInUserDetails()
+		if err != nil {
+			cli.HandleError(err, "Unable to authenticate")
+		}
+
 		// set up resty client
 		httpClient := resty.New()
 		httpClient.
+			SetAuthToken(loggedInUserDetails.UserCredentials.AccessToken).
 			SetHeader("Accept", "application/octet-stream").
 			SetHeader("Content-Type", "application/octet-stream")
 
-		httpRequest := httpClient.
-			R().
-			SetBody(b)
-
-		response, err := httpRequest.Post(
-			fmt.Sprintf("%v/api/v1/endpoints/%s/deployments", "http://127.0.0.1:3000", endpointID),
+		addDeploymentResp, err := api.CallAddDeployment(httpClient, &schemas.AddDeploymentReq{
+			EndpointID: endpointID,
+			Data:       b,
+		},
 		)
 		if err != nil {
-			fmt.Printf("CallCreateDeploymentV1: Unable to complete api request [err=%s]\n", err)
-			os.Exit(1)
-		}
-		if response.IsError() {
-			fmt.Printf("CallCreateDeploymentV1: Unsuccessful [response=%s]\n", response.String())
-			os.Exit(1)
+			cli.HandleError(err)
 		}
 
-		fmt.Printf("CallCreateDeploymentV1: Successful [response=%s]\n", response.String())
+		fmt.Println("Successful!!!")
+		fmt.Printf("Your deployment id: %s\n", addDeploymentResp.ID)
+		fmt.Printf("Your preview ingress url: %s\n", addDeploymentResp.IngressURL)
 	},
 }

@@ -26,7 +26,8 @@ To run awasm, use:
 func Execute() {
 	initLog()
 
-	rootCmd.PersistentFlags().StringVar(&config.AWASM_URL, "domain", constants.AWASM_DEFAULT_API_URL, "Point the CLI to your own backend [can also set via environment variable name: AWASM_API_URL]")
+	rootCmd.PersistentFlags().
+		StringVar(&config.AWASM_URL, "domain", constants.AWASM_DEFAULT_API_URL, "Point the CLI to your own backend [can also set via environment variable name: AWASM_API_URL]")
 
 	// if config.AWASM_URL is set to the default value, check if AWASM_URL is set in the environment
 	// this is used to allow overrides of the default value

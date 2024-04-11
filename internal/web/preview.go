@@ -10,6 +10,5 @@ import (
 func bindPreviewApi(g *echo.Group, c *controllers.Controllers, _ *middleware.Middleware) {
 	subGroup := g.Group("/preview")
 
-	publicGroup := subGroup.Group("")
-	publicGroup.Any("/:deploymentID/*", c.Preview.Serve)
+	subGroup.Any("/:deploymentID/*", c.Preview.Serve)
 }
