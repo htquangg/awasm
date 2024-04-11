@@ -2,21 +2,34 @@ package repo_test
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/db"
+	"github.com/htquangg/a-wasm/internal/repos/repo_test/container"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/pressly/goose/v3"
 	"github.com/segmentfault/pacman/log"
 )
 
-type TestDBSetting struct {
-	Driver       string
-	ImageName    string
-	ImageVersion string
-	ENV          []string
-	PortID       string
-	Connection   string
+type Database struct {
+	DB        db.DB
+	Container *container.PostgresContainer
+}
+
+func (d *Database) Shutdown(ctx context.Context) {
+	if d.DB != nil {
+		d.DB.Shutdown(ctx)
+	}
+
+	if d.Container != nil {
+		_ = d.Container.StopLogProducer()
+		_ = d.Container.Terminate(ctx)
+	}
 }
 
 // testDB used for repo testing
@@ -31,9 +44,21 @@ func TestMain(t *testing.M) {
 		panic(err)
 	}
 
-	if err := initTestDB(ctx, cfg.DB); err != nil {
+	d, err := initTestDB(ctx, cfg.DB)
+	if err != nil {
 		panic(err)
 	}
+	cleanup := func() {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if d != nil {
+			d.Shutdown(shutdownCtx)
+		}
+	}
+	defer cleanup()
+
+	testDB = d.DB
+
 	log.Info("init test database successfully")
 
 	if ret := t.Run(); ret != 0 {
@@ -41,13 +66,46 @@ func TestMain(t *testing.M) {
 	}
 }
 
-func initTestDB(ctx context.Context, cfg *config.DB) error {
-	db, err := db.New(ctx, cfg)
+func initTestDB(ctx context.Context, cfg *config.DB) (*Database, error) {
+	container, err := container.NewPostgresContainer(ctx, cfg)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("creating db container: %w", err)
+	}
+	cfg.Host = container.Host
+	cfg.Port = uint16(container.Port)
+
+	dbMigrate, err := goose.OpenDBWithDriver("postgres", cfg.Address())
+	if err != nil {
+		return nil, fmt.Errorf("creating migrate instance: %w", err)
+	}
+	// run drop to clear target DB (incase we're reusing)
+	if err := goose.RunContext(ctx, "reset", dbMigrate, cfg.MigrationDir); err != nil && !strings.Contains(err.Error(), "\"goose_db_version\" does not exist") {
+		return nil, fmt.Errorf("running drop: %w, %s", err, err.Error())
+	}
+	if err := dbMigrate.Close(); err != nil {
+		return nil, fmt.Errorf("closing db: %w", err)
 	}
 
-	testDB = db
+	// need new instance after drop
+	dbMigrate, err = goose.OpenDBWithDriver("postgres", cfg.Address())
+	if err != nil {
+		return nil, fmt.Errorf("creating migrate instance: %w", err)
+	}
+	// run drop to clear target DB (incase we're reusing)
+	if err := goose.RunContext(ctx, "up", dbMigrate, cfg.MigrationDir); err != nil && !strings.Contains(err.Error(), "\"goose_db_version\" does not exist") {
+		return nil, fmt.Errorf("running drop: %w, %s", err, err.Error())
+	}
+	if err := dbMigrate.Close(); err != nil {
+		return nil, fmt.Errorf("closing db: %w", err)
+	}
 
-	return nil
+	db, err := db.New(ctx, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Database{
+		DB:        db,
+		Container: container,
+	}, nil
 }

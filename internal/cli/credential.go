@@ -77,8 +77,6 @@ func GetCurrentLoggedInUserDetails() (*LoggedInUserDetails, error) {
 			SetAuthToken(userCreds.AccessToken).
 			SetHeader("Accept", "application/json")
 
-		config.AWASM_URL_MANUAL_OVERRIDE = config.AWASM_URL
-
 		if configFile.LoggedInUserDomain != "" {
 			config.AWASM_URL = configFile.LoggedInUserDomain
 		}

@@ -11,8 +11,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-var AWASM_URL string
-var AWASM_URL_MANUAL_OVERRIDE string
+var (
+	AWASM_URL                 string
+)
 
 type (
 	Config struct {
@@ -42,6 +43,7 @@ type (
 		MaxIdleConns    int    `json:"maxIdleConns"       mapstructure:"max_idle_conns"    yaml:"max_idle_conns"`
 		MaxOpenConns    int    `json:"maxOpenConns"       mapstructure:"max_open_conns"    yaml:"max_open_conns"`
 		ConnMaxLifetime int    `json:"connMaxLifetime"    mapstructure:"conn_max_lifetime" yaml:"conn_max_lifetime"`
+		MigrationDir    string `json:"migrationDir" mapstructure:"migration_dir" yaml:"migration_dir"`
 	}
 
 	Redis struct {
@@ -116,6 +118,18 @@ func LoadConfig() (*Config, error) {
 	}
 	cfg.Key.HashBytes = hashingKeyBytes
 
+	if cfg.DB.MigrationDir == "" {
+		migrationDirPathFromEnv := os.Getenv(constants.MigrationDirPath)
+		if migrationDirPathFromEnv != "" {
+			cfg.DB.MigrationDir = migrationDirPathFromEnv
+		} else {
+			cfg.DB.MigrationDir, err = getMigrationDirPath()
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	return cfg, nil
 }
 
@@ -152,6 +166,28 @@ func getConfigRootPath() (string, error) {
 
 	// Get the path to the "config" folder within the project directory
 	configPath := filepath.Join(absCurrentDir, "config")
+
+	return configPath, nil
+}
+
+func getMigrationDirPath() (string, error) {
+	// Get the current working directory
+	// Getwd gives us the current working directory that we are running our app with `go run` command. in goland we can specify this working directory for the project
+	// https://stackoverflow.com/questions/31873396/is-it-possible-to-get-the-current-root-of-package-structure-as-a-string-in-golan
+	// https://stackoverflow.com/questions/18537257/how-to-get-the-directory-of-the-currently-running-file
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	// Get the absolute path of the executed project directory
+	absCurrentDir, err := filepath.Abs(wd)
+	if err != nil {
+		return "", err
+	}
+
+	// Get the path to the "config" folder within the project directory
+	configPath := filepath.Join(absCurrentDir, "migrations/schemas")
 
 	return configPath, nil
 }

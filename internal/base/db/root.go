@@ -21,6 +21,7 @@ type (
 		InTransaction(ctx context.Context) bool
 		Exec(ctx context.Context, sqlAndArgs ...any) (sql.Result, error)
 		Query(ctx context.Context, sqlAndArgs ...any) ([]map[string][]byte, error)
+		Shutdown(ctx context.Context) error
 	}
 
 	db struct {
@@ -149,4 +150,8 @@ func (db *db) inTransaction(ctx context.Context) (*xorm.Session, bool) {
 	default:
 		return nil, false
 	}
+}
+
+func (db *db) Shutdown(ctx context.Context) error {
+	return db.e.Close()
 }
