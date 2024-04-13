@@ -33,7 +33,6 @@ require (
 	github.com/testcontainers/testcontainers-go v0.30.0
 	github.com/tetratelabs/wazero v1.6.0
 	github.com/zalando/go-keyring v0.2.4
-	go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho v0.47.0
 	golang.org/x/crypto v0.19.0
 	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v3 v3.0.1

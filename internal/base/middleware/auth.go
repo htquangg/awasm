@@ -85,7 +85,7 @@ func (m *AuthMiddleware) parseJWTClaims(echoCtx echo.Context, bearer string) err
 		ValidMethods: []string{jwt.SigningMethodHS256.Name},
 	}
 	token, err := p.ParseWithClaims(bearer, &entities.AccessTokenClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte(m.cfg.JWT.Secret), nil
+		return []byte(m.cfg.JWT.SecretBytes), nil
 	})
 	if err != nil {
 		return errors.Unauthorized(reason.InvalidTokenError)

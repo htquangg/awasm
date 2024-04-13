@@ -32,8 +32,8 @@ func Execute() {
 	// if config.AWASM_URL is set to the default value, check if AWASM_URL is set in the environment
 	// this is used to allow overrides of the default value
 	if !rootCmd.Flag("domain").Changed {
-		if envInfisicalBackendUrl, ok := os.LookupEnv("AWASM_API_URL"); ok {
-			config.AWASM_URL = envInfisicalBackendUrl
+		if envAwasmBackendUrl, ok := os.LookupEnv("AWASM_API_URL"); ok {
+			config.AWASM_URL = envAwasmBackendUrl
 		}
 	}
 

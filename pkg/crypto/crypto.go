@@ -2,10 +2,10 @@ package crypto
 
 import (
 	"crypto/rand"
-	"encoding/base64"
 
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/schemas"
+	"github.com/htquangg/a-wasm/pkg/converter"
 
 	"github.com/GoKillers/libsodium-go/cryptobox"
 	generichash "github.com/GoKillers/libsodium-go/cryptogenerichash"
@@ -58,15 +58,15 @@ func GetHash(data string, hashKey []byte) (string, error) {
 		return "", errors.InternalServer(reason.UnknownError).WithMsg("Hash failed.")
 	}
 
-	return base64.StdEncoding.EncodeToString(dataHashBytes), nil
+	return converter.ToB64(dataHashBytes), nil
 }
 
 func GetEncryptedToken(token string, publicKey string) (string, error) {
-	publicKeyBytes, err := base64.StdEncoding.DecodeString(publicKey)
+	publicKeyBytes, err := converter.FromB64(publicKey)
 	if err != nil {
 		return "", errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
 	}
-	tokenBytes, err := base64.URLEncoding.DecodeString(token)
+	tokenBytes, err := converter.FromURLB64(token)
 	if err != nil {
 		return "", errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
 	}
@@ -75,19 +75,19 @@ func GetEncryptedToken(token string, publicKey string) (string, error) {
 		return "", errors.InternalServer(reason.UnknownError).WithMsg("Encryption token failed.")
 	}
 
-	return base64.StdEncoding.EncodeToString(encryptedTokenBytes), nil
+	return converter.ToB64(encryptedTokenBytes), nil
 }
 
 func GetDecryptedToken(encryptedToken string, publicKey string, privateKey string) (string, error) {
-	publicKeyBytes, err := base64.StdEncoding.DecodeString(publicKey)
+	publicKeyBytes, err := converter.FromB64(publicKey)
 	if err != nil {
 		return "", errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
 	}
-	privateKeyBytes, err := base64.StdEncoding.DecodeString(privateKey)
+	privateKeyBytes, err := converter.FromB64(privateKey)
 	if err != nil {
 		return "", errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
 	}
-	encryptedTokenBytes, err := base64.StdEncoding.DecodeString(encryptedToken)
+	encryptedTokenBytes, err := converter.FromB64(encryptedToken)
 	if err != nil {
 		return "", errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
 	}
@@ -96,7 +96,7 @@ func GetDecryptedToken(encryptedToken string, publicKey string, privateKey strin
 		return "", errors.InternalServer(reason.UnknownError).WithMsg("Encryption token failed.")
 	}
 
-	return base64.URLEncoding.EncodeToString([]byte(decryptedTokenBytes)), nil
+	return converter.ToURLB64([]byte(decryptedTokenBytes)), nil
 }
 
 func GenerateRandomBytes(n int) ([]byte, error) {
@@ -119,16 +119,16 @@ func GenerateURLSafeRandomString(s int) (string, error) {
 		return "", errors.InternalServer(reason.UnknownError).WithError(err)
 	}
 
-	return base64.URLEncoding.EncodeToString(b), nil
+	return converter.ToURLB64(b), nil
 }
 
 func GenerateKeyPair() (string, string, error) {
 	skBytes, pkBytes, _ := cryptobox.CryptoBoxKeyPair()
-	return base64.StdEncoding.EncodeToString(skBytes), base64.StdEncoding.EncodeToString(pkBytes), nil
+	return converter.ToB64(skBytes), converter.ToB64(pkBytes), nil
 }
 
 func GenerateLoginSubKey(kek string) (string, error) {
-	kekBytes, err := base64.StdEncoding.DecodeString(kek)
+	kekBytes, err := converter.FromB64(kek)
 	if err != nil {
 		return "", errors.InternalServer(reason.UnknownError).WithError(err)
 	}
@@ -142,5 +142,5 @@ func GenerateLoginSubKey(kek string) (string, error) {
 	// use first 16 bytes of generated kekSubKey as loginSubKey
 	loginSubKeyBytes := kekSubKeyBytes[:16]
 
-	return base64.StdEncoding.EncodeToString(loginSubKeyBytes), nil
+	return converter.ToB64(loginSubKeyBytes), nil
 }

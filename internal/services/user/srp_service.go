@@ -5,6 +5,7 @@ import (
 
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/entities"
+	"github.com/htquangg/a-wasm/pkg/converter"
 	"github.com/htquangg/a-wasm/pkg/uid"
 
 	"github.com/kong/go-srp"
@@ -23,7 +24,7 @@ func (s *UserService) createAndInsertSRPChallenge(
 	serverSecret := srp.GenKey()
 	srpParams := srp.GetParams(Srp4096Params)
 
-	srpVerifierBytes, err := convertStringToBytes(srpVerifier)
+	srpVerifierBytes, err := converter.FromB64(srpVerifier)
 	if err != nil {
 		return nil, "", err
 	}
@@ -40,14 +41,14 @@ func (s *UserService) createAndInsertSRPChallenge(
 	srpChallenge := &entities.SrpChallenge{}
 	srpChallenge.ID = uid.ID()
 	srpChallenge.SrpUserID = srpUserID
-	srpChallenge.ServerKey = convertBytesToString(serverSecret)
+	srpChallenge.ServerKey = converter.ToB64(serverSecret)
 	srpChallenge.SrpA = srpA
 	err = s.userAuthRepo.AddSRPChallenge(ctx, srpChallenge)
 	if err != nil {
 		return nil, "", err
 	}
 
-	srpBBase64 := convertBytesToString(srpB)
+	srpBBase64 := converter.ToB64(srpB)
 	return &srpBBase64, srpChallenge.ID, nil
 }
 
@@ -71,11 +72,11 @@ func (s *UserService) verifySRPChallenge(
 	}
 
 	srpParams := srp.GetParams(Srp4096Params)
-	srpVerifierBytes, err := convertStringToBytes(srpVerifier)
+	srpVerifierBytes, err := converter.FromB64(srpVerifier)
 	if err != nil {
 		return nil, err
 	}
-	srpServerKeyBytes, err := convertStringToBytes(srpChallenge.ServerKey)
+	srpServerKeyBytes, err := converter.FromB64(srpChallenge.ServerKey)
 	if err != nil {
 		return nil, err
 	}
@@ -84,13 +85,13 @@ func (s *UserService) verifySRPChallenge(
 		return nil, errors.InternalServer(reason.UnknownError).WithMsg("server is nil.").WithStack()
 	}
 
-	srpABytes, err := convertStringToBytes(srpChallenge.SrpA)
+	srpABytes, err := converter.FromB64(srpChallenge.SrpA)
 	if err != nil {
 		return nil, err
 	}
 	srpServer.SetA(srpABytes)
 
-	srpM1Bytes, err := convertStringToBytes(srpM1)
+	srpM1Bytes, err := converter.FromB64(srpM1)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +108,7 @@ func (s *UserService) verifySRPChallenge(
 			return nil, err2
 		}
 	}
-	srpM2 := convertBytesToString(srpM2Bytes)
+	srpM2 := converter.ToB64(srpM2Bytes)
 
 	return &srpM2, nil
 }

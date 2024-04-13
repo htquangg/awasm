@@ -1,12 +1,12 @@
 package config
 
 import (
-	"encoding/base64"
 	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/htquangg/a-wasm/internal/constants"
+	"github.com/htquangg/a-wasm/pkg/converter"
 
 	"github.com/spf13/viper"
 )
@@ -54,8 +54,9 @@ type (
 	}
 
 	JWT struct {
-		Secret string `json:"secret,omitempty" mapstructure:"secret" yaml:"secret,omitempty"`
-		Exp    int    `json:"exp,omitempty"    mapstructure:"exp"    yaml:"exp,omitempty"`
+		Secret      string `json:"secret,omitempty" mapstructure:"secret"       yaml:"secret,omitempty"`
+		Exp         int    `json:"exp,omitempty"    mapstructure:"exp"          yaml:"exp,omitempty"`
+		SecretBytes []byte `json:"-"                mapstructure:"secret_bytes" yaml:"-"`
 	}
 
 	Key struct {
@@ -104,17 +105,23 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 
-	secretEncryptionKeyBytes, err := base64.StdEncoding.DecodeString(cfg.Key.Encryption)
+	secretEncryptionKeyBytes, err := converter.FromB64(cfg.Key.Encryption)
 	if err != nil {
 		return nil, fmt.Errorf("Could not decode email-encryption-key: %v", err)
 	}
 	cfg.Key.EncryptionBytes = secretEncryptionKeyBytes
 
-	hashingKeyBytes, err := base64.StdEncoding.DecodeString(cfg.Key.Hash)
+	hashingKeyBytes, err := converter.FromB64(cfg.Key.Hash)
 	if err != nil {
 		return nil, fmt.Errorf("Could not decode email-hash-key: %v", err)
 	}
 	cfg.Key.HashBytes = hashingKeyBytes
+
+	jwtSecretBytes, err := converter.FromURLB64(cfg.JWT.Secret)
+	if err != nil {
+		return nil, fmt.Errorf("Could not decode email-hash-key: %v", err)
+	}
+	cfg.JWT.SecretBytes = jwtSecretBytes
 
 	if cfg.DB.MigrationDir == "" {
 		migrationDirPathFromEnv := os.Getenv(constants.MigrationDirPath)

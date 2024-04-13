@@ -1,7 +1,7 @@
 ingress_url: http://127.0.0.1:3000
 
 server:
-  addr: 0.0.0.0:3000
+  addr: 127.0.0.1:3000
   show_start_banner: true
 
 db:

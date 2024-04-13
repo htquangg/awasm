@@ -78,7 +78,7 @@ func (s *SessionService) IssueSignupToken(
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	signed, err := token.SignedString([]byte(s.cfg.JWT.Secret))
+	signed, err := token.SignedString([]byte(s.cfg.JWT.SecretBytes))
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func (s *SessionService) generateAccessToken(
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	signed, err := token.SignedString([]byte(s.cfg.JWT.Secret))
+	signed, err := token.SignedString([]byte(s.cfg.JWT.SecretBytes))
 	if err != nil {
 		return "", 0, err
 	}

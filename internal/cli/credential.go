@@ -14,6 +14,8 @@ import (
 	"github.com/zalando/go-keyring"
 )
 
+const WarnAuthMessage = "not authenticated yet. Please run 'awasm login'"
+
 type LoggedInUserDetails struct {
 	UserCredentials *schemas.UserCredential
 }
@@ -37,7 +39,7 @@ func GetUserCredsFromKeyRing(userEmail string) (credentials *schemas.UserCredent
 	if err != nil {
 		if err == keyring.ErrUnsupportedPlatform {
 			return nil, errors.New(
-				"your OS does not support keyring. Consider using a service token https://infisical.com/docs/documentation/platform/token",
+				"your OS does not support keyring.",
 			)
 		} else if err == keyring.ErrNotFound {
 			return nil, errors.New("credentials not found in system keyring")
@@ -64,19 +66,19 @@ func GetCurrentLoggedInUserDetails() (*LoggedInUserDetails, error) {
 		configFile, err := GetConfigFile()
 		if err != nil {
 			return nil, fmt.Errorf(
-				"getCurrentLoggedInUserDetails: unable to get logged in user from config file [err=%s]",
+				"getCurrentLoggedInUserDetails: unable to get logged in user from config file [err=%s] \n",
 				err,
 			)
 		}
 		if configFile.LoggedInUserEmail == "" {
-			return nil, nil
+			return nil, fmt.Errorf("Error: %s", WarnAuthMessage)
 		}
 
 		userCreds, err := GetUserCredsFromKeyRing(configFile.LoggedInUserEmail)
 		if err != nil {
 			if strings.Contains(err.Error(), "credentials not found in system keyring") {
 				return nil, errors.New(
-					"we couldn't find your logged in details, try running [infisical login] then try again",
+					"we couldn't find your logged in details, try running [awasm login] then try again",
 				)
 			} else {
 				return nil, fmt.Errorf("failed to fetch creditnals from keyring because [err=%s]", err)
@@ -96,7 +98,7 @@ func GetCurrentLoggedInUserDetails() (*LoggedInUserDetails, error) {
 		// TODO: add refresh token
 
 		if !isAuthenticated {
-			return nil, nil
+			return nil, fmt.Errorf("Error: %s\n", WarnAuthMessage)
 		}
 
 		return &LoggedInUserDetails{

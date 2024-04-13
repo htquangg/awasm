@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"encoding/base64"
 	"strings"
 
 	"github.com/htquangg/a-wasm/config"
@@ -10,6 +9,7 @@ import (
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/internal/services/session"
+	"github.com/htquangg/a-wasm/pkg/converter"
 	"github.com/htquangg/a-wasm/pkg/crypto"
 	"github.com/htquangg/a-wasm/pkg/uid"
 
@@ -201,7 +201,7 @@ func (s *UserService) CompleteEmailAccountSignup(
 		return nil, err
 	}
 	accessTokenResp.EncryptedToken, err = crypto.GetEncryptedToken(
-		base64.StdEncoding.EncodeToString([]byte(accessTokenResp.CommonTokenResp.AccessToken)),
+		converter.ToB64([]byte(accessTokenResp.CommonTokenResp.AccessToken)),
 		keyAttribute.PublicKey,
 	)
 	if err != nil {
@@ -280,7 +280,7 @@ func (s *UserService) VerifyEmailLogin(
 		return nil, err
 	}
 	accessTokenResp.EncryptedToken, err = crypto.GetEncryptedToken(
-		base64.StdEncoding.EncodeToString([]byte(accessTokenResp.CommonTokenResp.AccessToken)),
+		converter.ToB64([]byte(accessTokenResp.CommonTokenResp.AccessToken)),
 		keyAttribute.PublicKey,
 	)
 	if err != nil {

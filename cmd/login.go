@@ -8,6 +8,7 @@ import (
 	"github.com/htquangg/a-wasm/internal/cli"
 	"github.com/htquangg/a-wasm/internal/cli/api"
 	"github.com/htquangg/a-wasm/internal/schemas"
+	"github.com/htquangg/a-wasm/pkg/converter"
 	"github.com/htquangg/a-wasm/pkg/crypto"
 
 	"github.com/fatih/color"
@@ -97,12 +98,12 @@ func loginCredential(userCredential *schemas.UserCredential) {
 	}
 
 	// [2]. Challenge email login
-	kekSaltBytes, err := convertStringToBytes(getSRPAttributeResp.KekSalt)
+	kekSaltBytes, err := converter.FromB64(getSRPAttributeResp.KekSalt)
 	if err != nil {
 		cli.HandleError(err)
 	}
 	kekBytes, _, _ := deriveKey(password, kekSaltBytes)
-	loginSubKey, err := crypto.GenerateLoginSubKey(convertBytesToString(kekBytes))
+	loginSubKey, err := crypto.GenerateLoginSubKey(converter.ToB64(kekBytes))
 	if err != nil {
 		cli.HandleError(err)
 	}
@@ -113,19 +114,19 @@ func loginCredential(userCredential *schemas.UserCredential) {
 
 	challengeEmailLoginResp, err := api.CallChallengeEmailLogin(httpClient, &schemas.ChallengeEmailLoginReq{
 		SRPUserID: getSRPAttributeResp.SRPUserID,
-		SRPA:      convertBytesToString(srpClient.ComputeA()),
+		SRPA:      converter.ToB64(srpClient.ComputeA()),
 	})
 	if err != nil {
 		cli.HandleError(err)
 	}
 
 	// [3]. Verify email login
-	srpBBytes, err := convertStringToBytes(challengeEmailLoginResp.SRPB)
+	srpBBytes, err := converter.FromB64(challengeEmailLoginResp.SRPB)
 	if err != nil {
 		cli.HandleError(err)
 	}
 	srpClient.SetB(srpBBytes)
-	srpM1 := convertBytesToString(srpClient.ComputeM1())
+	srpM1 := converter.ToB64(srpClient.ComputeM1())
 	verifyEmailLoginResp, err := api.CallVerifyEmailLogin(httpClient, &schemas.VerifyEmailLoginReq{
 		ChallengeID: challengeEmailLoginResp.ChallengeID,
 		SRPUserID:   getSRPAttributeResp.SRPUserID,
@@ -136,11 +137,13 @@ func loginCredential(userCredential *schemas.UserCredential) {
 	}
 
 	// get access token
-	encryptedKeyBytes, err := convertStringToBytes(verifyEmailLoginResp.KeyAttribute.EncryptedKey)
+	encryptedKeyBytes, err := converter.FromB64(verifyEmailLoginResp.KeyAttribute.EncryptedKey)
 	if err != nil {
 		cli.HandleError(err)
 	}
-	decryptionKeyNonceBytes, err := convertStringToBytes((verifyEmailLoginResp.KeyAttribute.KeyDecryptionNonce))
+	decryptionKeyNonceBytes, err := converter.FromB64(
+		(verifyEmailLoginResp.KeyAttribute.KeyDecryptionNonce),
+	)
 	if err != nil {
 		cli.HandleError(err)
 	}
@@ -148,15 +151,17 @@ func loginCredential(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	masterKeyBytes, err := convertStringToBytes(masterKey)
+	masterKeyBytes, err := converter.FromB64(masterKey)
 	if err != nil {
 		cli.HandleError(err)
 	}
-	encryptedSecretKeyBytes, err := convertStringToBytes(verifyEmailLoginResp.KeyAttribute.EncryptedSecretKey)
+	encryptedSecretKeyBytes, err := converter.FromB64(verifyEmailLoginResp.KeyAttribute.EncryptedSecretKey)
 	if err != nil {
 		cli.HandleError(err)
 	}
-	keyEncryptionNonceBytes, err := convertStringToBytes(verifyEmailLoginResp.KeyAttribute.SecretKeyDecryptionNonce)
+	keyEncryptionNonceBytes, err := converter.FromB64(
+		verifyEmailLoginResp.KeyAttribute.SecretKeyDecryptionNonce,
+	)
 	if err != nil {
 		cli.HandleError(err)
 	}
@@ -172,14 +177,14 @@ func loginCredential(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	tokenEncBytes, err := convertStringToBytes(tokenEnc)
+	tokenEncBytes, err := converter.FromB64(tokenEnc)
 	if err != nil {
 		cli.HandleError(err)
 	}
 	token := string(tokenEncBytes)
 
 	// updating user credential
-	kekEncrypted, err := crypto.GenerateKeyAndEncrypt(convertBytesToString(kekBytes))
+	kekEncrypted, err := crypto.GenerateKeyAndEncrypt(converter.ToB64(kekBytes))
 	if err != nil {
 		cli.HandleError(err)
 	}
