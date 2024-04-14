@@ -1,7 +1,7 @@
-
-GO_ENV=CGO_ENABLED=1 GO111MODULE=on
+VERSION=0.0.0
+GO_ENV=CGO_ENABLED=0 GO111MODULE=on
 Revision=$(shell git rev-parse --short HEAD 2>/dev/null || echo "")
-GO_FLAGS=-ldflags="-X 'github.com/htquangg/a-wasm/cmd.Revision=$(Revision)' -X 'github.com/htquangg/a-wasm/cmd.Time=`date +%s`' -extldflags -static"
+GO_FLAGS=-ldflags="-X github.com/htquangg/a-wasm/cmd.Version=$(VERSION) -X 'github.com/htquangg/a-wasm/cmd.Revision=$(Revision)' -X 'github.com/htquangg/a-wasm/cmd.Time=`date +%s`' -extldflags -static"
 GO=$(GO_ENV) $(shell which go)
 
 ifndef GOPATH
@@ -35,6 +35,13 @@ tidy: ## add missing and remove unused modules
 build: ## build the service binary
 	@echo "Building $(BIN) server"
 	@$(GO) build $(GO_FLAGS) -o $(BIN) main.go
+
+# https://dev.to/thewraven/universal-macos-binaries-with-go-1-16-3mm3
+universal:
+	@GOOS=darwin GOARCH=amd64 $(GO_ENV) $(GO) build $(GO_FLAGS) -o ${BIN}_amd64
+	@GOOS=darwin GOARCH=arm64 $(GO_ENV) $(GO) build $(GO_FLAGS) -o ${BIN}_arm64
+	@lipo -create -output ${BIN} ${BIN}_amd64 ${BIN}_arm64
+	@rm -f ${BIN}_amd64 ${BIN}_arm64
 
 .PHONY: build
 clean: ## clean all build result

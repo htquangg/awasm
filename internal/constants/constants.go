@@ -22,3 +22,9 @@ const (
 
 	TOKEN_LENGTH = 32
 )
+
+var (
+	Version   = ""
+	Revision  = ""
+	GoVersion = ""
+)

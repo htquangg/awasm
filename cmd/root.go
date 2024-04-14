@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/htquangg/a-wasm/config"
@@ -9,6 +10,15 @@ import (
 	"github.com/segmentfault/pacman/contrib/log/zap"
 	"github.com/segmentfault/pacman/log"
 	"github.com/spf13/cobra"
+)
+
+// go build -ldflags "-X github.com/htquangg/a-wasm/cmd.Version=x.y.z"
+var (
+	Name      = "awasm"
+	Version   = "devel"
+	Revision  = ""
+	Time      = ""
+	GoVersion = "1.21"
 )
 
 var rootCmd = &cobra.Command{
@@ -20,7 +30,7 @@ To run awasm, use:
   - 'awasm endpoints' to manage endpoints.
 		`,
 	CompletionOptions: cobra.CompletionOptions{HiddenDefaultCmd: true},
-	Version:           constants.CLI_VERSION,
+	Version:           fmt.Sprintf("%s\nrevision: %s\nbuild time: %s", Version, Revision, Time),
 }
 
 func Execute() {
