@@ -5,28 +5,24 @@ import (
 	"fmt"
 	"log"
 
-	generichash "github.com/GoKillers/libsodium-go/cryptogenerichash"
-	secretbox "github.com/GoKillers/libsodium-go/cryptosecretbox"
-	"github.com/GoKillers/libsodium-go/sodium"
 	"github.com/htquangg/a-wasm/pkg/crypto"
+	"golang.org/x/crypto/blake2b"
 )
 
 func main() {
-	sodium.Init()
-
-	keyBytes, err := crypto.GenerateRandomBytes(secretbox.CryptoSecretBoxKeyBytes())
+	keyBytes, err := crypto.GenerateRandomBytes(blake2b.Size256)
 	if err != nil {
 		log.Fatal(err)
 	}
 	key := base64.StdEncoding.EncodeToString(keyBytes)
 
-	hashBytes, err := crypto.GenerateRandomBytes(generichash.CryptoGenericHashBytesMax())
+	hashBytes, err := crypto.GenerateRandomBytes(blake2b.Size)
 	if err != nil {
 		log.Fatal(err)
 	}
 	hash := base64.StdEncoding.EncodeToString(hashBytes)
 
-	jwtBytes, err := crypto.GenerateRandomBytes(secretbox.CryptoSecretBoxKeyBytes())
+	jwtBytes, err := crypto.GenerateRandomBytes(blake2b.Size256)
 	if err != nil {
 		log.Fatal(err)
 	}

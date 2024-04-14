@@ -12,13 +12,14 @@ import (
 	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/base/middleware"
 	"github.com/htquangg/a-wasm/internal/base/translator"
+	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/controllers"
 	"github.com/htquangg/a-wasm/internal/protocluster"
 	"github.com/htquangg/a-wasm/internal/repos"
 	"github.com/htquangg/a-wasm/internal/services"
 	"github.com/htquangg/a-wasm/internal/web"
 
-	"github.com/GoKillers/libsodium-go/sodium"
+	"github.com/fatih/color"
 	"github.com/oklog/run"
 	"github.com/spf13/cobra"
 )
@@ -47,6 +48,12 @@ func runApp() {
 	if err != nil {
 		panic(err)
 	}
+
+	constants.Version = Version
+	constants.Revision = Revision
+	constants.GoVersion = GoVersion
+	regular := color.New()
+	regular.Println("├─ Awasm Version:", constants.Version, " Revision:", constants.Revision)
 
 	var se run.SignalError
 	if err := g.Run(); err != nil && !errors.As(err, &se) {
@@ -95,8 +102,6 @@ func initApp(ctx context.Context, cfg *config.Config) (run.Group, error) {
 		syscall.SIGQUIT,
 		syscall.SIGHUP,
 	))
-
-	sodium.Init()
 
 	return g, nil
 }

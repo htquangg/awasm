@@ -13,14 +13,13 @@ import (
 	"github.com/htquangg/a-wasm/pkg/crypto"
 	"github.com/htquangg/a-wasm/pkg/uid"
 
-	generichash "github.com/GoKillers/libsodium-go/cryptogenerichash"
-	secretbox "github.com/GoKillers/libsodium-go/cryptosecretbox"
 	"github.com/fatih/color"
 	"github.com/go-resty/resty/v2"
 	"github.com/kong/go-srp"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/argon2"
+	"golang.org/x/crypto/blake2b"
 )
 
 const (
@@ -220,19 +219,19 @@ func askForCredential() (email string, password string, err error) {
 func generateKeyAndSRPAttributes(
 	password string,
 ) (string, *schemas.KeyAttributeInfo, *schemas.SetupSRPAccountSignupReq, error) {
-	masterKeyBytes, err := crypto.GenerateRandomBytes(secretbox.CryptoSecretBoxKeyBytes())
+	masterKeyBytes, err := crypto.GenerateRandomBytes(blake2b.Size256)
 	if err != nil {
 		return "", nil, nil, err
 	}
 	masterKey := converter.ToB64(masterKeyBytes)
 
-	recoveryKeyBytes, err := crypto.GenerateRandomBytes(secretbox.CryptoSecretBoxKeyBytes())
+	recoveryKeyBytes, err := crypto.GenerateRandomBytes(blake2b.Size256)
 	if err != nil {
 		return "", nil, nil, err
 	}
 	recoveryKey := converter.ToB64(recoveryKeyBytes)
 
-	kekSaltBytes, err := crypto.GenerateRandomBytes(generichash.CryptoGenericHashBytesMax())
+	kekSaltBytes, err := crypto.GenerateRandomBytes(blake2b.Size)
 	if err != nil {
 		return "", nil, nil, err
 	}
@@ -294,7 +293,7 @@ func generateSRPSetupAttribute(loginSubKey string) (*schemas.SetupSRPAccountSign
 		return nil, err
 	}
 
-	srpSaltBytes, err := crypto.GenerateRandomBytes(secretbox.CryptoSecretBoxKeyBytes())
+	srpSaltBytes, err := crypto.GenerateRandomBytes(blake2b.Size256)
 	if err != nil {
 		return nil, err
 	}
