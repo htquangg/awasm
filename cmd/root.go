@@ -66,5 +66,5 @@ func initLog() {
 	logPath := os.Getenv(constants.LogPath)
 
 	log.SetLogger(zap.NewLogger(
-		log.ParseLevel(logLevel), zap.WithName("a-wasm"), zap.WithPath(logPath)))
+		log.ParseLevel(logLevel), zap.WithName("awasm"), zap.WithPath(logPath)))
 }

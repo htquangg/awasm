@@ -1,0 +1,108 @@
+version: "3.8"
+
+services:
+  grafana:
+    image: grafana/grafana:10.1.0
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    environment:
+      - TZ=UTC
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+      - grafana-data:/var/lib/grafana
+    networks:
+      - awasm-network
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:v1.1.2
+    ports:
+      - 9100:9100
+    container_name: node-exporter
+    volumes:
+      - '/:/host:ro,rslave'
+    pid: host
+    command:
+      - '--path.rootfs=/host'
+    restart: unless-stopped
+    networks:
+      - awasm-network
+
+
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    ports:
+      - 9090:9090
+    environment:
+      - TZ=UTC
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert.rules:/etc/prometheus/alert.rules
+      - prometheus-data:/prometheus/data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    user: root
+    networks:
+      - awasm-network
+
+  alertmanager:
+    image: prom/alertmanager
+    ports:
+      - 9093:9093
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/config.yml
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    networks:
+      - awasm-network
+
+  # Since the Loki containers are running as user 10001 and the mounted data volume is owned by root,
+  # Loki would not have permissions to create the directories.
+  # Therefore the init container changes permissions of the mounted directory.
+  init:
+    image: grafana/loki:2.7.3
+    user: root
+    entrypoint:
+      - "chown"
+      - "10001:10001"
+      - "/loki"
+    volumes:
+      - ./loki:/loki
+    networks:
+      - awasm-network
+
+  promtail:
+    image: grafana/promtail:2.7.4
+    volumes:
+      - ./loki/:/var/log/
+      - ./promtail/promtail.yml:/etc/promtail/promtail.yml
+    ports:
+      - "9080:9080"
+    command: -config.file=/etc/promtail/promtail.yml
+    networks:
+      - awasm-network
+
+  loki:
+    image: grafana/loki:2.7.3
+    volumes:
+      - ./loki/:/loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    depends_on:
+      - init
+      - promtail
+    networks:
+      - awasm-network
+
+volumes:
+    prometheus-data:
+    grafana-data:
+
+networks:
+  awasm-network:

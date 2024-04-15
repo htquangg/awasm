@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  awasm:
+    build:
+      context: ./../..
+    ports:
+      - 8080:8080 # API
+      - 2112:2112 # Prometheus metrics
+    environment:
+      - TZ=UTC
+    depends_on:
+      - postgres
+    networks:
+      - awasm-network
+
+  postgres:
+    image: postgres:12
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=dev-local-awasm-001
+      - POSTGRES_PASSWORD=localdb
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-q",
+          "-d",
+          "ente_db",
+          "-U",
+          "pguser"
+        ]
+      interval: 1s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - awasm-network
+
+  redis:
+    image: redis:6.2.5
+    ports:
+      - 6379:6379
+    environment:
+      TZ: UTC
+    volumes:
+      - redis-data:/data:rw
+    networks:
+      - awasm-network
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  awasm-network:

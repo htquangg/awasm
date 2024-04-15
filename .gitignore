@@ -8,3 +8,5 @@
 
 /awasm
 
+# monitoring
+**/deployments/docker-compose/loki

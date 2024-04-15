@@ -13,8 +13,10 @@ import (
 	"github.com/htquangg/a-wasm/internal/base/middleware"
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/controllers"
+	"github.com/htquangg/a-wasm/pkg/uid"
 
 	"github.com/fatih/color"
+	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	middleware_echo "github.com/labstack/echo/v4/middleware"
 	"github.com/segmentfault/pacman/errors"
@@ -35,16 +37,29 @@ func New(
 ) *Server {
 	e := echo.New()
 
-	e.Pre(middleware_echo.RemoveTrailingSlashWithConfig(middleware_echo.TrailingSlashConfig{
-		Skipper: func(c echo.Context) bool {
-			// enable by default only for the API routes
-			return !strings.HasPrefix(c.Request().URL.Path, constants.LiveIngressPath) ||
-				!strings.HasPrefix(c.Request().URL.Path, constants.PreviewIngressPath) ||
-				!strings.HasPrefix(c.Request().URL.Path, "/api/")
-		},
-	}))
-	e.Use(middleware_echo.Recover())
-	e.Use(middleware_echo.Secure())
+	e.Pre(
+		echoprometheus.NewMiddleware("awasm"),
+		middleware_echo.RemoveTrailingSlashWithConfig(middleware_echo.TrailingSlashConfig{
+			Skipper: func(c echo.Context) bool {
+				// enable by default only for the API routes
+				return !strings.HasPrefix(c.Request().URL.Path, constants.LiveIngressPath) ||
+					!strings.HasPrefix(c.Request().URL.Path, constants.PreviewIngressPath) ||
+					!strings.HasPrefix(c.Request().URL.Path, "/api/")
+			},
+		}),
+		middleware_echo.RequestIDWithConfig(
+			middleware_echo.RequestIDConfig{
+				Generator: func() string {
+					return uid.ID()
+				},
+			}),
+		middleware_echo.Logger(),
+		middleware_echo.Gzip(),
+		middleware_echo.Recover(),
+		middleware_echo.Secure(),
+	)
+
+	e.GET("/metrics", echoprometheus.NewHandler())
 
 	e.HTTPErrorHandler = func(err error, ctx echo.Context) {
 		if ctx.Response().Committed {
@@ -75,7 +90,7 @@ func New(
 	// catch all any route
 	v1Group.Any("/*", func(ctx echo.Context) error {
 		return echo.ErrNotFound
-	}, middleware_echo.Logger())
+	})
 
 	return &Server{
 		ctx: ctx,

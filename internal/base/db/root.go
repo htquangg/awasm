@@ -7,7 +7,9 @@ import (
 
 	"github.com/htquangg/a-wasm/config"
 
+	"github.com/dlmiddlecote/sqlstats"
 	_ "github.com/lib/pq"
+	"github.com/prometheus/client_golang/prometheus"
 	"xorm.io/xorm"
 	"xorm.io/xorm/names"
 	"xorm.io/xorm/schemas"
@@ -47,6 +49,11 @@ func New(ctx context.Context, cfg *config.DB) (DB, error) {
 	engine.SetConnMaxLifetime(time.Duration(cfg.ConnMaxLifetime))
 	engine.SetTZDatabase(time.UTC)
 	engine.SetDefaultContext(ctx)
+
+	// register the go_sql_stats_connections_* metrics
+	if err := prometheus.Register(sqlstats.NewStatsCollector("grafana", engine.DB().DB)); err != nil {
+		return nil, err
+	}
 
 	return &db{
 		ctx: ctx,
