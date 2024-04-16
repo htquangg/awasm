@@ -23,14 +23,13 @@ services:
       - 9100:9100
     container_name: node-exporter
     volumes:
-      - '/:/host:ro,rslave'
+      - "/:/host:ro,rslave"
     pid: host
     command:
-      - '--path.rootfs=/host'
+      - "--path.rootfs=/host"
     restart: unless-stopped
     networks:
       - awasm-network
-
 
   prometheus:
     image: prom/prometheus:v2.45.0
@@ -43,8 +42,8 @@ services:
       - ./prometheus/alert.rules:/etc/prometheus/alert.rules
       - prometheus-data:/prometheus/data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
     user: root
     networks:
       - awasm-network
@@ -56,8 +55,8 @@ services:
     volumes:
       - ./alertmanager/alertmanager.yml:/etc/alertmanager/config.yml
     command:
-      - '--config.file=/etc/alertmanager/config.yml'
-      - '--storage.path=/alertmanager'
+      - "--config.file=/etc/alertmanager/config.yml"
+      - "--storage.path=/alertmanager"
     networks:
       - awasm-network
 
@@ -102,9 +101,9 @@ services:
       - awasm-network
 
 volumes:
-    prometheus-data:
-    grafana-data:
-    loki-data:
+  prometheus-data:
+  grafana-data:
+  loki-data:
 
 networks:
   awasm-network:

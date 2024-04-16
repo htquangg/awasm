@@ -28,4 +28,3 @@ backend:
     email:
       duplicate:
         other: Email already exists.
-

@@ -22,16 +22,7 @@ services:
       - POSTGRES_DB=dev-local-awasm-001
       - POSTGRES_PASSWORD=localdb
     healthcheck:
-      test:
-        [
-          "CMD",
-          "pg_isready",
-          "-q",
-          "-d",
-          "ente_db",
-          "-U",
-          "pguser"
-        ]
+      test: ["CMD", "pg_isready", "-q", "-d", "ente_db", "-U", "pguser"]
       interval: 1s
       timeout: 5s
       retries: 20
