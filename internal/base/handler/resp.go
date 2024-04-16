@@ -8,14 +8,14 @@ import (
 )
 
 type RespBody struct {
-	// http code
-	Code int `json:"code"`
+	// response data
+	Data interface{} `json:"data"`
 	// reason key
 	Reason string `json:"reason"`
 	// response message
 	Message string `json:"msg"`
-	// response data
-	Data interface{} `json:"data"`
+	// http code
+	Code int `json:"code"`
 }
 
 // NewRespBody new response body

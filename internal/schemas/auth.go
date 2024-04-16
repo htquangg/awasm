@@ -8,7 +8,7 @@ type CommonTokenResp struct {
 }
 
 type AccessTokenResp struct {
-	CommonTokenResp
 	EncryptedToken string `json:"encryptedToken"`
 	RefreshToken   string `json:"refreshToken"`
+	CommonTokenResp
 }

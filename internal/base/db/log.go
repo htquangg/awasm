@@ -11,8 +11,8 @@ import (
 )
 
 type XORMLogBridge struct {
-	showSQL  atomic.Bool
 	logLevel string
+	showSQL  atomic.Bool
 }
 
 func NewXORMLogger(showSQL bool) xormlog.Logger {

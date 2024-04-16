@@ -48,9 +48,9 @@ func (r *userAuthRepo) GetSRPAttribute(ctx context.Context, userID string) (*sch
 	respFromDB := make([]*struct {
 		SRPUserID string `json:"srpUserId"`
 		Salt      string `json:"salt"`
+		KekSalt   string `json:"kekSalt"`
 		MemLimit  int    `json:"memLimit"`
 		OpsLimit  int    `json:"opsLimit"`
-		KekSalt   string `json:"kekSalt"`
 	}, 0, 1)
 	err := r.db.Engine(ctx).
 		Join("INNER", "key_attributes", "`key_attributes`.user_id =`srp_auth`.user_id").

@@ -7,12 +7,12 @@ type GetSRPAttributeReq struct {
 type GetSRPAttributeResp struct {
 	SRPUserID string `json:"srpUserId"`
 	SRPSalt   string `json:"srpSalt"`
+	KekSalt   string `json:"kekSalt"`
 	// MemLimit,OpsLimit,KekSalt are needed to derive the KeyEncryptionKey
 	// on the client. Client generates the LoginKey from the KeyEncryptionKey
 	// and treat that as UserInputPassword.
-	MemLimit int    `json:"memLimit"`
-	OpsLimit int    `json:"opsLimit"`
-	KekSalt  string `json:"kekSalt"`
+	MemLimit int `json:"memLimit"`
+	OpsLimit int `json:"opsLimit"`
 }
 
 type SetupSRPAccountSignupReq struct {

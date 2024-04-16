@@ -11,20 +11,20 @@ import (
 
 type (
 	Args struct {
+		Stdout       io.Writer
+		Cache        wazero.CompilationCache
 		DeploymentID string
 		Engine       string
-		Stdout       io.Writer
 		Data         []byte
-		Cache        wazero.CompilationCache
 	}
 
 	Runtime struct {
 		runtime wazero.Runtime
 		ctx     context.Context
 		stdout  io.Writer
+		mod     wazero.CompiledModule
 		engine  string
 		data    []byte
-		mod     wazero.CompiledModule
 	}
 )
 

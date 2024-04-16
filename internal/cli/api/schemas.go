@@ -5,8 +5,8 @@ const (
 )
 
 type AwasmResp[T any] struct {
-	Code   int    `json:"code"`
+	Data   T      `json:"data"`
 	Reason string `json:"reason"`
 	Msg    string `json:"msg"`
-	Data   T      `json:"data"`
+	Code   int    `json:"code"`
 }

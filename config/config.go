@@ -15,13 +15,13 @@ var AWASM_URL string
 
 type (
 	Config struct {
-		IngressURL string  `json:"ingressURL,omitempty" mapstructure:"ingress_url" yaml:"ingress_url,omitempty"`
 		Server     *Server `json:"server,omitempty"     mapstructure:"server"      yaml:"server,omitempty"`
 		DB         *DB     `json:"db,omitempty"         mapstructure:"db"          yaml:"db,omitempty"`
 		Redis      *Redis  `json:"redis,omitempty"      mapstructure:"redis"       yaml:"redis,omitempty"`
 		JWT        *JWT    `json:"jwt,omitempty"        mapstructure:"jwt"         yaml:"jwt,omitempty"`
 		Key        *Key    `json:"key,omitempty"        mapstructure:"key"         yaml:"key,omitempty"`
 		I18n       *I18n   `json:"i18n,omitempty"       mapstructure:"i18n"        yaml:"i18n,omitempty"`
+		IngressURL string  `json:"ingressURL,omitempty" mapstructure:"ingress_url" yaml:"ingress_url,omitempty"`
 	}
 
 	Server struct {
@@ -30,33 +30,33 @@ type (
 	}
 
 	DB struct {
-		Port            uint16 `json:"port,omitempty"     mapstructure:"port"              yaml:"port,omitempty"`
 		Host            string `json:"host,omitempty"     mapstructure:"host"              yaml:"host,omitempty"`
 		User            string `json:"user,omitempty"     mapstructure:"user"              yaml:"user,omitempty"`
 		Password        string `json:"password,omitempty" mapstructure:"password"          yaml:"password,omitempty"`
 		Schema          string `json:"schema,omitempty"   mapstructure:"schema"            yaml:"schema,omitempty"`
 		Charset         string `json:"charset"            mapstructure:"charset"           yaml:"charset"`
 		SslMode         string `json:"sslMode"            mapstructure:"ssl_mode"          yaml:"ssl_mode"`
-		LogSQL          bool   `json:"logSql"             mapstructure:"log_sql"           yaml:"log_sql"`
+		MigrationDir    string `json:"migrationDir"       mapstructure:"migration_dir"     yaml:"migration_dir"`
 		MaxIdleConns    int    `json:"maxIdleConns"       mapstructure:"max_idle_conns"    yaml:"max_idle_conns"`
 		MaxOpenConns    int    `json:"maxOpenConns"       mapstructure:"max_open_conns"    yaml:"max_open_conns"`
 		ConnMaxLifetime int    `json:"connMaxLifetime"    mapstructure:"conn_max_lifetime" yaml:"conn_max_lifetime"`
-		MigrationDir    string `json:"migrationDir"       mapstructure:"migration_dir"     yaml:"migration_dir"`
+		Port            uint16 `json:"port,omitempty"     mapstructure:"port"              yaml:"port,omitempty"`
+		LogSQL          bool   `json:"logSql"             mapstructure:"log_sql"           yaml:"log_sql"`
 	}
 
 	Redis struct {
 		Host       string `json:"host,omitempty"       mapstructure:"host"        yaml:"host,omitempty"`
-		Port       int    `json:"port,omitempty"       mapstructure:"port"        yaml:"port,omitempty"`
-		RequireTLS bool   `json:"requireTLS,omitempty" mapstructure:"require_tls" yaml:"require_tls,omitempty"`
 		Password   string `json:"password"             mapstructure:"password"    yaml:"password"`
+		Port       int    `json:"port,omitempty"       mapstructure:"port"        yaml:"port,omitempty"`
 		DB         int    `json:"db,omitempty"         mapstructure:"db"          yaml:"db,omitempty"`
 		PoolSize   int    `json:"poolSize"             mapstructure:"pool_size"   yaml:"pool_size"`
+		RequireTLS bool   `json:"requireTLS,omitempty" mapstructure:"require_tls" yaml:"require_tls,omitempty"`
 	}
 
 	JWT struct {
 		Secret      string `json:"secret,omitempty" mapstructure:"secret"       yaml:"secret,omitempty"`
-		Exp         int    `json:"exp,omitempty"    mapstructure:"exp"          yaml:"exp,omitempty"`
 		SecretBytes []byte `json:"-"                mapstructure:"secret_bytes" yaml:"-"`
+		Exp         int    `json:"exp,omitempty"    mapstructure:"exp"          yaml:"exp,omitempty"`
 	}
 
 	Key struct {

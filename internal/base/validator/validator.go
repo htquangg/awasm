@@ -23,9 +23,9 @@ import (
 )
 
 type TranslatorLocal struct {
-	La           i18n.Language
 	Lo           locales.Translator
 	RegisterFunc func(v *validator.Validate, trans ut.Translator) (err error)
+	La           i18n.Language
 }
 
 var allLanguageTranslators = []*TranslatorLocal{

@@ -10,11 +10,11 @@ type PublishEndpointResp struct {
 }
 
 type ServeEndpointReq struct {
+	Header     map[string][]string `json:"header"`
 	Method     string              `json:"method"`
 	URL        string              `json:"url"`
-	Body       []byte              `json:"body"`
-	Header     map[string][]string `json:"header"`
 	EndpointID string              `json:"endpointId"`
+	Body       []byte              `json:"body"`
 }
 
 type ServeEndpointResp struct {

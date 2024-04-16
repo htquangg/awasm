@@ -1,11 +1,11 @@
 package schemas
 
 type ServeDeploymentReq struct {
+	Header       map[string][]string `json:"header"`
 	Method       string              `json:"method"`
 	URL          string              `json:"url"`
-	Body         []byte              `json:"body"`
-	Header       map[string][]string `json:"header"`
 	DeploymentID string              `json:"deploymentId"`
+	Body         []byte              `json:"body"`
 }
 
 type ServeDeploymentResp struct {

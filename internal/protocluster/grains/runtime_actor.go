@@ -25,9 +25,9 @@ const (
 
 type runtimeActor struct {
 	deploymentRepo *repos.DeploymentRepo
-	deploymentID   string
 	stdout         *bytes.Buffer
 	runtime        *runtime.Runtime
+	deploymentID   string
 }
 
 func NewRuntimeActor(deploymentRepo *repos.DeploymentRepo) actor.Actor {

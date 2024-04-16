@@ -63,15 +63,14 @@ func (authMethod AuthenticationMethod) String() string {
 }
 
 type MFAFactor struct {
-	ID           string `xorm:"not null pk VARCHAR(36) id"`
-	UserID       string `xorm:"not null VARCHAR(36) user_id"`
-	Status       string `xorm:"not null TEXT status"`
-	FriendlyName string `xorm:"not null TEXT default '' friendly_name"`
-	FactorType   string `xorm:"not null TEXT factor_type"` // totp, webauthn
-	Secret       string `xorm:"not null TEXT default '' secret"`
-
-	CreatedAt time.Time `xorm:"created TIMESTAMPZ created_at"`
-	UpdatedAt time.Time `xorm:"updated TIMESTAMPZ updated_at"`
+	CreatedAt    time.Time `xorm:"created TIMESTAMPZ created_at"`
+	UpdatedAt    time.Time `xorm:"updated TIMESTAMPZ updated_at"`
+	ID           string    `xorm:"not null pk VARCHAR(36) id"`
+	UserID       string    `xorm:"not null VARCHAR(36) user_id"`
+	Status       string    `xorm:"not null TEXT status"`
+	FriendlyName string    `xorm:"not null TEXT default '' friendly_name"`
+	FactorType   string    `xorm:"not null TEXT factor_type"` // totp, webauthn
+	Secret       string    `xorm:"not null TEXT default '' secret"`
 }
 
 func (MFAFactor) TableName() string {
@@ -79,11 +78,10 @@ func (MFAFactor) TableName() string {
 }
 
 type MFAAMRClaim struct {
-	SessionID            string `xorm:"not null VARCHAR(36) session_id"`
-	AuthenticationMethod string `xorm:"not null authentication_method"`
-
-	CreatedAt time.Time `xorm:"created TIMESTAMPZ created_at"`
-	UpdatedAt time.Time `xorm:"updated TIMESTAMPZ updated_at"`
+	CreatedAt            time.Time `xorm:"created TIMESTAMPZ created_at"`
+	UpdatedAt            time.Time `xorm:"updated TIMESTAMPZ updated_at"`
+	SessionID            string    `xorm:"not null VARCHAR(36) session_id"`
+	AuthenticationMethod string    `xorm:"not null authentication_method"`
 }
 
 func (MFAAMRClaim) TableName() string {
@@ -95,11 +93,11 @@ func (a *MFAAMRClaim) GetAuthenticationMethod() string {
 }
 
 type MFAChallenge struct {
-	ID       string `xorm:"not null pk VARCHAR(36) id"`
-	FactorID string `xorm:"not null VARCHAR(36) facor_id"`
-	IP       string `xorm:"not null default '' TEXT ip"`
+	CreatedAt time.Time `xorm:"created TIMESTAMPZ created_at"`
 
 	VerifiedAt *time.Time `xorm:"TIMESTAMPZ verified_at"`
 
-	CreatedAt time.Time `xorm:"created TIMESTAMPZ created_at"`
+	ID       string `xorm:"not null pk VARCHAR(36) id"`
+	FactorID string `xorm:"not null VARCHAR(36) facor_id"`
+	IP       string `xorm:"not null default '' TEXT ip"`
 }

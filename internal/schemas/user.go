@@ -26,9 +26,9 @@ type VerifyEmailSignupResp struct {
 type CompleteEmailSignupReq struct {
 	SetupID      string           `validate:"required" json:"setupId"`
 	SRPM1        string           `validate:"required" json:"srpM1"`
-	KeyAttribute KeyAttributeInfo `validate:"required" json:"keyAttribute"`
 	IP           string           `                    json:"-"`
 	UserAgent    string           `                    json:"-"`
+	KeyAttribute KeyAttributeInfo `validate:"required" json:"keyAttribute"`
 }
 
 type CompleteEmailSignupInfo struct {
@@ -68,8 +68,6 @@ type VerifyEmailLoginResp struct {
 }
 
 type KeyAttributeInfo struct {
-	MemLimit                          int    `validate:"required" json:"memLimit"`
-	OpsLimit                          int    `validate:"required" json:"opsLimit"`
 	KekSalt                           string `validate:"required" json:"kekSalt"`
 	EncryptedKey                      string `validate:"required" json:"encryptedKey"`
 	KeyDecryptionNonce                string `validate:"required" json:"keyDecryptionNonce"`
@@ -80,6 +78,8 @@ type KeyAttributeInfo struct {
 	MasterKeyDecryptionNonce          string `                    json:"masterKeyDecryptionNonce"`
 	RecoveryKeyEncryptedWithMasterKey string `                    json:"recoveryKeyEncryptedWithMasterKey"`
 	RecoveryKeyDecryptionNonce        string `                    json:"recoveryKeyDecryptionNonce"`
+	MemLimit                          int    `validate:"required" json:"memLimit"`
+	OpsLimit                          int    `validate:"required" json:"opsLimit"`
 }
 
 func (i *KeyAttributeInfo) ConvertFromKeyAttributeEntity(keyAttributeInfo *entities.KeyAttribute) {
@@ -93,10 +93,10 @@ type EncryptionResult struct {
 }
 
 type UserCredential struct {
-	Email        string            `json:"email"`
-	AccessToken  string            `json:"accessToken"`
 	KeyAttribute *KeyAttributeInfo `json:"keyAttribute"`
 	KekEncrypted *EncryptionResult `json:"kekEncrypted"`
+	Email        string            `json:"email"`
+	AccessToken  string            `json:"accessToken"`
 }
 
 type ConfigFile struct {

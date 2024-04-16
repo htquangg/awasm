@@ -28,8 +28,8 @@ func (aal AuthenticatorAssuranceLevel) String() string {
 
 type AMREntry struct {
 	Method    string `json:"method"`
-	Timestamp int64  `json:"timestamp"`
 	Provider  string `json:"provider,omitempty"`
+	Timestamp int64  `json:"timestamp"`
 }
 
 type sortAMREntries struct {
@@ -49,6 +49,11 @@ func (s sortAMREntries) Swap(i, j int) {
 }
 
 type Session struct {
+	CreatedAt time.Time `xorm:"created TIMESTAMPZ created_at"`
+
+	NotAfter *time.Time `xorm:"not null TIMESTAMPZ not_after"`
+
+	DeletedAt *time.Time     `xorm:"TIMESTAMPZ deleted_at"`
 	ID        string         `xorm:"not null pk VARCHAR(36) id"`
 	UserID    string         `xorm:"not null VARCHAR(36) user_id"`
 	AAL       string         `xorm:"not null TEXT aal"`
@@ -56,11 +61,6 @@ type Session struct {
 	UserAgent string         `xorm:"not null TEXT default '' user_agent"`
 	FactorID  string         `xorm:"not null VARCHAR(36) default '' factor_id"`
 	AMRClaims []*MFAAMRClaim `xorm:"-"`
-
-	NotAfter *time.Time `xorm:"not null TIMESTAMPZ not_after"`
-
-	CreatedAt time.Time  `xorm:"created TIMESTAMPZ created_at"`
-	DeletedAt *time.Time `xorm:"TIMESTAMPZ deleted_at"`
 }
 
 func (Session) TableName() string {

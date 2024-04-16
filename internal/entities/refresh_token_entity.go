@@ -24,14 +24,13 @@ func (c ClaimScope) Ptr() *ClaimScope {
 }
 
 type RefreshToken struct {
-	ID        string `xorm:"not null pk VARCHAR(36) id"`
-	UserID    string `xorm:"not null VARCHAR(36) user_id"`
-	Token     string `xorm:"not null VARCHAR(255) token"`
-	SessionID string `xorm:"not null VARCHAR(36) session_id"`
-	Revoked   bool   `xorm:"not null BOOL default false revoked"`
-
 	CreatedAt time.Time `xorm:"created TIMESTAMPZ created_at"`
 	UpdatedAt time.Time `xorm:"updated TIMESTAMPZ updated_at"`
+	ID        string    `xorm:"not null pk VARCHAR(36) id"`
+	UserID    string    `xorm:"not null VARCHAR(36) user_id"`
+	Token     string    `xorm:"not null VARCHAR(255) token"`
+	SessionID string    `xorm:"not null VARCHAR(36) session_id"`
+	Revoked   bool      `xorm:"not null BOOL default false revoked"`
 }
 
 func (RefreshToken) TableName() string {
@@ -46,9 +45,9 @@ type GrantParams struct {
 }
 
 type CommonTokenClaims struct {
-	jwt.StandardClaims
-	Email string      `json:"email"`
 	Scope *ClaimScope `json:"scope"`
+	jwt.StandardClaims
+	Email string `json:"email"`
 }
 
 func (w *CommonTokenClaims) GetScope() ClaimScope {
@@ -61,6 +60,6 @@ func (w *CommonTokenClaims) GetScope() ClaimScope {
 type AccessTokenClaims struct {
 	CommonTokenClaims
 	AuthenticatorAssuranceLevel   string     `json:"aal,omitempty"`
-	AuthenticationMethodReference []AMREntry `json:"amr,omitempty"`
 	SessionID                     string     `json:"session_id,omitempty"`
+	AuthenticationMethodReference []AMREntry `json:"amr,omitempty"`
 }
