@@ -9,4 +9,6 @@
 /awasm
 
 # monitoring
-**/deployments/docker-compose/loki
+**/log/
+
+

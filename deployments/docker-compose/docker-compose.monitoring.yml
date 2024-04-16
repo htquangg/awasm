@@ -72,14 +72,14 @@ services:
       - "10001:10001"
       - "/loki"
     volumes:
-      - ./loki:/loki
+      - loki-data:/loki
     networks:
       - awasm-network
 
   promtail:
     image: grafana/promtail:2.7.4
     volumes:
-      - ./loki/:/var/log/
+      - ./../../log/:/var/log/awasm/
       - ./promtail/promtail.yml:/etc/promtail/promtail.yml
     ports:
       - "9080:9080"
@@ -90,10 +90,11 @@ services:
   loki:
     image: grafana/loki:2.7.3
     volumes:
-      - ./loki/:/loki
+      - ./loki/loki-config.yml:/etc/loki/loki-config.yml
+      - loki-data:/loki
     ports:
       - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/loki-config.yml
     depends_on:
       - init
       - promtail
@@ -103,6 +104,7 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
+    loki-data:
 
 networks:
   awasm-network:
