@@ -91,7 +91,12 @@ func GetDecryptedToken(encryptedToken string, publicKey string, privateKey strin
 	if err != nil {
 		return "", errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
 	}
-	decryptedTokenBytes, ok := box.OpenAnonymous(nil, encryptedTokenBytes, (*[32]byte)(publicKeyBytes), (*[32]byte)(privateKeyBytes))
+	decryptedTokenBytes, ok := box.OpenAnonymous(
+		nil,
+		encryptedTokenBytes,
+		(*[32]byte)(publicKeyBytes),
+		(*[32]byte)(privateKeyBytes),
+	)
 	if !ok {
 		return "", errors.InternalServer(reason.UnknownError).WithMsg("Encryption token failed.")
 	}

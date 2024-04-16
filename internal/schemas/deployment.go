@@ -8,6 +8,7 @@ import (
 
 type AddDeploymentReq struct {
 	EndpointID string `json:"endpointId"`
+	UserID     string `json:"-"`
 	Data       []byte `json:"data"`
 }
 

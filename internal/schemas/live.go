@@ -2,6 +2,7 @@ package schemas
 
 type PublishEndpointReq struct {
 	DeploymentID string `validate:"required" json:"deploymentId"`
+	UserID       string `                    json:"-"`
 }
 
 type PublishEndpointResp struct {

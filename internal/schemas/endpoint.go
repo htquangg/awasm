@@ -22,6 +22,7 @@ type AddEndpointReq struct {
 	Name string `validate:"required,gte=8,lte=50" json:"name"`
 	// Runtime on which the code will be invoked. (go or js for now)
 	Runtime string `validate:"required,oneof=go js"  json:"runtime"`
+	UserID  string `                                 json:"-"`
 }
 
 type AddEndpointResp struct {

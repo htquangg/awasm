@@ -57,8 +57,11 @@ func (s *DeploymentService) AddDeployment(
 	if !exists {
 		return nil, errors.BadRequest(reason.EndpointNotFound)
 	}
+	if endpoint.UserID != req.UserID {
+		return nil, errors.Forbidden(reason.EndpointAccessDenied)
+	}
 
-	deployment := entities.NewFromEndpoint(endpoint, req.Data)
+	deployment := entities.NewFromEndpoint(endpoint, req.UserID, req.Data)
 
 	err = s.deploymentRepo.AddDeployment(ctx, deployment)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"io"
 
 	"github.com/htquangg/a-wasm/internal/base/handler"
+	"github.com/htquangg/a-wasm/internal/base/middleware"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/internal/services/endpoint"
@@ -28,6 +29,7 @@ func (c *LiveController) Publish(ctx echo.Context) error {
 		return handler.HandleResponse(ctx, err, errField)
 	}
 
+	req.UserID = middleware.GetUserID(ctx)
 	resp, err := c.endpointService.Publish(ctx.Request().Context(), req)
 
 	return handler.HandleResponse(ctx, err, resp)

@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS endpoints
     updated_at           TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     deleted_at           TIMESTAMPTZ               NULL,
 
+    user_id              VARCHAR(36)               NOT NULL,
     name                 VARCHAR(256)              NOT NULL,
     runtime              VARCHAR(64)               NOT NULL,
     active_deployment_id VARCHAR(36)               NOT NULL
@@ -38,6 +39,7 @@ CREATE TABLE IF NOT EXISTS deployments
     created_at  TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     deleted_at  TIMESTAMPTZ               NULL,
 
+    user_id     VARCHAR(36)               NOT NULL,
     endpoint_id VARCHAR(36)               NOT NULL,
     hash        CHAR(32)                  NOT NULL,
     data        BYTEA                     NOT NULL,

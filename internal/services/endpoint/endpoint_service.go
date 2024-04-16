@@ -59,6 +59,9 @@ func (s *EndpointService) Publish(
 	if !exists {
 		return nil, errors.BadRequest(reason.DeploymentNotFound)
 	}
+	if deployment.UserID != req.UserID {
+		return nil, errors.Forbidden(reason.DeploymentAccessDenied)
+	}
 
 	endpoint, exists, err := s.endpointRepo.GetEndpointByID(ctx, deployment.EndpointID)
 	if err != nil {
@@ -66,6 +69,9 @@ func (s *EndpointService) Publish(
 	}
 	if !exists {
 		return nil, errors.BadRequest(reason.EndpointNotFound)
+	}
+	if endpoint.UserID != req.UserID {
+		return nil, errors.Forbidden(reason.EndpointAccessDenied)
 	}
 
 	currentDeploymentID := endpoint.ActiveDeploymentID
