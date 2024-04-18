@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/htquangg/a-wasm/internal/base/db"
+	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/protocluster/grains"
 	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
 	"github.com/htquangg/a-wasm/internal/protocluster/repos"
@@ -43,19 +44,19 @@ func New(ctx context.Context, db db.DB) *Cluster {
 	return cluster
 }
 
-func (c *Cluster) ServeHandler() (execute func() error, interrupt func(error)) {
-	ctx, cancel := context.WithCancel(c.ctx)
-	return func() error {
-			c.c.StartMember()
+func (c *Cluster) Start() error {
+	c.c.StartMember()
+	c.createWasmServerActor()
+	return nil
+}
 
-			c.createWasmServerActor()
+func (c *Cluster) Shutdown() error {
+	_, cancel := context.WithTimeout(context.Background(), constants.ShutdownTimeout)
+	defer cancel()
 
-			<-ctx.Done()
-			return ctx.Err()
-		}, func(err error) {
-			defer cancel()
-			c.c.Shutdown(true)
-		}
+	c.c.Shutdown(true)
+
+	return nil
 }
 
 func initKinds(repos *repos.Repos) []*cluster.Kind {

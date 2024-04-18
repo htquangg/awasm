@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"syscall"
@@ -20,7 +19,7 @@ import (
 	"github.com/htquangg/a-wasm/internal/web"
 
 	"github.com/fatih/color"
-	"github.com/oklog/run"
+	"github.com/segmentfault/pacman"
 	"github.com/spf13/cobra"
 )
 
@@ -44,7 +43,7 @@ func runApp() {
 		panic(err)
 	}
 
-	g, err := initApp(ctx, cfg)
+	app, err := initApp(ctx, cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -53,55 +52,53 @@ func runApp() {
 	constants.Revision = Revision
 	constants.GoVersion = GoVersion
 	regular := color.New()
-	regular.Println("├─ Awasm Version:", constants.Version, " Revision:", constants.Revision)
-
-	var se run.SignalError
-	if err := g.Run(); err != nil && !errors.As(err, &se) {
+	regular.Println("awasm Version:", constants.Version, " Revision:", constants.Revision)
+	if err := app.Run(context.Background()); err != nil {
 		panic(err)
 	}
 }
 
-func initApp(ctx context.Context, cfg *config.Config) (run.Group, error) {
-	var g run.Group
-
+func initApp(ctx context.Context, cfg *config.Config) (*pacman.Application, error) {
 	_, err := translator.NewTranslator(cfg.I18n)
 	if err != nil {
-		return g, err
+		return nil, err
 	}
 
 	db, err := db.New(ctx, cfg.DB)
 	if err != nil {
-		return g, err
+		return nil, err
 	}
 
 	cache, err := cache.New(ctx, cfg.Redis)
 	if err != nil {
-		return g, err
+		return nil, err
 	}
 
 	cluster := protocluster.New(ctx, db)
 
-	g.Add(cluster.ServeHandler())
-
 	repos := repos.New(cfg, db, cache)
+
 	services := services.New(cfg, repos, cluster)
 
 	mws := middleware.NewMiddleware(cfg, repos)
 	controllers := controllers.New(services)
 
-	g.Add(web.
-		New(ctx, cfg.Server, controllers, mws).
-		ServeHandler(),
-	)
-
-	g.Add(run.SignalHandler(ctx,
-		os.Interrupt,
-		os.Kill,
-		syscall.SIGINT,
-		syscall.SIGTERM,
-		syscall.SIGQUIT,
-		syscall.SIGHUP,
-	))
-
-	return g, nil
+	return pacman.NewApp(
+		pacman.WithName(Name),
+		pacman.WithVersion(Version),
+		pacman.WithSignals(
+			[]os.Signal{
+				os.Interrupt,
+				os.Kill,
+				syscall.SIGTERM,
+				syscall.SIGQUIT,
+				syscall.SIGINT,
+				syscall.SIGHUP,
+			},
+		),
+		pacman.WithServer(
+			web.New(ctx, cfg.Server, controllers, mws),
+			cluster,
+		),
+	), nil
 }

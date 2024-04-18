@@ -20,13 +20,13 @@ import (
 	"github.com/labstack/echo/v4"
 	middleware_echo "github.com/labstack/echo/v4/middleware"
 	"github.com/segmentfault/pacman/errors"
-	"github.com/segmentfault/pacman/log"
 )
 
 type Server struct {
 	ctx context.Context
 	cfg *config.Server
 	e   *echo.Echo
+	srv *http.Server
 }
 
 func New(
@@ -92,49 +92,55 @@ func New(
 		return echo.ErrNotFound
 	})
 
+	srv := &http.Server{
+		ReadTimeout:       constants.ReadTimeout,
+		ReadHeaderTimeout: constants.ReadHeaderTimeout,
+		WriteTimeout:      constants.WriteTimeout,
+		Handler:           e,
+		Addr:              cfg.Addr,
+	}
+
 	return &Server{
 		ctx: ctx,
 		cfg: cfg,
 		e:   e,
+		srv: srv,
 	}
 }
 
-func (s *Server) ServeHandler() (execute func() error, interrupt func(error)) {
-	s.e.Server.Addr = s.cfg.Addr
+func (s *Server) Start() error {
+	if s.cfg.ShowStartBanner {
+		addr := s.srv.Addr
+		schema := "http"
 
-	server := &http.Server{
-		ReadTimeout:       constants.ReadTimeout,
-		ReadHeaderTimeout: constants.ReadHeaderTimeout,
-		WriteTimeout:      constants.WriteTimeout,
-		Handler:           s.e,
-		Addr:              s.cfg.Addr,
+		date := new(strings.Builder)
+		std_log.New(date, "", std_log.LstdFlags).Print()
+
+		bold := color.New(color.Bold).Add(color.FgGreen)
+		bold.Printf(
+			"%s Web server started at %s\n",
+			strings.TrimSpace(date.String()),
+			color.CyanString("%s://%s", schema, addr),
+		)
+
+		regular := color.New()
+		regular.Printf("├─ REST API: %s\n", color.CyanString("%s://%s/api/", schema, addr))
 	}
 
-	return func() error {
-			if s.cfg.ShowStartBanner {
-				addr := server.Addr
-				schema := "http"
+	return s.srv.ListenAndServe()
+}
 
-				date := new(strings.Builder)
-				std_log.New(date, "", std_log.LstdFlags).Print()
+func (s *Server) Shutdown() error {
+	if s.srv != nil {
+		ctx, cancel := context.WithTimeout(context.Background(), constants.ShutdownTimeout)
+		defer cancel()
 
-				bold := color.New(color.Bold).Add(color.FgGreen)
-				bold.Printf(
-					"%s Web server started at %s\n",
-					strings.TrimSpace(date.String()),
-					color.CyanString("%s://%s", schema, addr),
-				)
-
-				regular := color.New()
-				regular.Printf("├─ REST API: %s\n", color.CyanString("%s://%s/api/", schema, addr))
-			}
-
-			return server.ListenAndServe()
-		}, func(err error) {
-			ctx, cancel := context.WithTimeout(context.Background(), constants.ShutdownTimeout)
-			defer cancel()
-			if err := server.Shutdown(ctx); err != nil {
-				log.Warnf("Web server failed to stop gracefully: %v", err)
-			}
+		if err := s.srv.Shutdown(ctx); err != nil {
+			return fmt.Errorf("Web server failed to stop gracefully: %v", err)
 		}
+
+		return nil
+	}
+
+	return nil
 }
