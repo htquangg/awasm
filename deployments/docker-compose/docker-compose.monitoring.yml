@@ -78,7 +78,7 @@ services:
   promtail:
     image: grafana/promtail:2.7.4
     volumes:
-      - ./../../log/:/var/log/awasm/
+      - ./../../logs/:/var/log/awasm/
       - ./promtail/promtail.yml:/etc/promtail/promtail.yml
     ports:
       - "9080:9080"

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
-	"github.com/segmentfault/pacman/log"
+	"github.com/htquangg/a-wasm/pkg/logger"
 
 	"github.com/asynkron/protoactor-go/actor"
 	"github.com/asynkron/protoactor-go/cluster"
@@ -40,7 +40,7 @@ func (s *wasmServerActor) Receive(ctx actor.Context) {
 	case *RequestWithResponse:
 		pid := s.requestRuntime(ctx, msg.Req.GetDeploymentID())
 		if pid == nil {
-			log.Error("failed to request a runtime PID")
+			logger.Error("failed to request a runtime PID")
 			return
 		}
 		s.responses[msg.Req.GetID()] = msg.Resp
@@ -62,12 +62,12 @@ func (s *wasmServerActor) requestRuntime(_ actor.Context, key string) *actor.PID
 		key: key,
 	}, time.Second*5).Result()
 	if err != nil {
-		log.Warn("runtime manager response failed")
+		logger.Warn("runtime manager response failed")
 		return nil
 	}
 	pid, ok := resp.(*actor.PID)
 	if !ok {
-		log.Warn("runtime manager responded with a non *actor.PID")
+		logger.Warn("runtime manager responded with a non *actor.PID")
 	}
 	return pid
 }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/base/translator"
+	"github.com/htquangg/a-wasm/pkg/logger"
 
 	"github.com/go-playground/locales"
 	english "github.com/go-playground/locales/en"
@@ -19,7 +20,6 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	myErrors "github.com/segmentfault/pacman/errors"
 	"github.com/segmentfault/pacman/i18n"
-	"github.com/segmentfault/pacman/log"
 )
 
 type TranslatorLocal struct {
@@ -161,7 +161,7 @@ func (m *MyValidator) Check(value interface{}) (errFields []*FormErrorField, err
 	if err != nil {
 		var valErrors validator.ValidationErrors
 		if !errors.As(err, &valErrors) {
-			log.Error(err)
+			logger.Error(err)
 			return nil, errors.New("validate check exception")
 		}
 
@@ -214,7 +214,7 @@ type Checker interface {
 func getObjectTagByFieldName(obj interface{}, fieldName string) (tag string) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Error(err)
+			logger.Error(err)
 		}
 	}()
 

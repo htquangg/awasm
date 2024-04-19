@@ -13,7 +13,7 @@ db:
   charset: "utf8mb4"
   log_sql: true
   ssl_mode: disable
-  max_idle_conns: 1000
+  max_idle_conns: 100
   max_open_conns: 100
   conn_max_lifetime: 300
 
@@ -33,6 +33,14 @@ key:
   encryption: bASFEEq6OmFvrpYDGgsF7lZn95p8VkuDgPAw93hpad8=
   hash: lXdxDsEADpazx2V9vR6tjnDa60CVdEaIp2z8jLChTR0oyqpcWm0fQcDq7dKAzq44ttGcN90TvjmsC67llMsz8w==
 
+logging:
+  filename: ""
+  level: "info"
+  max_size: 100
+  max_backups: 30
+  max_age: 10
+  use_local_time: false
+  use_compress: true
+
 i18n:
   bundle_dir: "./i18n"
-

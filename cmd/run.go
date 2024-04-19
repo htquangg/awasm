@@ -17,6 +17,7 @@ import (
 	"github.com/htquangg/a-wasm/internal/repos"
 	"github.com/htquangg/a-wasm/internal/services"
 	"github.com/htquangg/a-wasm/internal/web"
+	"github.com/htquangg/a-wasm/pkg/logger"
 
 	"github.com/fatih/color"
 	"github.com/segmentfault/pacman"
@@ -28,24 +29,37 @@ var runCmd = &cobra.Command{
 	Short:                 "Run the application",
 	DisableFlagsInUseLine: true,
 	Args:                  cobra.NoArgs,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("Awasm is starting..........................")
-		runApp()
+		return runApp()
 	},
 }
 
-func runApp() {
+func runApp() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	// Load the configuration from the file
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
+	// Setup application logger
+	logger.SetLogger(logger.NewZapLogger(
+		logger.WithZapFilename(cfg.Logging.Filename),
+		logger.WithZapLevel(cfg.Logging.Level),
+		logger.WithZapMaxSize(cfg.Logging.MaxSize),
+		logger.WithZapMaxBackups(cfg.Logging.MaxBackups),
+		logger.WithZapMaxAge(cfg.Logging.MaxAge),
+		logger.WithZapLocalTime(cfg.Logging.UseLocalTime),
+		logger.WithZapCompress(cfg.Logging.UseCompress),
+	))
+
+	// Setup dependencies and application
 	app, err := initApp(ctx, cfg)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	constants.Version = Version
@@ -53,9 +67,12 @@ func runApp() {
 	constants.GoVersion = GoVersion
 	regular := color.New()
 	regular.Println("awasm Version:", constants.Version, " Revision:", constants.Revision)
+
 	if err := app.Run(context.Background()); err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 func initApp(ctx context.Context, cfg *config.Config) (*pacman.Application, error) {

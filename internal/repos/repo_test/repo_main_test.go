@@ -10,10 +10,10 @@ import (
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/repos/repo_test/container"
+	"github.com/htquangg/a-wasm/pkg/logger"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
-	"github.com/segmentfault/pacman/log"
 )
 
 type Database struct {
@@ -59,7 +59,7 @@ func TestMain(t *testing.M) {
 
 	testDB = d.DB
 
-	log.Info("init test database successfully")
+	logger.Info("init test database successfully")
 
 	if ret := t.Run(); ret != 0 {
 		panic(ret)

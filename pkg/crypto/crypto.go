@@ -144,7 +144,7 @@ func GenerateLoginSubKey(kek string) (string, error) {
 	loginSubKeyBytes := make([]byte, 16)
 	kdf := hkdf.New(sha256.New, kekBytes, nil, []byte(LOGIN_SUB_KEY_INFO))
 	if _, err := io.ReadFull(kdf, loginSubKeyBytes); err != nil {
-		panic(err)
+		return "", errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
 	}
 
 	return converter.ToB64(loginSubKeyBytes), nil

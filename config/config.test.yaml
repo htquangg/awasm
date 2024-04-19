@@ -13,7 +13,7 @@ db:
   charset: "utf8mb4"
   log_sql: false
   ssl_mode: disable
-  max_idle_conns: 1000
+  max_idle_conns: 100
   max_open_conns: 100
   conn_max_lifetime: 300
 
@@ -32,6 +32,16 @@ jwt:
 key:
   encryption: kUbSxDDI/zFES4GW/HM5FB8ue9qdBwrzi6PJ75ZeOO0=
   hash: 0P04lPYQDfBGQn+ehhZFnbBup8iNT8a3WyPl8uL74yAGbJtdDA88Detti6DcDA+b5wefXzmwmlXV1hfUWvn0Rw==
+
+logging:
+  filename: "logs/awasm_test.log"
+  level: "info"
+  maxsize: 100
+  maxbackups: 30
+  maxage: 10
+  use_localtime: false
+  use_compression: true
+
 
 i18n:
   bundle_dir: "./i18n"

@@ -3,12 +3,12 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/constants"
+	"github.com/htquangg/a-wasm/pkg/logger"
 
-	"github.com/segmentfault/pacman/contrib/log/zap"
-	"github.com/segmentfault/pacman/log"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +33,31 @@ To run awasm, use:
 	Version:           fmt.Sprintf("%s\nrevision: %s\nbuild time: %s", Version, Revision, Time),
 }
 
+// exitCode wraps a return value for the application
+type exitCode struct {
+	Code int
+	Err  error
+}
+
+func handleExit() {
+	if e := recover(); e != nil {
+		if exit, ok := e.(exitCode); ok {
+			if exit.Code != 0 {
+				fmt.Fprintln(os.Stderr, "Awasm failed at", time.Now().Format("January 2, 2006 at 3:04pm (MST)"), "Err:", exit.Err)
+			} else {
+				fmt.Fprintln(os.Stderr, "Stopped Awasm at", time.Now().Format("January 2, 2006 at 3:04pm (MST)"))
+			}
+
+			os.Exit(exit.Code)
+		}
+		panic(e) // not an exitCode, bubble up
+	}
+}
+
 func Execute() {
+	// This makes sure that we panic and run defers correctly
+	defer handleExit()
+
 	initLog()
 
 	rootCmd.PersistentFlags().
@@ -48,9 +72,13 @@ func Execute() {
 	}
 
 	if err := rootCmd.Execute(); err != nil {
-		log.Errorf("the service exitted abnormally: %v", err)
-		os.Exit(1)
+		panic(exitCode{
+			Code: 1,
+			Err:  err,
+		})
 	}
+
+	panic(exitCode{Code: 0})
 }
 
 func init() {
@@ -62,9 +90,11 @@ func init() {
 }
 
 func initLog() {
-	logLevel := os.Getenv(constants.LogLevel)
 	logPath := os.Getenv(constants.LogPath)
+	logLevel := os.Getenv(constants.LogLevel)
 
-	log.SetLogger(zap.NewLogger(
-		log.ParseLevel(logLevel), zap.WithName("awasm"), zap.WithPath(logPath)))
+	logger.SetLogger(logger.NewZapLogger(
+		logger.WithZapFilename(logPath),
+		logger.WithZapLevel(logLevel),
+	))
 }

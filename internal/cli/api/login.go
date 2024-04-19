@@ -6,9 +6,9 @@ import (
 
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/schemas"
+	"github.com/htquangg/a-wasm/pkg/logger"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/segmentfault/pacman/log"
 )
 
 func CallGetSRPAttribute(
@@ -87,7 +87,7 @@ func CallIsAuthenticated(
 		return false
 	}
 	if resp.IsError() || result.Code != http.StatusOK {
-		log.Debugf("CallVerifyEmailLogin: Unsuccessful response [response=%s]", resp)
+		logger.Debugf("CallVerifyEmailLogin: Unsuccessful response [response=%s]", resp)
 		return false
 	}
 

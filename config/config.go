@@ -15,13 +15,14 @@ var AWASM_URL string
 
 type (
 	Config struct {
-		Server     *Server `json:"server,omitempty"     mapstructure:"server"      yaml:"server,omitempty"`
-		DB         *DB     `json:"db,omitempty"         mapstructure:"db"          yaml:"db,omitempty"`
-		Redis      *Redis  `json:"redis,omitempty"      mapstructure:"redis"       yaml:"redis,omitempty"`
-		JWT        *JWT    `json:"jwt,omitempty"        mapstructure:"jwt"         yaml:"jwt,omitempty"`
-		Key        *Key    `json:"key,omitempty"        mapstructure:"key"         yaml:"key,omitempty"`
-		I18n       *I18n   `json:"i18n,omitempty"       mapstructure:"i18n"        yaml:"i18n,omitempty"`
-		IngressURL string  `json:"ingressURL,omitempty" mapstructure:"ingress_url" yaml:"ingress_url,omitempty"`
+		Server     *Server  `json:"server,omitempty"     mapstructure:"server"      yaml:"server,omitempty"`
+		DB         *DB      `json:"db,omitempty"         mapstructure:"db"          yaml:"db,omitempty"`
+		Redis      *Redis   `json:"redis,omitempty"      mapstructure:"redis"       yaml:"redis,omitempty"`
+		JWT        *JWT     `json:"jwt,omitempty"        mapstructure:"jwt"         yaml:"jwt,omitempty"`
+		Key        *Key     `json:"key,omitempty"        mapstructure:"key"         yaml:"key,omitempty"`
+		I18n       *I18n    `json:"i18n,omitempty"       mapstructure:"i18n"        yaml:"i18n,omitempty"`
+		Logging    *Logging `json:"logging"              mapstructure:"logging"     yaml:"logging"`
+		IngressURL string   `json:"ingressURL,omitempty" mapstructure:"ingress_url" yaml:"ingress_url,omitempty"`
 	}
 
 	Server struct {
@@ -66,12 +67,24 @@ type (
 		HashBytes       []byte `json:"-"                    mapstructure:"hash_bytes"       yaml:"-"`
 	}
 
+	Logging struct {
+		Filename     string `json:"filename"   mapstructure:"filename"    yaml:"filename"`
+		Level        string `json:"level"      mapstructure:"level"       yaml:"level"`
+		MaxBackups   int    `json:"maxBackups" mapstructure:"max_backups" yaml:"max_backups"`
+		MaxSize      int    `json:"maxSize"    mapstructure:"max_size"    yaml:"max_size"`
+		MaxAge       int    `json:"maxAge"     mapstructure:"max_age"     yaml:"max_age"`
+		UseLocalTime bool   `json:"useLocalTime"  mapstructure:"use_local_time"  yaml:"use_local_time"`
+		UseCompress  bool   `json:"useCompress"   mapstructure:"use_compress"    yaml:"use_compress"`
+	}
+
 	I18n struct {
 		BundleDir string `json:"bundle_dir,omitempty" mapstructure:"bundle_dir" yaml:"bundle_dir,omitempty"`
 	}
 )
 
 func LoadConfig() (*Config, error) {
+	loadDefaultConfig()
+
 	var configPath string
 
 	env := os.Getenv(constants.AppEnv)
@@ -107,19 +120,19 @@ func LoadConfig() (*Config, error) {
 
 	secretEncryptionKeyBytes, err := converter.FromB64(cfg.Key.Encryption)
 	if err != nil {
-		return nil, fmt.Errorf("Could not decode email-encryption-key: %v", err)
+		return nil, fmt.Errorf("could not decode email-encryption-key: %v", err)
 	}
 	cfg.Key.EncryptionBytes = secretEncryptionKeyBytes
 
 	hashingKeyBytes, err := converter.FromB64(cfg.Key.Hash)
 	if err != nil {
-		return nil, fmt.Errorf("Could not decode email-hash-key: %v", err)
+		return nil, fmt.Errorf("could not decode email-hash-key: %v", err)
 	}
 	cfg.Key.HashBytes = hashingKeyBytes
 
 	jwtSecretBytes, err := converter.FromURLB64(cfg.JWT.Secret)
 	if err != nil {
-		return nil, fmt.Errorf("Could not decode email-hash-key: %v", err)
+		return nil, fmt.Errorf("could not decode email-hash-key: %v", err)
 	}
 	cfg.JWT.SecretBytes = jwtSecretBytes
 
@@ -150,6 +163,48 @@ func (c *DB) Address() string {
 	)
 
 	return conn
+}
+
+func loadDefaultConfig() {
+	viper.SetDefault("ingress_url", "http://127.0.0.1:8080")
+
+	viper.SetDefault("server.addr", "127.0.0.1:8080")
+	viper.SetDefault("server.show_start_banner", true)
+
+	viper.SetDefault("db.host", "127.0.0.1")
+	viper.SetDefault("db.port", 5432)
+	viper.SetDefault("db.user", "postgres")
+	viper.SetDefault("db.password", "localdb")
+	viper.SetDefault("db.schema", "dev-local-awasm-001")
+	viper.SetDefault("db.charset", "utf8bm4")
+	viper.SetDefault("db.log_sql", true)
+	viper.SetDefault("db.ssl_mode", "disable")
+	viper.SetDefault("db.max_idle_conns", 100)
+	viper.SetDefault("db.max_open_conns", 100)
+	viper.SetDefault("db.conn_max_lifetime", 300)
+
+	viper.SetDefault("redis.host", "127.0.0.1")
+	viper.SetDefault("redis.port", 6379)
+	viper.SetDefault("redis.require_tls", 6379)
+	viper.SetDefault("redis.password", "")
+	viper.SetDefault("redis.db", 1)
+	viper.SetDefault("redis.pool_size", 50)
+
+	viper.SetDefault("jwt.secret", "lLTQ-5romlnVEOVdq6gCwEpCCKeypoKvuugm2GDfjzs=")
+	viper.SetDefault("jwt.exp", 86400)
+
+	viper.SetDefault("key.encryption", "bASFEEq6OmFvrpYDGgsF7lZn95p8VkuDgPAw93hpad8=")
+	viper.SetDefault("key.hash", "lXdxDsEADpazx2V9vR6tjnDa60CVdEaIp2z8jLChTR0oyqpcWm0fQcDq7dKAzq44ttGcN90TvjmsC67llMsz8w==")
+
+	viper.SetDefault("logging.filename", "logs/awasm.log")
+	viper.SetDefault("logging.level", "info")
+	viper.SetDefault("logging.max_size", 100)
+	viper.SetDefault("logging.max_backups", 30)
+	viper.SetDefault("logging.max_age", 10)
+	viper.SetDefault("logging.use_local_time", false)
+	viper.SetDefault("logging.use_compress", true)
+
+	viper.SetDefault("i18n.bundle_dir", "./i18n")
 }
 
 func getConfigRootPath() (string, error) {

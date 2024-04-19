@@ -9,8 +9,7 @@ import (
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/schemas"
-
-	"github.com/segmentfault/pacman/log"
+	"github.com/htquangg/a-wasm/pkg/logger"
 )
 
 func WriteInitalConfig(userCredentials *schemas.UserCredential) error {
@@ -72,7 +71,7 @@ func WriteInitalConfig(userCredentials *schemas.UserCredential) error {
 func ConfigFileExists() bool {
 	fullConfigFileURI, _, err := GetFullConfigFilePath()
 	if err != nil {
-		log.Debugf("There was an error when creating the full path to config file: %v", err)
+		logger.Debugf("There was an error when creating the full path to config file: %v", err)
 		return false
 	}
 

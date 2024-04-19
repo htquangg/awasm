@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 
 	"github.com/htquangg/a-wasm/config"
+	"github.com/htquangg/a-wasm/pkg/logger"
 
 	myTran "github.com/segmentfault/pacman/contrib/i18n"
 	"github.com/segmentfault/pacman/i18n"
-	"github.com/segmentfault/pacman/log"
 	"gopkg.in/yaml.v3"
 )
 
@@ -47,7 +47,7 @@ func NewTranslator(c *config.I18n) (tr i18n.Translator, err error) {
 		if filepath.Ext(file.Name()) != ".yaml" && file.Name() != "i18n.yaml" {
 			continue
 		}
-		log.Debugf("try to read file: %s", file.Name())
+		logger.Debugf("try to read file: %s", file.Name())
 		buf, err := os.ReadFile(filepath.Join(c.BundleDir, file.Name()))
 		if err != nil {
 			return nil, fmt.Errorf("read file failed: %s %s", file.Name(), err)
@@ -70,13 +70,13 @@ func NewTranslator(c *config.I18n) (tr i18n.Translator, err error) {
 
 		content, err := yaml.Marshal(translation)
 		if err != nil {
-			log.Debugf("marshal translation content failed: %s %s", file.Name(), err)
+			logger.Debugf("marshal translation content failed: %s %s", file.Name(), err)
 			continue
 		}
 
 		// add translator use backend translation
 		if err = myTran.AddTranslator(content, file.Name()); err != nil {
-			log.Debugf("add translator failed: %s %s", file.Name(), err)
+			logger.Debugf("add translator failed: %s %s", file.Name(), err)
 			continue
 		}
 	}

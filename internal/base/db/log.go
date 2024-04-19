@@ -5,8 +5,8 @@ import (
 	"sync/atomic"
 
 	"github.com/htquangg/a-wasm/internal/constants"
+	"github.com/htquangg/a-wasm/pkg/logger"
 
-	"github.com/segmentfault/pacman/log"
 	xormlog "xorm.io/xorm/log"
 )
 
@@ -25,35 +25,35 @@ func NewXORMLogger(showSQL bool) xormlog.Logger {
 }
 
 func (l *XORMLogBridge) Debug(v ...interface{}) {
-	log.Debug(v...)
+	logger.Debug(v...)
 }
 
 func (l *XORMLogBridge) Debugf(format string, v ...interface{}) {
-	log.Debugf(format, v...)
+	logger.Debugf(format, v...)
 }
 
 func (l *XORMLogBridge) Error(v ...interface{}) {
-	log.Error(v...)
+	logger.Error(v...)
 }
 
 func (l *XORMLogBridge) Errorf(format string, v ...interface{}) {
-	log.Errorf(format, v...)
+	logger.Errorf(format, v...)
 }
 
 func (l *XORMLogBridge) Info(v ...interface{}) {
-	log.Info(v...)
+	logger.Info(v...)
 }
 
 func (l *XORMLogBridge) Infof(format string, v ...interface{}) {
-	log.Infof(format, v...)
+	logger.Infof(format, v...)
 }
 
 func (l *XORMLogBridge) Warn(v ...interface{}) {
-	log.Warn(v...)
+	logger.Warn(v...)
 }
 
 func (l *XORMLogBridge) Warnf(format string, v ...interface{}) {
-	log.Warnf(format, v...)
+	logger.Warnf(format, v...)
 }
 
 func (l *XORMLogBridge) Level() xormlog.LogLevel {

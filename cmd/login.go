@@ -13,8 +13,8 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/go-resty/resty/v2"
+	"github.com/htquangg/a-wasm/pkg/logger"
 	"github.com/manifoldco/promptui"
-	"github.com/segmentfault/pacman/log"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +33,7 @@ var loginCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		currentLoggedInUserDetails, err := cli.GetCurrentLoggedInUserDetails()
 		if err != nil && (strings.Contains(err.Error(), "we couldn't find your logged in details")) {
-			log.Debug(err)
+			logger.Debug(err)
 		} else if err != nil {
 			cli.HandleError(err)
 		}
@@ -58,7 +58,7 @@ var loginCmd = &cobra.Command{
 
 		err = cli.StoreUserCredsInKeyRing(&userCredentialToBeStored)
 		if err != nil {
-			log.Errorf("Unable to store your credential in system [%s]", err)
+			logger.Errorf("Unable to store your credential in system [%s]", err)
 			cli.HandleError(err)
 		}
 
