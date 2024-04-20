@@ -61,50 +61,49 @@ func GetUserCredsFromKeyRing(userEmail string) (credentials *schemas.UserCredent
 	return &userCredentials, err
 }
 
-func GetCurrentLoggedInUserDetails() (*LoggedInUserDetails, error) {
-	if ConfigFileExists() {
-		configFile, err := GetConfigFile()
-		if err != nil {
-			return nil, fmt.Errorf(
-				"getCurrentLoggedInUserDetails: unable to get logged in user from config file [err=%s] \n",
-				err,
-			)
-		}
-		if configFile.LoggedInUserEmail == "" {
-			return nil, fmt.Errorf("Error: %s", WarnAuthMessage)
-		}
-
-		userCreds, err := GetUserCredsFromKeyRing(configFile.LoggedInUserEmail)
-		if err != nil {
-			if strings.Contains(err.Error(), "credentials not found in system keyring") {
-				return nil, errors.New(
-					"we couldn't find your logged in details, try running [awasm login] then try again",
-				)
-			} else {
-				return nil, fmt.Errorf("failed to fetch creditnals from keyring because [err=%s]", err)
-			}
-		}
-
-		httpClient := resty.New().
-			SetAuthToken(userCreds.AccessToken).
-			SetHeader("Accept", "application/json")
-
-		if configFile.LoggedInUserDomain != "" {
-			config.AWASM_URL = configFile.LoggedInUserDomain
-		}
-
-		isAuthenticated := api.CallIsAuthenticated(httpClient)
-
-		// TODO: add refresh token
-
-		if !isAuthenticated {
-			return nil, fmt.Errorf("Error: %s\n", WarnAuthMessage)
-		}
-
-		return &LoggedInUserDetails{
-			UserCredentials: userCreds,
-		}, nil
-	} else {
-		return nil, nil
+func GetCurrentLoggedInUserDetails() (*LoggedInUserDetails, bool, error) {
+	if !ConfigFileExists() {
+		return nil, false, nil
 	}
+
+	configFile, err := GetConfigFile()
+	if err != nil {
+		return nil, false, fmt.Errorf(
+			"getCurrentLoggedInUserDetails: unable to get logged in user from config file [err=%s] \n",
+			err,
+		)
+	}
+	if configFile.LoggedInUserEmail == "" {
+		return nil, false, fmt.Errorf("Error: %s", WarnAuthMessage)
+	}
+
+	userCreds, err := GetUserCredsFromKeyRing(configFile.LoggedInUserEmail)
+	if err != nil {
+		if strings.Contains(err.Error(), "credentials not found in system keyring") {
+			return nil, false, errors.New(
+				"we couldn't find your logged in details, try running [awasm login] then try again",
+			)
+		} else {
+			return nil, false, fmt.Errorf("failed to fetch creditnals from keyring because [err=%s]", err)
+		}
+	}
+
+	httpClient := resty.New().
+		SetAuthToken(userCreds.AccessToken).
+		SetHeader("Accept", "application/json")
+
+	if configFile.LoggedInUserDomain != "" {
+		config.AWASM_URL = configFile.LoggedInUserDomain
+	}
+
+	isAuthenticated := api.CallIsAuthenticated(httpClient)
+	if !isAuthenticated {
+		return nil, false, nil
+	}
+
+	// TODO: add refresh token
+
+	return &LoggedInUserDetails{
+		UserCredentials: userCreds,
+	}, true, nil
 }

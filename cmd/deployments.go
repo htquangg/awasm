@@ -53,9 +53,12 @@ var createDeploymentCmd = &cobra.Command{
 			fmt.Println("unable to read file")
 		}
 
-		loggedInUserDetails, err := cli.GetCurrentLoggedInUserDetails()
+		loggedInUserDetails, isAuthenticated, err := cli.GetCurrentLoggedInUserDetails()
 		if err != nil {
 			cli.HandleError(err, "Unable to authenticate")
+		}
+		if !isAuthenticated {
+			cli.PrintErrorMessageAndExit("Your login session has expired, please run [awasm login] and try again")
 		}
 
 		// set up resty client

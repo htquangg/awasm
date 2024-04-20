@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/htquangg/a-wasm/pkg/crypto"
+
 	"golang.org/x/crypto/blake2b"
 )
 

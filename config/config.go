@@ -68,13 +68,13 @@ type (
 	}
 
 	Logging struct {
-		Filename     string `json:"filename"   mapstructure:"filename"    yaml:"filename"`
-		Level        string `json:"level"      mapstructure:"level"       yaml:"level"`
-		MaxBackups   int    `json:"maxBackups" mapstructure:"max_backups" yaml:"max_backups"`
-		MaxSize      int    `json:"maxSize"    mapstructure:"max_size"    yaml:"max_size"`
-		MaxAge       int    `json:"maxAge"     mapstructure:"max_age"     yaml:"max_age"`
-		UseLocalTime bool   `json:"useLocalTime"  mapstructure:"use_local_time"  yaml:"use_local_time"`
-		UseCompress  bool   `json:"useCompress"   mapstructure:"use_compress"    yaml:"use_compress"`
+		Filename     string `json:"filename"     mapstructure:"filename"       yaml:"filename"`
+		Level        string `json:"level"        mapstructure:"level"          yaml:"level"`
+		MaxBackups   int    `json:"maxBackups"   mapstructure:"max_backups"    yaml:"max_backups"`
+		MaxSize      int    `json:"maxSize"      mapstructure:"max_size"       yaml:"max_size"`
+		MaxAge       int    `json:"maxAge"       mapstructure:"max_age"        yaml:"max_age"`
+		UseLocalTime bool   `json:"useLocalTime" mapstructure:"use_local_time" yaml:"use_local_time"`
+		UseCompress  bool   `json:"useCompress"  mapstructure:"use_compress"   yaml:"use_compress"`
 	}
 
 	I18n struct {
@@ -194,7 +194,10 @@ func loadDefaultConfig() {
 	viper.SetDefault("jwt.exp", 86400)
 
 	viper.SetDefault("key.encryption", "bASFEEq6OmFvrpYDGgsF7lZn95p8VkuDgPAw93hpad8=")
-	viper.SetDefault("key.hash", "lXdxDsEADpazx2V9vR6tjnDa60CVdEaIp2z8jLChTR0oyqpcWm0fQcDq7dKAzq44ttGcN90TvjmsC67llMsz8w==")
+	viper.SetDefault(
+		"key.hash",
+		"lXdxDsEADpazx2V9vR6tjnDa60CVdEaIp2z8jLChTR0oyqpcWm0fQcDq7dKAzq44ttGcN90TvjmsC67llMsz8w==",
+	)
 
 	viper.SetDefault("logging.filename", "logs/awasm.log")
 	viper.SetDefault("logging.level", "info")

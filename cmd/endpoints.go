@@ -58,9 +58,12 @@ var createEndpointCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		loggedInUserDetails, err := cli.GetCurrentLoggedInUserDetails()
+		loggedInUserDetails, isAuthenticated, err := cli.GetCurrentLoggedInUserDetails()
 		if err != nil {
 			cli.HandleError(err, "Unable to authenticate")
+		}
+		if !isAuthenticated {
+			cli.PrintErrorMessageAndExit("Your login session has expired, please run [awasm login] and try again")
 		}
 
 		// set up resty client
@@ -93,9 +96,12 @@ var publishEndpointCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		loggedInUserDetails, err := cli.GetCurrentLoggedInUserDetails()
+		loggedInUserDetails, isAuthenticated, err := cli.GetCurrentLoggedInUserDetails()
 		if err != nil {
 			cli.HandleError(err, "Unable to authenticate")
+		}
+		if !isAuthenticated {
+			cli.PrintErrorMessageAndExit("Your login session has expired, please run [awasm login] and try again")
 		}
 
 		// set up resty client

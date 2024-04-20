@@ -35,15 +35,21 @@ To run awasm, use:
 
 // exitCode wraps a return value for the application
 type exitCode struct {
-	Code int
 	Err  error
+	Code int
 }
 
 func handleExit() {
 	if e := recover(); e != nil {
 		if exit, ok := e.(exitCode); ok {
 			if exit.Code != 0 {
-				fmt.Fprintln(os.Stderr, "Awasm failed at", time.Now().Format("January 2, 2006 at 3:04pm (MST)"), "Err:", exit.Err)
+				fmt.Fprintln(
+					os.Stderr,
+					"Awasm failed at",
+					time.Now().Format("January 2, 2006 at 3:04pm (MST)"),
+					"Err:",
+					exit.Err,
+				)
 			} else {
 				fmt.Fprintln(os.Stderr, "Stopped Awasm at", time.Now().Format("January 2, 2006 at 3:04pm (MST)"))
 			}

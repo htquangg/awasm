@@ -31,14 +31,14 @@ var loginCmd = &cobra.Command{
 	DisableFlagsInUseLine: true,
 	Args:                  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		currentLoggedInUserDetails, err := cli.GetCurrentLoggedInUserDetails()
+		currentLoggedInUserDetails, isAuthenticated, err := cli.GetCurrentLoggedInUserDetails()
 		if err != nil && (strings.Contains(err.Error(), "we couldn't find your logged in details")) {
 			logger.Debug(err)
 		} else if err != nil {
 			cli.HandleError(err)
 		}
 
-		if currentLoggedInUserDetails != nil {
+		if isAuthenticated {
 			shouldOverride, err := userLoginMenu(currentLoggedInUserDetails.UserCredentials.Email)
 			if err != nil {
 				cli.HandleError(err)
