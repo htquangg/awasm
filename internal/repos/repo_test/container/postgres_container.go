@@ -60,7 +60,7 @@ func NewPostgresContainer(ctx context.Context, cfg *config.DB) (*PostgresContain
 		return nil, err
 	}
 
-	verbose, _ := strconv.ParseBool(strings.TrimSpace(os.Getenv("FLIPT_TEST_DATABASE_VERBOSE")))
+	verbose, _ := strconv.ParseBool(strings.TrimSpace(os.Getenv("AWASM_TEST_DATABASE_VERBOSE")))
 	if verbose {
 		var logger testContainerLogger
 		container.FollowOutput(&logger)

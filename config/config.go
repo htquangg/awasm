@@ -95,25 +95,25 @@ func LoadConfig() (*Config, error) {
 	configPathFromEnv := os.Getenv(constants.ConfigPath)
 	if configPathFromEnv != "" {
 		configPath = configPathFromEnv
+	} else if viper.GetString("config-path") != "" {
+		configPath = viper.GetString("config-path")
 	} else {
 		rootPath, err := getConfigRootPath()
 		if err != nil {
 			return nil, err
 		}
-		configPath = fmt.Sprintf("%s/config.development.yaml", rootPath)
+		configPath = fmt.Sprintf("%s/awasm.yaml", rootPath)
 	}
 
 	fmt.Printf("Load config from %s\n", configPath)
 
 	viper.SetConfigType(constants.Yaml)
 	viper.SetConfigFile(configPath)
-
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, err
 	}
 
 	cfg := &Config{}
-
 	if err := viper.Unmarshal(cfg); err != nil {
 		return nil, err
 	}

@@ -22,17 +22,22 @@ import (
 	"github.com/fatih/color"
 	"github.com/segmentfault/pacman"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var runCmd = &cobra.Command{
 	Use:                   "run",
 	Short:                 "Run the application",
 	DisableFlagsInUseLine: true,
-	Args:                  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("Awasm is starting..........................")
 		return runApp()
 	},
+}
+
+func init() {
+	runCmd.PersistentFlags().String("config-path", "", "Specify the config path of the application")
+	ensure(viper.BindPFlag("config-path", runCmd.PersistentFlags().Lookup("config-path")))
 }
 
 func runApp() error {

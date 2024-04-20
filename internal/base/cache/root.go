@@ -26,7 +26,7 @@ type cache struct {
 }
 
 func Key(k string) string {
-	return fmt.Sprintf("flipt:%x", md5.Sum([]byte(k)))
+	return fmt.Sprintf("awasm:%x", md5.Sum([]byte(k)))
 }
 
 func New(ctx context.Context, cfg *config.Redis) (Cacher, error) {

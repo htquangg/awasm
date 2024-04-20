@@ -33,6 +33,14 @@ To run awasm, use:
 	Version:           fmt.Sprintf("%s\nrevision: %s\nbuild time: %s", Version, Revision, Time),
 }
 
+func init() {
+	cobra.OnInitialize(initLog)
+
+	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd, deploymentsCmd, loginCmd, signupCmd, resetCmd} {
+		rootCmd.AddCommand(cmd)
+	}
+}
+
 // exitCode wraps a return value for the application
 type exitCode struct {
 	Err  error
@@ -87,14 +95,6 @@ func Execute() {
 	panic(exitCode{Code: 0})
 }
 
-func init() {
-	cobra.OnInitialize(initLog)
-
-	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd, deploymentsCmd, loginCmd, signupCmd, resetCmd} {
-		rootCmd.AddCommand(cmd)
-	}
-}
-
 func initLog() {
 	logPath := os.Getenv(constants.LogPath)
 	logLevel := os.Getenv(constants.LogLevel)
@@ -103,4 +103,10 @@ func initLog() {
 		logger.WithZapFilename(logPath),
 		logger.WithZapLevel(logLevel),
 	))
+}
+
+func ensure(err error) {
+	if err != nil {
+		panic(err)
+	}
 }

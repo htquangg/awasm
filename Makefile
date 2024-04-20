@@ -47,7 +47,7 @@ dev: ## run the dev application
 
 .PHONY: dev-run
 dev-run: ## run the dev application and serve
-	@go run main.go run
+	@go run main.go run --config-path $(shell PWD)/config/awasm.yaml
 
 .PHONY: air
 air: ## live reloading the application
@@ -60,7 +60,7 @@ air-run: ## live reloading the application and serve
 .PHONY: test
 test: ## run the go tests
 	@echo "Running tests"
-	go test ./... -v --cover
+	@MIGRATION_DIR_PATH=$PWD/migrations/schemas CONFIG_PATH=$PWD/config/awasm.yaml go test ./... -v --cover
 
 test-report: ## run the go tests and report
 	@echo "Running tests"
