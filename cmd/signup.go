@@ -51,11 +51,18 @@ func signupCredential(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err, "Unable to parse email and password for authentication")
 	}
+
 	// set up resty client
 	httpClient := resty.New()
 	httpClient.
 		SetHeader("Accept", "application/json").
 		SetHeader("Content-Type", "application/json")
+
+	// check password strength
+	err = api.CallCheckPasswordStrength(httpClient, password)
+	if err != nil {
+		cli.HandleError(err)
+	}
 
 	// [1]. Send verification code to email
 	_, err = api.CallBeginEmailSignupProcess(httpClient, &schemas.BeginEmailSignupProcessReq{
