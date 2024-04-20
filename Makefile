@@ -1,3 +1,5 @@
+SHELL=/bin/bash
+
 VERSION=0.0.0
 BIN=awasm
 
@@ -60,7 +62,7 @@ air-run: ## live reloading the application and serve
 .PHONY: test
 test: ## run the go tests
 	@echo "Running tests"
-	@MIGRATION_DIR_PATH=$PWD/migrations/schemas CONFIG_PATH=$PWD/config/awasm.yaml go test ./... -v --cover
+	@MIGRATION_DIR_PATH=$(PWD)/migrations/schemas CONFIG_PATH=$(PWD)/config/awasm.yaml go test ./... -v --cover
 
 test-report: ## run the go tests and report
 	@echo "Running tests"
