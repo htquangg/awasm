@@ -10,6 +10,7 @@ import (
 	"github.com/htquangg/a-wasm/pkg/logger"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // go build -ldflags "-X github.com/htquangg/a-wasm/cmd.Version=x.y.z"
@@ -76,6 +77,8 @@ func Execute() {
 
 	rootCmd.PersistentFlags().
 		StringVar(&config.AWASM_URL, "domain", constants.AWASM_DEFAULT_API_URL, "Point the CLI to your own backend [can also set via environment variable name: AWASM_API_URL]")
+	rootCmd.PersistentFlags().Bool("debug", false, "Indicate whether the debug mode is turned on")
+	ensure(viper.BindPFlag("cli.debug", rootCmd.PersistentFlags().Lookup("debug")))
 
 	// if config.AWASM_URL is set to the default value, check if AWASM_URL is set in the environment
 	// this is used to allow overrides of the default value

@@ -8,8 +8,8 @@ import (
 	"github.com/htquangg/a-wasm/internal/cli/api"
 	"github.com/htquangg/a-wasm/internal/schemas"
 
-	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var deploymentsCmd = &cobra.Command{
@@ -61,14 +61,12 @@ var createDeploymentCmd = &cobra.Command{
 			cli.PrintErrorMessageAndExit("Your login session has expired, please run [awasm login] and try again")
 		}
 
-		// set up resty client
-		httpClient := resty.New()
-		httpClient.
-			SetAuthToken(loggedInUserDetails.UserCredentials.AccessToken).
-			SetHeader("Accept", "application/octet-stream").
-			SetHeader("Content-Type", "application/octet-stream")
+		client := api.NewClient(&api.ClientOptions{
+			Debug: viper.GetBool("cli.debug"),
+		})
+		client.HTTPClient.SetAuthToken(loggedInUserDetails.UserCredentials.AccessToken)
 
-		addDeploymentResp, err := api.CallAddDeployment(httpClient, &schemas.AddDeploymentReq{
+		addDeploymentResp, err := api.CallAddDeployment(client.HTTPClient, &schemas.AddDeploymentReq{
 			EndpointID: endpointID,
 			Data:       b,
 		},
@@ -77,7 +75,6 @@ var createDeploymentCmd = &cobra.Command{
 			cli.HandleError(err)
 		}
 
-		fmt.Println("Successful!!!")
 		fmt.Printf("Your deployment id: %s\n", addDeploymentResp.ID)
 		fmt.Printf("Your preview ingress url: %s\n", addDeploymentResp.IngressURL)
 	},

@@ -8,8 +8,8 @@ import (
 	"github.com/htquangg/a-wasm/internal/cli/api"
 	"github.com/htquangg/a-wasm/internal/schemas"
 
-	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var endpointsCmd = &cobra.Command{
@@ -66,14 +66,12 @@ var createEndpointCmd = &cobra.Command{
 			cli.PrintErrorMessageAndExit("Your login session has expired, please run [awasm login] and try again")
 		}
 
-		// set up resty client
-		httpClient := resty.New()
-		httpClient.
-			SetAuthToken(loggedInUserDetails.UserCredentials.AccessToken).
-			SetHeader("Accept", "application/json").
-			SetHeader("Content-Type", "application/json")
+		client := api.NewClient(&api.ClientOptions{
+			Debug: viper.GetBool("cli.debug"),
+		})
+		client.HTTPClient.SetAuthToken(loggedInUserDetails.UserCredentials.AccessToken)
 
-		addEndpointResp, err := api.CallAddEndpoint(httpClient, &schemas.AddEndpointReq{
+		addEndpointResp, err := api.CallAddEndpoint(client.HTTPClient, &schemas.AddEndpointReq{
 			Name:    name,
 			Runtime: runtime,
 		})
@@ -81,7 +79,6 @@ var createEndpointCmd = &cobra.Command{
 			cli.HandleError(err)
 		}
 
-		fmt.Println("Successful!!!")
 		fmt.Printf("Your endpoint id: %s\n", addEndpointResp.ID)
 	},
 }
@@ -104,21 +101,18 @@ var publishEndpointCmd = &cobra.Command{
 			cli.PrintErrorMessageAndExit("Your login session has expired, please run [awasm login] and try again")
 		}
 
-		// set up resty client
-		httpClient := resty.New()
-		httpClient.
-			SetAuthToken(loggedInUserDetails.UserCredentials.AccessToken).
-			SetHeader("Accept", "application/json").
-			SetHeader("Content-Type", "application/json")
+		client := api.NewClient(&api.ClientOptions{
+			Debug: viper.GetBool("cli.debug"),
+		})
+		client.HTTPClient.SetAuthToken(loggedInUserDetails.UserCredentials.AccessToken)
 
-		publicEndpointResp, err := api.CallPublishEndpoint(httpClient, &schemas.PublishEndpointReq{
+		publicEndpointResp, err := api.CallPublishEndpoint(client.HTTPClient, &schemas.PublishEndpointReq{
 			DeploymentID: deploymentID,
 		})
 		if err != nil {
 			cli.HandleError(err)
 		}
 
-		fmt.Println("Successful!!!")
 		fmt.Printf("Your ingress url: %s\n", publicEndpointResp.IngressURL)
 	},
 }

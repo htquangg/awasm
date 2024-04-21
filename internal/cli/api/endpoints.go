@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/schemas"
 
 	"github.com/go-resty/resty/v2"
@@ -20,7 +19,7 @@ func CallAddEndpoint(
 		SetResult(&result).
 		SetHeader("User-Agent", USER_AGENT).
 		SetBody(req).
-		Post(fmt.Sprintf("%s/v1/endpoints", config.AWASM_URL))
+		Post("/v1/endpoints")
 	if err != nil {
 		return nil, fmt.Errorf("CallCreateEndpoint: Unable to complete api request [err=%s]", err)
 	}
@@ -41,7 +40,7 @@ func CallPublishEndpoint(
 		SetResult(&result).
 		SetHeader("User-Agent", USER_AGENT).
 		SetBody(req).
-		Post(fmt.Sprintf("%s/v1/live/publish", config.AWASM_URL))
+		Post("/v1/live/publish")
 	if err != nil {
 		return nil, fmt.Errorf("CallPublishEndpoint: Unable to complete api request [err=%s]", err)
 	}

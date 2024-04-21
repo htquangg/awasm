@@ -37,7 +37,7 @@ var runCmd = &cobra.Command{
 
 func init() {
 	runCmd.PersistentFlags().String("config-path", "", "Specify the config path of the application")
-	ensure(viper.BindPFlag("config-path", runCmd.PersistentFlags().Lookup("config-path")))
+	ensure(viper.BindPFlag("server.config-path", runCmd.PersistentFlags().Lookup("config-path")))
 }
 
 func runApp() error {

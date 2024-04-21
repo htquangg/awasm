@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/pkg/logger"
 
@@ -21,7 +20,7 @@ func CallGetSRPAttribute(
 		SetResult(&result).
 		SetHeader("User-Agent", USER_AGENT).
 		SetBody(req).
-		Get(fmt.Sprintf("%s/v1/users/srp/attributes?email=%s", config.AWASM_URL, req.Email))
+		Get(fmt.Sprintf("/v1/users/srp/attributes?email=%s", req.Email))
 	if err != nil {
 		return nil, fmt.Errorf("CallGetSRPAttribute: Unable to complete api request [err=%s]", err)
 	}
@@ -42,7 +41,7 @@ func CallChallengeEmailLogin(
 		SetResult(&result).
 		SetHeader("User-Agent", USER_AGENT).
 		SetBody(req).
-		Post(fmt.Sprintf("%s/v1/users/auth/email/login/challenge", config.AWASM_URL))
+		Post("/v1/users/auth/email/login/challenge")
 	if err != nil {
 		return nil, fmt.Errorf("CallChallengeEmailLogin: Unable to complete api request [err=%s]", err)
 	}
@@ -63,7 +62,7 @@ func CallVerifyEmailLogin(
 		SetResult(&result).
 		SetHeader("User-Agent", USER_AGENT).
 		SetBody(req).
-		Post(fmt.Sprintf("%s/v1/users/auth/email/login/verify", config.AWASM_URL))
+		Post("/v1/users/auth/email/login/verify")
 	if err != nil {
 		return nil, fmt.Errorf("CallVerifyEmailLogin: Unable to complete api request [err=%s]", err)
 	}
@@ -82,7 +81,7 @@ func CallIsAuthenticated(
 		R().
 		SetResult(&result).
 		SetHeader("User-Agent", USER_AGENT).
-		Post(fmt.Sprintf("%s/v1/users/auth/check", config.AWASM_URL))
+		Post("/v1/users/auth/check")
 	if err != nil {
 		return false
 	}

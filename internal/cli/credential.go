@@ -10,7 +10,6 @@ import (
 	"github.com/htquangg/a-wasm/internal/cli/api"
 	"github.com/htquangg/a-wasm/internal/schemas"
 
-	"github.com/go-resty/resty/v2"
 	"github.com/zalando/go-keyring"
 )
 
@@ -88,15 +87,14 @@ func GetCurrentLoggedInUserDetails() (*LoggedInUserDetails, bool, error) {
 		}
 	}
 
-	httpClient := resty.New().
-		SetAuthToken(userCreds.AccessToken).
-		SetHeader("Accept", "application/json")
-
 	if configFile.LoggedInUserDomain != "" {
 		config.AWASM_URL = configFile.LoggedInUserDomain
 	}
 
-	isAuthenticated := api.CallIsAuthenticated(httpClient)
+	client := api.NewClient(&api.ClientOptions{})
+	client.HTTPClient.SetAuthToken(userCreds.AccessToken)
+
+	isAuthenticated := api.CallIsAuthenticated(client.HTTPClient)
 	if !isAuthenticated {
 		return nil, false, nil
 	}

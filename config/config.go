@@ -95,8 +95,8 @@ func LoadConfig() (*Config, error) {
 	configPathFromEnv := os.Getenv(constants.ConfigPath)
 	if configPathFromEnv != "" {
 		configPath = configPathFromEnv
-	} else if viper.GetString("config-path") != "" {
-		configPath = viper.GetString("config-path")
+	} else if viper.GetString("server.config-path") != "" {
+		configPath = viper.GetString("server.config-path")
 	} else {
 		rootPath, err := getConfigRootPath()
 		if err != nil {

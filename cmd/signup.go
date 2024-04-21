@@ -14,10 +14,10 @@ import (
 	"github.com/htquangg/a-wasm/pkg/uid"
 
 	"github.com/fatih/color"
-	"github.com/go-resty/resty/v2"
 	"github.com/kong/go-srp"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"golang.org/x/crypto/argon2"
 	"golang.org/x/crypto/blake2b"
 )
@@ -52,20 +52,18 @@ func signupCredential(userCredential *schemas.UserCredential) {
 		cli.HandleError(err, "Unable to parse email and password for authentication")
 	}
 
-	// set up resty client
-	httpClient := resty.New()
-	httpClient.
-		SetHeader("Accept", "application/json").
-		SetHeader("Content-Type", "application/json")
+	client := api.NewClient(&api.ClientOptions{
+		Debug: viper.GetBool("cli.debug"),
+	})
 
 	// check password strength
-	err = api.CallCheckPasswordStrength(httpClient, password)
+	err = api.CallCheckPasswordStrength(client.HTTPClient, password)
 	if err != nil {
 		cli.HandleError(err)
 	}
 
 	// [1]. Send verification code to email
-	_, err = api.CallBeginEmailSignupProcess(httpClient, &schemas.BeginEmailSignupProcessReq{
+	_, err = api.CallBeginEmailSignupProcess(client.HTTPClient, &schemas.BeginEmailSignupProcessReq{
 		Email: email,
 	})
 	if err != nil {
@@ -87,13 +85,13 @@ func signupCredential(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	verifyEmailSignupResp, err := api.CallVerifyEmailSignup(httpClient, &schemas.VerifyEmailSignupReq{
+	verifyEmailSignupResp, err := api.CallVerifyEmailSignup(client.HTTPClient, &schemas.VerifyEmailSignupReq{
 		Email: email,
 		OTP:   otp,
 	})
 
 	// set the jwt token to request
-	httpClient.SetAuthToken(verifyEmailSignupResp.AccessToken)
+	client.HTTPClient.SetAuthToken(verifyEmailSignupResp.AccessToken)
 
 	// [3]. Setup SRP account
 	masterKey, keyAttribute, srpAttribute, err := generateKeyAndSRPAttributes(password)
@@ -115,7 +113,7 @@ func signupCredential(userCredential *schemas.UserCredential) {
 		cli.HandleError(err)
 	}
 
-	setupSRPAccountSignupResp, err := api.CallSetupSRPAccountSignup(httpClient, &schemas.SetupSRPAccountSignupReq{
+	setupSRPAccountSignupResp, err := api.CallSetupSRPAccountSignup(client.HTTPClient, &schemas.SetupSRPAccountSignupReq{
 		SRPUserID:   srpAttribute.SRPUserID,
 		SRPSalt:     srpAttribute.SRPSalt,
 		SRPVerifier: srpAttribute.SRPVerifier,
@@ -130,7 +128,7 @@ func signupCredential(userCredential *schemas.UserCredential) {
 	srpClient.SetB(srpBBytes)
 	srpM1 := converter.ToB64(srpClient.ComputeM1())
 	completeEmailAccountSignupResp, err := api.CallCompleteEmailAccountSignup(
-		httpClient,
+		client.HTTPClient,
 		&schemas.CompleteEmailSignupReq{
 			SetupID:      setupSRPAccountSignupResp.SetupID,
 			SRPM1:        srpM1,
@@ -172,7 +170,7 @@ func signupCredential(userCredential *schemas.UserCredential) {
 	token := string(tokenEncBytes)
 
 	// set the jwt token to request
-	httpClient.SetAuthToken(token)
+	client.HTTPClient.SetAuthToken(token)
 
 	// updating user credential
 	kekEncrypted, err := crypto.GenerateKeyAndEncrypt(converter.ToB64(kekBytes))

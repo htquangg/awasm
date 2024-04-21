@@ -10,12 +10,12 @@ import (
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/pkg/converter"
 	"github.com/htquangg/a-wasm/pkg/crypto"
+	"github.com/htquangg/a-wasm/pkg/logger"
 
 	"github.com/fatih/color"
-	"github.com/go-resty/resty/v2"
-	"github.com/htquangg/a-wasm/pkg/logger"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -83,14 +83,12 @@ func loginCredential(userCredential *schemas.UserCredential) {
 		cli.HandleError(err, "Unable to parse email and password for authentication")
 	}
 
-	// set up resty client
-	httpClient := resty.New()
-	httpClient.
-		SetHeader("Accept", "application/json").
-		SetHeader("Content-Type", "application/json")
+	client := api.NewClient(&api.ClientOptions{
+		Debug: viper.GetBool("cli.debug"),
+	})
 
 	// [1]. Get srp attribute
-	getSRPAttributeResp, err := api.CallGetSRPAttribute(httpClient, &schemas.GetSRPAttributeReq{
+	getSRPAttributeResp, err := api.CallGetSRPAttribute(client.HTTPClient, &schemas.GetSRPAttributeReq{
 		Email: email,
 	})
 	if err != nil {
@@ -112,7 +110,7 @@ func loginCredential(userCredential *schemas.UserCredential) {
 		cli.HandleError(err)
 	}
 
-	challengeEmailLoginResp, err := api.CallChallengeEmailLogin(httpClient, &schemas.ChallengeEmailLoginReq{
+	challengeEmailLoginResp, err := api.CallChallengeEmailLogin(client.HTTPClient, &schemas.ChallengeEmailLoginReq{
 		SRPUserID: getSRPAttributeResp.SRPUserID,
 		SRPA:      converter.ToB64(srpClient.ComputeA()),
 	})
@@ -127,7 +125,7 @@ func loginCredential(userCredential *schemas.UserCredential) {
 	}
 	srpClient.SetB(srpBBytes)
 	srpM1 := converter.ToB64(srpClient.ComputeM1())
-	verifyEmailLoginResp, err := api.CallVerifyEmailLogin(httpClient, &schemas.VerifyEmailLoginReq{
+	verifyEmailLoginResp, err := api.CallVerifyEmailLogin(client.HTTPClient, &schemas.VerifyEmailLoginReq{
 		ChallengeID: challengeEmailLoginResp.ChallengeID,
 		SRPUserID:   getSRPAttributeResp.SRPUserID,
 		SRPM1:       srpM1,

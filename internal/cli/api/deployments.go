@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/schemas"
 
 	"github.com/go-resty/resty/v2"
@@ -20,7 +19,7 @@ func CallAddDeployment(
 		SetResult(&result).
 		SetHeader("User-Agent", USER_AGENT).
 		SetBody(req.Data).
-		Post(fmt.Sprintf("%s/v1/endpoints/%s/deployments", config.AWASM_URL, req.EndpointID))
+		Post(fmt.Sprintf("/v1/endpoints/%s/deployments", req.EndpointID))
 	if err != nil {
 		return nil, fmt.Errorf("CallAddDeployment: Unable to complete api request [err=%s]", err)
 	}
