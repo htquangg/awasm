@@ -1,16 +1,10 @@
 name: CI
 
-on:
-  push:
-    branches:
-      - "**"
-  pull_request:
-    branches:
-      - "**"
+on: [push, pull_request]
 
 jobs:
-  build:
-    name: Build
+  test:
+    name: Test
     runs-on: ubuntu-latest
 
     steps:
@@ -26,21 +20,23 @@ jobs:
       - name: Build
         run: make build
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: "go.mod"
-          cache: true
-
       - name: Test
         run: make test
         env:
           PWD: ${{ github.workspace }}
+
+      - name: Telegram notification
+        if: always()
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown
+          message: |
+            *${{ github.actor }}* created commit:
+            `Commit message`: *${{ github.event.commits[0].message }}*
+            `Repository`: *${{ github.repository }}*
+
+            *${{github.repository}}* - a *${{ github.event_name }}* to *${{ github.ref }}* triggered by ${{ github.actor }} has status *${{ job.status }}* ${{ job.status == 'success' && '&#9989;' || '&#10060;' }}
+
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
