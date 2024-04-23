@@ -50,6 +50,9 @@ func (s *SessionService) IssueRefreshToken(
 	}
 
 	accessToken, expiresAt, err := s.generateAccessToken(ctx, user, refreshToken.SessionID)
+	if err != nil {
+		return nil, err
+	}
 
 	return &schemas.AccessTokenResp{
 		CommonTokenResp: schemas.CommonTokenResp{

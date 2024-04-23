@@ -87,11 +87,6 @@ func LoadConfig() (*Config, error) {
 
 	var configPath string
 
-	env := os.Getenv(constants.AppEnv)
-	if env == "" {
-		env = constants.Dev
-	}
-
 	configPathFromEnv := os.Getenv(constants.ConfigPath)
 	if configPathFromEnv != "" {
 		configPath = configPathFromEnv

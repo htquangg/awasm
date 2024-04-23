@@ -100,22 +100,22 @@ func (s *sessionRepo) addClaimToSession(
 func (r *sessionRepo) GetSessionByID(
 	ctx context.Context,
 	id string,
-) (session *entities.Session, exists bool, err error) {
-	session = &entities.Session{}
-	exists, err = r.db.Engine(ctx).ID(id).Get(session)
+) (*entities.Session, bool, error) {
+	session := &entities.Session{}
+	exists, err := r.db.Engine(ctx).ID(id).Get(session)
 	if err != nil {
-		err = errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+		return nil, false, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
 
 	if session.AMRClaims == nil {
 		amrClaims, err := r.getAMRClaimsWithSessionID(ctx, session.ID)
 		if err != nil {
-			err = errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+			return nil, false, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 		}
 		session.AMRClaims = amrClaims
 	}
 
-	return
+	return session, exists, nil
 }
 
 func (r *sessionRepo) getAMRClaimsWithSessionID(
@@ -125,7 +125,7 @@ func (r *sessionRepo) getAMRClaimsWithSessionID(
 	var amrClaims []*entities.MFAAMRClaim
 
 	if err := r.db.Engine(ctx).Where("session_id = $1", sessionID).Find(&amrClaims); err != nil {
-		err = errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+		return nil, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
 
 	return amrClaims, nil

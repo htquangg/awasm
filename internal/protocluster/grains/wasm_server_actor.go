@@ -10,6 +10,8 @@ import (
 	"github.com/asynkron/protoactor-go/cluster"
 )
 
+const RequestRuntimeTimeout = 5 * time.Second
+
 type (
 	wasmServerActor struct {
 		c                 *cluster.Cluster
@@ -60,7 +62,7 @@ func (s *wasmServerActor) initialize(ctx actor.Context) {
 func (s *wasmServerActor) requestRuntime(_ actor.Context, key string) *actor.PID {
 	resp, err := s.c.ActorSystem.Root.RequestFuture(s.runtimeManagerPID, &requestRuntime{
 		key: key,
-	}, time.Second*5).Result()
+	}, RequestRuntimeTimeout).Result()
 	if err != nil {
 		logger.Warn("runtime manager response failed")
 		return nil

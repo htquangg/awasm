@@ -89,6 +89,9 @@ func signupCredential(userCredential *schemas.UserCredential) {
 		Email: email,
 		OTP:   otp,
 	})
+	if err != nil {
+		cli.HandleError(err)
+	}
 
 	// set the jwt token to request
 	client.HTTPClient.SetAuthToken(verifyEmailSignupResp.AccessToken)
@@ -119,6 +122,9 @@ func signupCredential(userCredential *schemas.UserCredential) {
 		SRPVerifier: srpAttribute.SRPVerifier,
 		SRPA:        converter.ToB64(srpClient.ComputeA()),
 	})
+	if err != nil {
+		cli.HandleError(err)
+	}
 
 	// [4]. Complete signup account
 	srpBBytes, err := converter.FromB64(setupSRPAccountSignupResp.SRPB)
@@ -268,6 +274,9 @@ func generateKeyAndSRPAttributes(
 	}
 
 	loginSubKey, err := crypto.GenerateLoginSubKey(kek)
+	if err != nil {
+		return "", nil, nil, err
+	}
 
 	setupSRPAccountSignupReq, err := generateSRPSetupAttribute(loginSubKey)
 	if err != nil {

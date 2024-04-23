@@ -43,7 +43,7 @@ func (r *runtimeActor) Receive(ctx actor.Context) {
 		logger.Infof("runtime handling request with request_id %s, pid %v", msg.ID, ctx.Self())
 
 		if r.runtime == nil {
-			r.initialize(msg)
+			_ = r.initialize(msg)
 		}
 
 		r.handleHTTPRequest(ctx, msg)
@@ -85,6 +85,7 @@ func (r *runtimeActor) handleHTTPRequest(ctx actor.Context, msg *messages.HTTPRe
 	req := bytes.NewReader(b)
 	if err := r.runtime.Invoke(req); err != nil {
 		logger.Warnf("failed to invoke runtime: %v", err)
+		handleResponse(ctx, http.StatusBadRequest, []byte("failed to invoke runtime"), msg.ID)
 		return
 	}
 	_, res, status, err := ParseStdout(r.stdout)

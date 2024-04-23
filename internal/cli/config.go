@@ -101,11 +101,7 @@ func GetConfigFile() (*schemas.ConfigFile, error) {
 
 	configFileAsBytes, err := os.ReadFile(fullConfigFilePath)
 	if err != nil {
-		if err, ok := err.(*os.PathError); ok {
-			return nil, nil
-		} else {
-			return nil, err
-		}
+		return nil, err
 	}
 
 	var configFile schemas.ConfigFile

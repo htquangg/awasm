@@ -7,12 +7,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type contextKey string
-
-func (c contextKey) String() string {
-	return "ctx-req-" + string(c)
-}
-
 const (
 	tokenKey   = "ctx-req-jwt"
 	userKey    = "ctx-req-user"

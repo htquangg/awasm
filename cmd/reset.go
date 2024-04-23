@@ -17,7 +17,9 @@ var resetCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		configFile, _ := cli.GetConfigFile()
 		if configFile != nil {
-			cli.DeleteValueInKeyring(configFile.LoggedInUserEmail)
+			if err := cli.DeleteValueInKeyring(configFile.LoggedInUserEmail); err != nil {
+				cli.HandleError(err, "unable to reset")
+			}
 		}
 
 		_, pathToDir, err := cli.GetFullConfigFilePath()

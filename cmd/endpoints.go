@@ -60,7 +60,7 @@ var createEndpointCmd = &cobra.Command{
 
 		loggedInUserDetails, isAuthenticated, err := cli.GetCurrentLoggedInUserDetails()
 		if err != nil {
-			cli.HandleError(err, "Unable to authenticate")
+			cli.HandleError(err, "unable to authenticate")
 		}
 		if !isAuthenticated {
 			cli.PrintErrorMessageAndExit("Your login session has expired, please run [awasm login] and try again")

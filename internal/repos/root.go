@@ -36,6 +36,7 @@ type Repos struct {
 
 func New(cfg *config.Config, db db.DB, cache cache.Cacher) *Repos {
 	return &Repos{
+		cfg:              cfg,
 		db:               db,
 		Endpoint:         endpoint.NewEndpointRepo(db),
 		EndpointCommon:   endpoint_common.NewEndpointCommonRepo(db),

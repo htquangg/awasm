@@ -76,7 +76,7 @@ func New(
 			err = errors.New(v.Code, reason)
 		}
 
-		handler.HandleResponse(ctx, err, nil)
+		_ = handler.HandleResponse(ctx, err, nil)
 	}
 
 	v1Group := e.Group("/api/v1")
