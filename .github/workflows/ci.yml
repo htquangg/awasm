@@ -25,6 +25,12 @@ jobs:
         env:
           PWD: ${{ github.workspace }}
 
+      - name: Install dependencies
+        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.57.2
+
+      - name: Run linter
+        run: make lint
+
       - name: Telegram notification
         if: always()
         uses: appleboy/telegram-action@master
