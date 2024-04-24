@@ -57,6 +57,9 @@ func (c *LiveController) Serve(ctx echo.Context) error {
 	}
 
 	resp, err := c.endpointService.Serve(ctx.Request().Context(), req)
+	if err != nil {
+		return handler.HandleResponse(ctx, err, resp)
+	}
 
-	return handler.HandleResponse(ctx, err, resp)
+	return middleware.Serve(ctx, int(resp.StatusCode), resp.Response, resp.Header)
 }

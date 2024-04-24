@@ -3,6 +3,7 @@ package sdk
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/json"
 	"io"
 	"log"
 	"net/http"
@@ -14,12 +15,13 @@ import (
 )
 
 type ResponseWriter struct {
-	buffer     bytes.Buffer
+	header     http.Header
+	buffer     *bytes.Buffer
 	statusCode int
 }
 
-func (*ResponseWriter) Header() http.Header {
-	return http.Header{}
+func (w *ResponseWriter) Header() http.Header {
+	return w.header
 }
 
 func (w *ResponseWriter) Write(b []byte) (n int, err error) {
@@ -40,7 +42,11 @@ func Handle(h http.Handler) {
 		log.Fatal(err)
 	}
 
-	w := &ResponseWriter{}
+	w := &ResponseWriter{
+		header:     make(http.Header),
+		buffer:     new(bytes.Buffer),
+		statusCode: 200,
+	}
 	r, err := http.NewRequest(req.Method, req.URL, bytes.NewReader(req.Body))
 	if err != nil {
 		log.Fatal(err)
@@ -51,8 +57,15 @@ func Handle(h http.Handler) {
 	h.ServeHTTP(w, r) // execute the user's handler
 	os.Stdout.Write(w.buffer.Bytes())
 
-	buf := make([]byte, 1<<3)
+	js, err := json.Marshal(w.Header())
+	if err != nil {
+		log.Fatal(err)
+	}
+	os.Stdout.Write(js)
+
+	buf := make([]byte, 1<<8)
 	binary.LittleEndian.PutUint32(buf[0:4], uint32(w.statusCode))
 	binary.LittleEndian.PutUint32(buf[4:8], uint32(w.buffer.Len()))
+	binary.LittleEndian.PutUint32(buf[8:12], uint32(len(js)))
 	os.Stdout.Write(buf)
 }

@@ -21,5 +21,6 @@ type ServeEndpointReq struct {
 type ServeEndpointResp struct {
 	RequestID  string `json:"requestId"`
 	Response   []byte `json:"response"`
+	Header     []byte `json:"-"`
 	StatusCode int32  `json:"statusCode"`
 }

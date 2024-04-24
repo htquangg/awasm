@@ -20,7 +20,7 @@ import (
 const (
 	KindRuntime = "kind"
 
-	magicLen = 1 << 3
+	magicLen = 1 << 8
 )
 
 type runtimeActor struct {
@@ -85,44 +85,55 @@ func (r *runtimeActor) handleHTTPRequest(ctx actor.Context, msg *messages.HTTPRe
 	req := bytes.NewReader(b)
 	if err := r.runtime.Invoke(req); err != nil {
 		logger.Warnf("failed to invoke runtime: %v", err)
-		handleResponse(ctx, http.StatusBadRequest, []byte("failed to invoke runtime"), msg.ID)
+		handleResponse(ctx, http.StatusBadRequest, []byte("failed to invoke runtime"), nil, msg.ID)
 		return
 	}
-	_, res, status, err := ParseStdout(r.stdout)
+	_, res, header, status, err := ParseStdout(r.stdout)
 	if err != nil {
-		handleResponse(ctx, http.StatusOK, []byte("OK"), msg.ID)
+		handleResponse(ctx, http.StatusOK, []byte(err.Error()), nil, msg.ID)
 		return
 	}
 
-	handleResponse(ctx, int32(status), res, msg.ID)
+	handleResponse(ctx, int32(status), res, header, msg.ID)
 }
 
-func ParseStdout(stdout io.Reader) (logs []byte, resp []byte, status int, err error) {
+func ParseStdout(stdout io.Reader) (logs []byte, resp []byte, header []byte, status int, err error) {
 	stdoutb, err := io.ReadAll(stdout)
 	if err != nil {
 		return
 	}
+
 	outLen := len(stdoutb)
 	if outLen < magicLen {
 		err = fmt.Errorf("mallformed HTTP response missing last %d bytes", magicLen)
 		return
 	}
-	magicStart := outLen - magicLen
-	status = int(binary.LittleEndian.Uint32(stdoutb[magicStart : magicStart+4]))
-	respLen := binary.LittleEndian.Uint32(stdoutb[magicStart+4:])
-	if int(respLen) > outLen-magicLen {
+
+	wasmRespStart := outLen - magicLen
+
+	status = int(binary.LittleEndian.Uint32(stdoutb[wasmRespStart : wasmRespStart+4]))
+	respLen := binary.LittleEndian.Uint32(stdoutb[wasmRespStart+4 : wasmRespStart+8])
+	headerLen := binary.LittleEndian.Uint32(stdoutb[wasmRespStart+8 : wasmRespStart+12])
+	if int(respLen)+int(headerLen) > outLen-magicLen {
 		err = fmt.Errorf("response length exceeds available data")
 		return
 	}
-	respStart := outLen - magicLen - int(respLen)
+
+	respStart := outLen - magicLen - int(headerLen) - int(respLen)
 	resp = stdoutb[respStart : respStart+int(respLen)]
+
+	headerStart := outLen - magicLen - int(headerLen)
+	header = stdoutb[headerStart : headerStart+int(headerLen)]
+
 	logs = stdoutb[:respStart]
+
 	return
 }
 
-func handleResponse(ctx actor.Context, code int32, msg []byte, id string) {
+func handleResponse(ctx actor.Context, code int32, msg []byte, header []byte, id string) {
 	ctx.Respond(&messages.HTTPResponse{
 		Response:   msg,
+		Header:     header,
 		StatusCode: code,
 		RequestID:  id,
 	})

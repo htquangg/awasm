@@ -4,6 +4,7 @@ import (
 	"io"
 
 	"github.com/htquangg/a-wasm/internal/base/handler"
+	"github.com/htquangg/a-wasm/internal/base/middleware"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/internal/services/deployment"
@@ -44,6 +45,9 @@ func (c *PreviewController) Serve(ctx echo.Context) error {
 	}
 
 	resp, err := c.deploymentService.Serve(ctx.Request().Context(), req)
+	if err != nil {
+		return handler.HandleResponse(ctx, err, resp)
+	}
 
-	return handler.HandleResponse(ctx, err, resp)
+	return middleware.Serve(ctx, int(resp.StatusCode), resp.Response, resp.Header)
 }

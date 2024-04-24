@@ -22,5 +22,6 @@ message HeaderFields {
 message HTTPResponse {
   string RequestID = 1;
   bytes Response = 2;
-  int32 StatusCode = 3;
+  bytes Header = 3;
+  int32 StatusCode = 4;
 }
