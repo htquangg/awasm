@@ -35,7 +35,7 @@ func (r *authRepo) GetUserCacheInfo(ctx context.Context, userID string) (userInf
 		return nil, nil
 	}
 	userInfo = &entities.UserCacheInfo{}
-	_ = json.Unmarshal([]byte(userInfoCache), userInfo)
+	_ = json.Unmarshal(userInfoCache, userInfo)
 	return userInfo, nil
 }
 

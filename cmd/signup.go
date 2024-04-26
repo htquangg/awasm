@@ -116,12 +116,15 @@ func signupCredential(userCredential *schemas.UserCredential) {
 		cli.HandleError(err)
 	}
 
-	setupSRPAccountSignupResp, err := api.CallSetupSRPAccountSignup(client.HTTPClient, &schemas.SetupSRPAccountSignupReq{
-		SRPUserID:   srpAttribute.SRPUserID,
-		SRPSalt:     srpAttribute.SRPSalt,
-		SRPVerifier: srpAttribute.SRPVerifier,
-		SRPA:        converter.ToB64(srpClient.ComputeA()),
-	})
+	setupSRPAccountSignupResp, err := api.CallSetupSRPAccountSignup(
+		client.HTTPClient,
+		&schemas.SetupSRPAccountSignupReq{
+			SRPUserID:   srpAttribute.SRPUserID,
+			SRPSalt:     srpAttribute.SRPSalt,
+			SRPVerifier: srpAttribute.SRPVerifier,
+			SRPA:        converter.ToB64(srpClient.ComputeA()),
+		},
+	)
 	if err != nil {
 		cli.HandleError(err)
 	}

@@ -101,7 +101,7 @@ func GetDecryptedToken(encryptedToken string, publicKey string, privateKey strin
 		return "", errors.InternalServer(reason.UnknownError).WithMsg("Encryption token failed.")
 	}
 
-	return converter.ToURLB64([]byte(decryptedTokenBytes)), nil
+	return converter.ToURLB64(decryptedTokenBytes), nil
 }
 
 func GenerateRandomBytes(n int) ([]byte, error) {

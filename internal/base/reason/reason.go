@@ -8,7 +8,7 @@ const (
 	DatabaseError             = "base.database_error"
 	ForbiddenError            = "base.forbidden_error"
 	DuplicateRequestError     = "base.duplicate_request_error"
-	TooManyWrongAttemptsError = "base.too_many_wrong_attemps_error"
+	TooManyWrongAttemptsError = "base.too_many_wrong_attempts_error"
 )
 
 const (

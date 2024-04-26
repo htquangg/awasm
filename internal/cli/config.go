@@ -125,7 +125,7 @@ func WriteConfigFile(configFile *schemas.ConfigFile) error {
 	configFileMarshalled, err := json.Marshal(configFile)
 	if err != nil {
 		return fmt.Errorf(
-			"writeConfigFile: unable to write config file because an error occurred when marshalling the config file [err=%s]",
+			"writeConfigFile: unable to write config file because an error occurred when marshaling the config file [err=%s]",
 			err,
 		)
 	}
