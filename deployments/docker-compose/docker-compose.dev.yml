@@ -19,10 +19,20 @@ services:
     ports:
       - 5432:5432
     environment:
+      - POSTGRES_USER=awasm
+      - POSTGRES_PASSWORD=awasm
       - POSTGRES_DB=dev-local-awasm-001
-      - POSTGRES_PASSWORD=localdb
     healthcheck:
-      test: ["CMD", "pg_isready", "-q", "-d", "dev-local-awasm-001", "-U", "postgres"]
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-q",
+          "-d",
+          "dev-local-awasm-001",
+          "-U",
+          "awasm",
+        ]
       interval: 1s
       timeout: 5s
       retries: 20
@@ -36,7 +46,7 @@ services:
     ports:
       - 6379:6379
     environment:
-      TZ: UTC
+      - TZ=UTC
     volumes:
       - redis-data:/data:rw
     networks:

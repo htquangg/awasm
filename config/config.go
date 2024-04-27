@@ -168,8 +168,8 @@ func loadDefaultConfig() {
 
 	viper.SetDefault("db.host", "127.0.0.1")
 	viper.SetDefault("db.port", 5432)
-	viper.SetDefault("db.user", "postgres")
-	viper.SetDefault("db.password", "localdb")
+	viper.SetDefault("db.user", "awasm")
+	viper.SetDefault("db.password", "awasm")
 	viper.SetDefault("db.schema", "dev-local-awasm-001")
 	viper.SetDefault("db.charset", "utf8bm4")
 	viper.SetDefault("db.log_sql", true)

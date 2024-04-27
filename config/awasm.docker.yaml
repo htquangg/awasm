@@ -7,8 +7,8 @@ server:
 db:
   host: postgres
   port: 5432
-  user: "postgres"
-  password: "localdb"
+  user: "awasm"
+  password: "awasm"
   schema: "dev-local-awasm-001"
   charset: "utf8mb4"
   log_sql: true

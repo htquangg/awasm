@@ -212,7 +212,7 @@ func askForCredential() (email string, password string, err error) {
 	}
 
 	validatePassword := func(input string) error {
-		if len(input) < 1 {
+		if len(input) < 8 {
 			return errors.New("please enter a valid password")
 		}
 		return nil

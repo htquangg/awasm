@@ -97,14 +97,8 @@ DB_DRIVER =  postgres
 DB_NAME = dev-local-awasm-001
 DB_HOST = 127.0.0.1
 DB_PORT = 5432
-DB_USER = postgres
-DB_PASS = localdb
-
-TEST_DB_NAME = test-local-awasm-001
-TEST_DB_HOST = 127.0.0.1
-TEST_DB_PORT = 5432
-TEST_DB_USER = postgres
-TEST_DB_PASS = localdb
+DB_USER = awasm
+DB_PASS = awasm
 
 # Go migrate postgres https://github.com/pressly/goose
 .PHONY: migrate-create
