@@ -72,7 +72,7 @@ func initTestDB(ctx context.Context, cfg *config.DB) (*Database, error) {
 		return nil, fmt.Errorf("creating db container: %w", err)
 	}
 	cfg.Host = container.Host
-	cfg.Port = uint16(container.Port)
+	cfg.Port = container.Port
 
 	dbMigrate, err := goose.OpenDBWithDriver("postgres", cfg.Address())
 	if err != nil {

@@ -9,6 +9,7 @@ import (
 	"github.com/htquangg/a-wasm/internal/repos/deployment_common"
 	"github.com/htquangg/a-wasm/internal/repos/endpoint"
 	"github.com/htquangg/a-wasm/internal/repos/endpoint_common"
+	"github.com/htquangg/a-wasm/internal/repos/mailer"
 	"github.com/htquangg/a-wasm/internal/repos/session"
 	"github.com/htquangg/a-wasm/internal/repos/user"
 	auth_svc "github.com/htquangg/a-wasm/internal/services/auth"
@@ -16,6 +17,7 @@ import (
 	deployment_common_svc "github.com/htquangg/a-wasm/internal/services/deployment_common"
 	endpoint_svc "github.com/htquangg/a-wasm/internal/services/endpoint"
 	envpoint_common_svc "github.com/htquangg/a-wasm/internal/services/endpoint_common"
+	mailer_svc "github.com/htquangg/a-wasm/internal/services/mailer"
 	session_svc "github.com/htquangg/a-wasm/internal/services/session"
 	user_svc "github.com/htquangg/a-wasm/internal/services/user"
 )
@@ -32,6 +34,7 @@ type Repos struct {
 	Session          session_svc.SessionRepo
 	User             user_svc.UserRepo
 	UserAuth         user_svc.UserAuthRepo
+	Mailer           mailer_svc.MailerRepo
 }
 
 func New(cfg *config.Config, db db.DB, cache cache.Cacher) *Repos {
@@ -46,5 +49,6 @@ func New(cfg *config.Config, db db.DB, cache cache.Cacher) *Repos {
 		Session:          session.NewSessionRepo(db),
 		User:             user.NewUserRepo(cfg, db),
 		UserAuth:         user.NewUserAuthRepo(cfg, db),
+		Mailer:           mailer.NewMailerRepo(db, cache),
 	}
 }

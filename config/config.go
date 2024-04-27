@@ -20,13 +20,14 @@ type (
 		Redis      *Redis   `json:"redis,omitempty"      mapstructure:"redis"       yaml:"redis,omitempty"`
 		JWT        *JWT     `json:"jwt,omitempty"        mapstructure:"jwt"         yaml:"jwt,omitempty"`
 		Key        *Key     `json:"key,omitempty"        mapstructure:"key"         yaml:"key,omitempty"`
-		I18n       *I18n    `json:"i18n,omitempty"       mapstructure:"i18n"        yaml:"i18n,omitempty"`
+		SMTP       *SMTP    `json:"smtp"                 mapstructure:"smtp"        yaml:"smtp"`
 		Logging    *Logging `json:"logging"              mapstructure:"logging"     yaml:"logging"`
+		I18n       *I18n    `json:"i18n,omitempty"       mapstructure:"i18n"        yaml:"i18n,omitempty"`
 		IngressURL string   `json:"ingressURL,omitempty" mapstructure:"ingress_url" yaml:"ingress_url,omitempty"`
 	}
 
 	Server struct {
-		Addr            string `json:"addr,omitempty"  mapstructure:"addr"              yaml:"addr,omitempty"`
+		Addr            string `json:"addr"            mapstructure:"addr"              yaml:"addr"`
 		ShowStartBanner bool   `json:"showStartBanner" mapstructure:"show_start_banner" yaml:"show_start_banner"`
 	}
 
@@ -41,17 +42,17 @@ type (
 		MaxIdleConns    int    `json:"maxIdleConns"       mapstructure:"max_idle_conns"    yaml:"max_idle_conns"`
 		MaxOpenConns    int    `json:"maxOpenConns"       mapstructure:"max_open_conns"    yaml:"max_open_conns"`
 		ConnMaxLifetime int    `json:"connMaxLifetime"    mapstructure:"conn_max_lifetime" yaml:"conn_max_lifetime"`
-		Port            uint16 `json:"port,omitempty"     mapstructure:"port"              yaml:"port,omitempty"`
+		Port            int    `json:"port,omitempty"     mapstructure:"port"              yaml:"port,omitempty"`
 		LogSQL          bool   `json:"logSql"             mapstructure:"log_sql"           yaml:"log_sql"`
 	}
 
 	Redis struct {
-		Host       string `json:"host,omitempty"       mapstructure:"host"        yaml:"host,omitempty"`
-		Password   string `json:"password"             mapstructure:"password"    yaml:"password"`
-		Port       int    `json:"port,omitempty"       mapstructure:"port"        yaml:"port,omitempty"`
-		DB         int    `json:"db,omitempty"         mapstructure:"db"          yaml:"db,omitempty"`
-		PoolSize   int    `json:"poolSize"             mapstructure:"pool_size"   yaml:"pool_size"`
-		RequireTLS bool   `json:"requireTLS,omitempty" mapstructure:"require_tls" yaml:"require_tls,omitempty"`
+		Host       string `json:"host,omitempty" mapstructure:"host"        yaml:"host,omitempty"`
+		Password   string `json:"password"       mapstructure:"password"    yaml:"password"`
+		Port       int    `json:"port,omitempty" mapstructure:"port"        yaml:"port,omitempty"`
+		DB         int    `json:"db,omitempty"   mapstructure:"db"          yaml:"db,omitempty"`
+		PoolSize   int    `json:"poolSize"       mapstructure:"pool_size"   yaml:"pool_size"`
+		RequireTLS bool   `json:"requireTLS"     mapstructure:"require_tls" yaml:"require_tls"`
 	}
 
 	JWT struct {
@@ -65,6 +66,16 @@ type (
 		Hash            string `json:"hash,omitempty"       mapstructure:"hash"             yaml:"hash,omitempty"`
 		EncryptionBytes []byte `json:"-"                    mapstructure:"encryption_bytes" yaml:"-"`
 		HashBytes       []byte `json:"-"                    mapstructure:"hash_bytes"       yaml:"-"`
+	}
+
+	SMTP struct {
+		FromEmail  string `json:"from_email,omitempty" mapstructure:"from_email"  yaml:"from_email,omitempty"`
+		FromName   string `json:"from_name"            mapstructure:"from_name"   yaml:"from_name"`
+		User       string `json:"user"                 mapstructure:"user"        yaml:"user"`
+		Password   string `json:"password"             mapstructure:"password"    yaml:"password"`
+		Host       string `json:"host,omitempty"       mapstructure:"host"        yaml:"host,omitempty"`
+		Port       int    `json:"port,omitempty"       mapstructure:"port"        yaml:"port,omitempty"`
+		RequireTLS bool   `json:"requireTLS"           mapstructure:"require_tls" yaml:"require_tls"`
 	}
 
 	Logging struct {
@@ -166,11 +177,6 @@ func loadDefaultConfig() {
 	viper.SetDefault("server.addr", "127.0.0.1:8080")
 	viper.SetDefault("server.show_start_banner", true)
 
-	viper.SetDefault("db.host", "127.0.0.1")
-	viper.SetDefault("db.port", 5432)
-	viper.SetDefault("db.user", "awasm")
-	viper.SetDefault("db.password", "awasm")
-	viper.SetDefault("db.schema", "dev-local-awasm-001")
 	viper.SetDefault("db.charset", "utf8bm4")
 	viper.SetDefault("db.log_sql", true)
 	viper.SetDefault("db.ssl_mode", "disable")
@@ -178,21 +184,14 @@ func loadDefaultConfig() {
 	viper.SetDefault("db.max_open_conns", 100)
 	viper.SetDefault("db.conn_max_lifetime", 300)
 
-	viper.SetDefault("redis.host", "127.0.0.1")
-	viper.SetDefault("redis.port", 6379)
-	viper.SetDefault("redis.require_tls", 6379)
 	viper.SetDefault("redis.password", "")
-	viper.SetDefault("redis.db", 1)
 	viper.SetDefault("redis.pool_size", 50)
+	viper.SetDefault("redis.require_tls", false)
 
-	viper.SetDefault("jwt.secret", "lLTQ-5romlnVEOVdq6gCwEpCCKeypoKvuugm2GDfjzs=")
-	viper.SetDefault("jwt.exp", 86400)
-
-	viper.SetDefault("key.encryption", "bASFEEq6OmFvrpYDGgsF7lZn95p8VkuDgPAw93hpad8=")
-	viper.SetDefault(
-		"key.hash",
-		"lXdxDsEADpazx2V9vR6tjnDa60CVdEaIp2z8jLChTR0oyqpcWm0fQcDq7dKAzq44ttGcN90TvjmsC67llMsz8w==",
-	)
+	viper.SetDefault("smtp.from_name", "Local Awasm")
+	viper.SetDefault("smtp.user", "")
+	viper.SetDefault("smtp.password", "")
+	viper.SetDefault("smtp.require_tls", false)
 
 	viper.SetDefault("logging.filename", "logs/awasm.log")
 	viper.SetDefault("logging.level", "info")

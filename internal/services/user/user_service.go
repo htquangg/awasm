@@ -3,11 +3,14 @@ package user
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/reason"
+	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/schemas"
+	"github.com/htquangg/a-wasm/internal/services/mailer"
 	"github.com/htquangg/a-wasm/internal/services/session"
 	"github.com/htquangg/a-wasm/pkg/converter"
 	"github.com/htquangg/a-wasm/pkg/crypto"
@@ -41,6 +44,7 @@ type (
 		userRepo       UserRepo
 		userAuthRepo   UserAuthRepo
 		sessionService *session.SessionService
+		mailerService  *mailer.MailerService
 	}
 )
 
@@ -49,12 +53,14 @@ func NewUserService(
 	userRepo UserRepo,
 	userAuthRepo UserAuthRepo,
 	sessionService *session.SessionService,
+	mailerSercice *mailer.MailerService,
 ) *UserService {
 	return &UserService{
 		cfg:            cfg,
 		userRepo:       userRepo,
 		userAuthRepo:   userAuthRepo,
 		sessionService: sessionService,
+		mailerService:  mailerSercice,
 	}
 }
 
@@ -98,7 +104,26 @@ func (s *UserService) BeginEmailSignupProcess(ctx context.Context, req *schemas.
 		return errors.BadRequest(reason.EmailDuplicate)
 	}
 
-	// TODO: send email with OTP
+	otp, err := crypto.GenerateOtp()
+	if err != nil {
+		// OTP generation must always succeed
+		panic(err)
+	}
+	title, body, err := s.mailerService.EmailVerificationTemplate(ctx, otp)
+	if err != nil {
+		return err
+	}
+
+	data := &schemas.EmailCodeContent{
+		SourceType: schemas.EmailVerificationSourceType,
+		Code:       otp,
+		ExpiresAt:  time.Now().UTC().Add(constants.ExpiresInOTPEmailSignup).Unix(),
+	}
+	err = s.mailerService.SendAndSaveCode(ctx, email, title, body, data)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -107,7 +132,14 @@ func (s *UserService) VerifyEmailSignup(
 	req *schemas.VerifyEmailSignupReq,
 ) (*schemas.CommonTokenResp, error) {
 	email := strings.ToLower(req.Email)
-	// TODO: verify email OTP
+
+	check, err := s.mailerService.VerifyCode(ctx, email, schemas.EmailVerificationSourceType, req.OTP)
+	if err != nil {
+		return nil, err
+	}
+	if !check {
+		return nil, errors.BadRequest(reason.OTPIncorrect)
+	}
 
 	user, exists, err := s.userRepo.GetUserWithEmail(ctx, email)
 	if err != nil {

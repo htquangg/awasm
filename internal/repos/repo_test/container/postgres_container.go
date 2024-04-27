@@ -22,13 +22,8 @@ type PostgresContainer struct {
 }
 
 func NewPostgresContainer(ctx context.Context, cfg *config.DB) (*PostgresContainer, error) {
-	var (
-		req  testcontainers.ContainerRequest
-		port nat.Port
-	)
-
-	port = nat.Port(fmt.Sprintf("%d/tcp", cfg.Port))
-	req = testcontainers.ContainerRequest{
+	port := nat.Port(fmt.Sprintf("%d/tcp", cfg.Port))
+	req := testcontainers.ContainerRequest{
 		Image:        "postgres:12.2-alpine",
 		ExposedPorts: []string{fmt.Sprintf("%d/tcp", cfg.Port)},
 		WaitingFor: wait.ForSQL(port, "postgres", func(host string, port nat.Port) string {

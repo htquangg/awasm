@@ -52,6 +52,17 @@ services:
     networks:
       - awasm-network
 
+  smtp:
+    image: lytrax/mailhog:latest # https://github.com/mailhog/MailHog/issues/353#issuecomment-821137362
+    restart: always
+    logging:
+      driver: "none" # disable saving logs
+    ports:
+      - 1025:1025 # SMTP server
+      - 8025:8025 # Web UI
+    networks:
+      - awasm-network
+
 volumes:
   postgres-data:
   redis-data:

@@ -64,6 +64,11 @@ backend:
     key_attribute:
       not_found:
         other: Key attribute not found.
+    otp:
+      expired:
+        other: OTP is expired.
+      incorrect:
+        other: OTP is incorrect.
   email_tpl:
     email_verification:
       title:

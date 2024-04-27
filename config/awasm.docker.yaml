@@ -22,7 +22,7 @@ redis:
   port: 6379
   require_tls: false
   password:
-  db: 1
+  db: 0
   pool_size: 50
 
 jwt:
@@ -32,6 +32,14 @@ jwt:
 key:
   encryption: bASFEEq6OmFvrpYDGgsF7lZn95p8VkuDgPAw93hpad8=
   hash: lXdxDsEADpazx2V9vR6tjnDa60CVdEaIp2z8jLChTR0oyqpcWm0fQcDq7dKAzq44ttGcN90TvjmsC67llMsz8w==
+
+smtp:
+  from_email: support@awasm.com
+  from_name: Local Awasm
+  host: 127.0.0.1
+  port: 1025
+  user:
+  password:
 
 logging:
   filename: ""

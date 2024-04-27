@@ -71,7 +71,7 @@ func (s *SessionService) IssueSignupToken(
 	params *entities.GrantParams,
 ) (*schemas.CommonTokenResp, error) {
 	issuedAt := time.Now().UTC()
-	expiresAt := issuedAt.Add(constants.ExpiresInSignup).Unix()
+	expiresAt := issuedAt.Add(constants.ExpiresInTokenSignup).Unix()
 
 	claims := &entities.CommonTokenClaims{
 		StandardClaims: jwt.StandardClaims{Subject: user.ID, IssuedAt: issuedAt.Unix(), ExpiresAt: expiresAt},
@@ -89,7 +89,7 @@ func (s *SessionService) IssueSignupToken(
 	return &schemas.CommonTokenResp{
 		AccessToken: signed,
 		TokenType:   "bearer",
-		ExpiresIn:   int(constants.ExpiresInSignup.Seconds()),
+		ExpiresIn:   int(constants.ExpiresInTokenSignup.Seconds()),
 		ExpiresAt:   expiresAt,
 	}, nil
 }
