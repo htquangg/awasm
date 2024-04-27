@@ -15,16 +15,58 @@ backend:
     duplicate_request_error:
       other: Duplicate submission.
   error:
+    common:
+      invalid_token:
+        other: Invalid token.
+      invalid_scope:
+        other: Invalid scope.
+    object:
+      email_or_password_incorrect:
+        other: Email and password do not match.
     endpoint:
       not_found:
-        other: Endpoint do not found.
+        other: Endpoint not found.
+      access_denied:
+        other: Access denied.
       has_not_published:
         other: Endpoint has not published.
     deployment:
       not_found:
-        other: Deployment do not found.
+        other: Deployment not found.
+      access_denied:
+        other: Access denied.
       already_activated:
-        other: Deployment has already activated.
+        other: Deployment has been activated.
     email:
       duplicate:
-        other: Email already exists.
+        other: Email is already in use.
+      not_found:
+        other: Email not found.
+    access_token:
+      session_required:
+        other: Session required.
+    session:
+      not_found:
+        other: Session not found.
+    user:
+      not_found:
+        other: User not found.
+    srp:
+      not_found:
+        other: User not found.
+      already_verified:
+        other: Srp has been verified.
+    srp_challenge:
+      not_found:
+        other: Srp challenge not found.
+      already_verified:
+        other: Srp challenge has been verified.
+    key_attribute:
+      not_found:
+        other: Key attribute not found.
+  email_tpl:
+    email_verification:
+      title:
+        other: "Confirm your email address"
+      body:
+        other: "Your confirmation code is below - enter it in the browser window where you've started signing up for Awasm.\n<h1>{{.Code}}</h1>\nIf you did not request this change, please ignore this email.\n"
