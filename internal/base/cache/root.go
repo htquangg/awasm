@@ -15,14 +15,16 @@ import (
 )
 
 type Cacher interface {
+	Ping(ctx context.Context) error
 	Get(ctx context.Context, key string) ([]byte, bool, error)
 	Set(ctx context.Context, key string, value []byte, ttp time.Duration) error
 	Delete(ctx context.Context, key string) error
 }
 
 type cache struct {
-	c   *goredis_cache.Cache
-	cfg *config.Redis
+	cfg    *config.Redis
+	client *goredis.Client
+	cache  *goredis_cache.Cache
 }
 
 func Key(k string) string {
@@ -53,17 +55,31 @@ func New(ctx context.Context, cfg *config.Redis) (Cacher, error) {
 	}
 
 	return &cache{
-		cfg: cfg,
-		c: goredis_cache.New(&goredis_cache.Options{
+		cfg:    cfg,
+		client: rdb,
+		cache: goredis_cache.New(&goredis_cache.Options{
 			Redis: rdb,
 		}),
 	}, nil
 }
 
+func (c *cache) Ping(ctx context.Context) error {
+	status := c.client.Ping(ctx)
+	if status == nil {
+		return errors.New("connecting to redis: no status")
+	}
+
+	if status.Err() != nil {
+		return fmt.Errorf("connecting to redis: %w", status.Err())
+	}
+
+	return nil
+}
+
 func (c *cache) Get(ctx context.Context, key string) ([]byte, bool, error) {
 	var value []byte
 	key = Key(key)
-	if err := c.c.Get(ctx, key, &value); err != nil {
+	if err := c.cache.Get(ctx, key, &value); err != nil {
 		if errors.Is(err, goredis_cache.ErrCacheMiss) {
 			return nil, false, nil
 		}
@@ -76,7 +92,7 @@ func (c *cache) Get(ctx context.Context, key string) ([]byte, bool, error) {
 
 func (c *cache) Set(ctx context.Context, key string, value []byte, ttl time.Duration) error {
 	key = Key(key)
-	if err := c.c.Set(&goredis_cache.Item{
+	if err := c.cache.Set(&goredis_cache.Item{
 		Ctx:   ctx,
 		Key:   key,
 		Value: value,
@@ -89,7 +105,7 @@ func (c *cache) Set(ctx context.Context, key string, value []byte, ttl time.Dura
 }
 
 func (c *cache) Delete(ctx context.Context, key string) error {
-	if err := c.c.Delete(ctx, key); err != nil {
+	if err := c.cache.Delete(ctx, key); err != nil {
 		return err
 	}
 

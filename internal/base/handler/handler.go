@@ -27,7 +27,7 @@ func HandleResponse(ctx echo.Context, err error, data interface{}) error {
 	if !std_errors.As(err, &myErr) {
 		logger.Error(err)
 		return ctx.JSON(
-			http.StatusOK,
+			http.StatusInternalServerError,
 			NewRespBody(
 				http.StatusInternalServerError,
 				reason.UnknownError,
@@ -36,9 +36,12 @@ func HandleResponse(ctx echo.Context, err error, data interface{}) error {
 	}
 
 	// log internal server error
-	if errors.IsInternalServer(myErr) {
+	if isInternalServer(myErr) {
 		logger.Error(myErr)
 		myErr.Reason = ""
+		return ctx.JSON(myErr.Code,
+			NewRespBody(myErr.Code, "").TrMsg(lang),
+		)
 	}
 
 	respBody := NewRespBodyFromError(myErr).TrMsg(lang)
@@ -65,4 +68,8 @@ func BindAndValidate(ctx echo.Context, data interface{}) (err error, errField an
 	errField, err = validator.GetValidatorByLang(lang).Check(data)
 
 	return err, errField
+}
+
+func isInternalServer(err *myErrors.Error) bool {
+	return err.Code >= http.StatusInternalServerError
 }

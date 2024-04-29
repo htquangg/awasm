@@ -41,6 +41,11 @@ func New(ctx context.Context, cfg *config.DB) (DB, error) {
 		return nil, err
 	}
 
+	err = engine.Ping()
+	if err != nil {
+		return nil, err
+	}
+
 	engine.SetMapper(names.GonicMapper{})
 	engine.SetLogger(NewXORMLogger(cfg.LogSQL))
 	engine.ShowSQL(cfg.LogSQL)

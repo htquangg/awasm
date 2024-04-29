@@ -1,13 +1,29 @@
 package health
 
-import "github.com/htquangg/a-wasm/internal/schemas"
+import (
+	"context"
 
-type HealthService struct{}
+	"github.com/htquangg/a-wasm/internal/schemas"
+)
 
-func NewHealthService() *HealthService {
-	return &HealthService{}
+type HealthRepo interface {
+	Check(ctx context.Context) error
 }
 
-func (s *HealthService) CheckHealth() (*schemas.CheckHealthResp, error) {
+type HealthService struct {
+	healthRepo HealthRepo
+}
+
+func NewHealthService(healthRepo HealthRepo) *HealthService {
+	return &HealthService{
+		healthRepo: healthRepo,
+	}
+}
+
+func (s *HealthService) CheckHealth(ctx context.Context) (*schemas.CheckHealthResp, error) {
+	if err := s.healthRepo.Check(ctx); err != nil {
+		return nil, err
+	}
+
 	return &schemas.CheckHealthResp{Msg: "API is live!!!"}, nil
 }

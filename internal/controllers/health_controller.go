@@ -18,7 +18,7 @@ func NewHealthController(healthService *health.HealthService) *HealthController 
 }
 
 func (c *HealthController) CheckHealth(ctx echo.Context) error {
-	result, err := c.healthService.CheckHealth()
+	result, err := c.healthService.CheckHealth(ctx.Request().Context())
 	if err != nil {
 		return handler.HandleResponse(ctx, err, nil)
 	}

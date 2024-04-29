@@ -27,7 +27,7 @@ type Sevices struct {
 }
 
 func New(cfg *config.Config, repos *repos.Repos, protoCluster *protocluster.Cluster) *Sevices {
-	healthService := health.NewHealthService()
+	healthService := health.NewHealthService(repos.Health)
 	mailerService := mailer.NewMailerService(cfg, repos.Mailer)
 	endpointService := endpoint.NewEndpointService(cfg, repos.Endpoint, repos.DeploymentCommon, protoCluster)
 	deploymentService := deployment.NewDeploymentService(cfg, repos.Deployment, repos.EndpointCommon, protoCluster)
