@@ -18,7 +18,6 @@ import (
 type (
 	DB interface {
 		Engine(ctx context.Context) Engine
-		TxContext(parentCtx context.Context) (*Context, Committer, error)
 		WithTx(parentCtx context.Context, f func(ctx context.Context) (interface{}, error)) (interface{}, error)
 		InTransaction(ctx context.Context) bool
 		Exec(ctx context.Context, sqlAndArgs ...any) (sql.Result, error)
@@ -84,18 +83,6 @@ func (db *db) engine(ctx context.Context) Engine {
 		return enginedInterface.(Engined).Engine()
 	}
 	return nil
-}
-
-func (db *db) TxContext(parentCtx context.Context) (*Context, Committer, error) {
-	if sess, ok := db.inTransaction(parentCtx); ok {
-		return newContext(parentCtx, sess, true), &halfCommitter{committer: sess}, nil
-	}
-
-	sess := db.e.NewSession()
-	if err := sess.Begin(); err != nil {
-		return nil, nil, err
-	}
-	return newContext(db.ctx, sess, true), sess, nil
 }
 
 func (db *db) WithTx(parentCtx context.Context, f func(ctx context.Context) (interface{}, error)) (interface{}, error) {
