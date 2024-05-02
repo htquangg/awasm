@@ -20,6 +20,22 @@ CREATE TABLE IF NOT EXISTS users
 
 CREATE INDEX IF NOT EXISTS idx_users_email_hash ON users (email_hash);
 
+CREATE TABLE IF NOT EXISTS api_keys
+(
+    id            VARCHAR(36) PRIMARY KEY   NOT NULL,
+    created_at    TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    last_used_at  TIMESTAMPTZ               NULL,
+
+    user_id       VARCHAR(36)               NOT NULL,
+    key           VARCHAR(512)              NOT NULL,
+    key_preview   VARCHAR(32)               NOT NULL,
+    friendly_name TEXT                      NULL,
+    CONSTRAINT fk_api_keys_user_id
+        FOREIGN KEY (user_id)
+            REFERENCES users (id)
+            ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS endpoints
 (
     id                   VARCHAR(36) PRIMARY KEY   NOT NULL,
@@ -85,14 +101,14 @@ CREATE TABLE IF NOT EXISTS srp_auth_temp
 
 CREATE TABLE IF NOT EXISTS srp_challenges
 (
-    id               VARCHAR(36) PRIMARY KEY   NOT NULL,
-    created_at       TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    id            VARCHAR(36) PRIMARY KEY NOT NULL,
+    created_at    TIMESTAMPTZ                      DEFAULT NOW() NOT NULL,
 
-    srp_user_id      VARCHAR(36)               NOT NULL,
-    server_key       TEXT                      NOT NULL,
-    srp_a            TEXT                      NOT NULL,
-    verified_at      TIMESTAMPTZ               NULL,
-    attempt_count    INT                       NOT NULL DEFAULT 0
+    srp_user_id   VARCHAR(36)             NOT NULL,
+    server_key    TEXT                    NOT NULL,
+    srp_a         TEXT                    NOT NULL,
+    verified_at   TIMESTAMPTZ             NULL,
+    attempt_count INT                     NOT NULL DEFAULT 0
 );
 
 -- +goose StatementBegin
@@ -120,7 +136,7 @@ CREATE TABLE IF NOT EXISTS mfa_factors
     status        factor_status             NOT NULL,
     friendly_name TEXT                      NULL,
     factor_type   factor_type               NOT NULL,
-    secret        text                      NULL,
+    secret        TEXT                      NULL,
     CONSTRAINT fk_mfa_factors_user_id
         FOREIGN KEY (user_id)
             REFERENCES users (id)
@@ -169,7 +185,7 @@ CREATE TABLE IF NOT EXISTS mfa_amr_claims
     updated_at            TIMESTAMPTZ DEFAULT NOW() NOT NULL,
 
     session_id            VARCHAR(36)               NOT NULL,
-    authentication_method text                      not null,
+    authentication_method TEXT                      not null,
     CONSTRAINT pk_mfa_amr_claims_session_id_authentication_method UNIQUE (session_id, authentication_method),
     CONSTRAINT fk_mfa_amr_claims_session_id
         FOREIGN KEY (session_id)
@@ -261,5 +277,7 @@ DROP TABLE IF EXISTS deployments;
 DROP TABLE IF EXISTS endpoints;
 
 DROP INDEX idx_users_email_hash;
+
+DROP TABLE IF EXISTS api_keys;
 
 DROP TABLE IF EXISTS users;

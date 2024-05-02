@@ -49,18 +49,17 @@ func (s sortAMREntries) Swap(i, j int) {
 }
 
 type Session struct {
-	CreatedAt time.Time `xorm:"created TIMESTAMPZ created_at"`
-
-	NotAfter *time.Time `xorm:"not null TIMESTAMPZ not_after"`
-
-	DeletedAt *time.Time     `xorm:"TIMESTAMPZ deleted_at"`
-	ID        string         `xorm:"not null pk VARCHAR(36) id"`
-	UserID    string         `xorm:"not null VARCHAR(36) user_id"`
-	AAL       string         `xorm:"not null TEXT aal"`
-	IP        string         `xorm:"not null TEXT default '' ip"`
-	UserAgent string         `xorm:"not null TEXT default '' user_agent"`
-	FactorID  string         `xorm:"not null VARCHAR(36) default '' factor_id"`
-	AMRClaims []*MFAAMRClaim `xorm:"-"`
+	CreatedAt  time.Time      `xorm:"created TIMESTAMPZ created_at"`
+	DeletedAt  *time.Time     `xorm:"TIMESTAMPZ deleted_at"`
+	LastUsedAt *time.Time     `xorm:"TIMESTAMPZ last_used_at"`
+	NotAfter   *time.Time     `xorm:"not null TIMESTAMPZ not_after"`
+	ID         string         `xorm:"not null pk VARCHAR(36) id"`
+	UserID     string         `xorm:"not null VARCHAR(36) user_id"`
+	AAL        string         `xorm:"not null TEXT aal"`
+	IP         string         `xorm:"not null TEXT default '' ip"`
+	UserAgent  string         `xorm:"not null TEXT default '' user_agent"`
+	FactorID   string         `xorm:"not null VARCHAR(36) default '' factor_id"`
+	AMRClaims  []*MFAAMRClaim `xorm:"-"`
 }
 
 func (Session) TableName() string {

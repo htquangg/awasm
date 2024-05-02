@@ -63,14 +63,15 @@ func (authMethod AuthenticationMethod) String() string {
 }
 
 type MFAFactor struct {
-	CreatedAt    time.Time `xorm:"created TIMESTAMPZ created_at"`
-	UpdatedAt    time.Time `xorm:"updated TIMESTAMPZ updated_at"`
-	ID           string    `xorm:"not null pk VARCHAR(36) id"`
-	UserID       string    `xorm:"not null VARCHAR(36) user_id"`
-	Status       string    `xorm:"not null TEXT status"`
-	FriendlyName string    `xorm:"not null TEXT default '' friendly_name"`
-	FactorType   string    `xorm:"not null TEXT factor_type"` // totp, webauthn
-	Secret       string    `xorm:"not null TEXT default '' secret"`
+	CreatedAt    time.Time  `xorm:"created TIMESTAMPZ created_at"`
+	UpdatedAt    time.Time  `xorm:"updated TIMESTAMPZ updated_at"`
+	LastUsedAt   *time.Time `xorm:"TIMESTAMPZ last_used_at"`
+	ID           string     `xorm:"not null pk VARCHAR(36) id"`
+	UserID       string     `xorm:"not null VARCHAR(36) user_id"`
+	Status       string     `xorm:"not null TEXT status"`
+	FriendlyName string     `xorm:"not null TEXT default '' friendly_name"`
+	FactorType   string     `xorm:"not null TEXT factor_type"` // totp, webauthn
+	Secret       string     `xorm:"not null TEXT default '' secret"`
 }
 
 func (MFAFactor) TableName() string {

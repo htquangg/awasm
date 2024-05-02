@@ -5,13 +5,11 @@ import (
 )
 
 type User struct {
-	LastLoginAt time.Time `xorm:"TIMESTAMPZ last_login_at"`
-
-	CreatedAt time.Time `xorm:"created TIMESTAMPZ created_at"`
-	UpdatedAt time.Time `xorm:"updated TIMESTAMPZ updated_at"`
-
-	EmailAcceptedAt      *time.Time `xorm:"TIMESTAMPZ email_accepted_at"`
+	CreatedAt            time.Time  `xorm:"created TIMESTAMPZ created_at"`
+	UpdatedAt            time.Time  `xorm:"updated TIMESTAMPZ updated_at"`
 	DeletedAt            *time.Time `xorm:"TIMESTAMPZ deleted_at"`
+	LastLoginAt          *time.Time `xorm:"TIMESTAMPZ last_login_at"`
+	EmailAcceptedAt      *time.Time `xorm:"TIMESTAMPZ email_accepted_at"`
 	ID                   string     `xorm:"not null pk VARCHAR(36) id"`
 	Name                 string     `xorm:"not null TEXT default '' name"`
 	Email                string     `xorm:"-"`
