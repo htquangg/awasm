@@ -102,7 +102,7 @@ func initApp(ctx context.Context, cfg *config.Config) (*pacman.Application, erro
 
 	services := services.New(cfg, repos, cluster)
 
-	mws := middleware.NewMiddleware(cfg, repos)
+	mws := middleware.NewMiddleware(cfg, services, repos)
 	controllers := controllers.New(services)
 
 	return pacman.NewApp(

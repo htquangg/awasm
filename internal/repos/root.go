@@ -4,6 +4,7 @@ import (
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/cache"
 	"github.com/htquangg/a-wasm/internal/base/db"
+	"github.com/htquangg/a-wasm/internal/repos/api_key"
 	"github.com/htquangg/a-wasm/internal/repos/auth"
 	"github.com/htquangg/a-wasm/internal/repos/deployment"
 	"github.com/htquangg/a-wasm/internal/repos/deployment_common"
@@ -13,6 +14,7 @@ import (
 	"github.com/htquangg/a-wasm/internal/repos/mailer"
 	"github.com/htquangg/a-wasm/internal/repos/session"
 	"github.com/htquangg/a-wasm/internal/repos/user"
+	api_key_svc "github.com/htquangg/a-wasm/internal/services/api_key"
 	auth_svc "github.com/htquangg/a-wasm/internal/services/auth"
 	deployment_svc "github.com/htquangg/a-wasm/internal/services/deployment"
 	deployment_common_svc "github.com/htquangg/a-wasm/internal/services/deployment_common"
@@ -38,6 +40,7 @@ type Repos struct {
 	User             user_svc.UserRepo
 	UserAuth         user_svc.UserAuthRepo
 	Mailer           mailer_svc.MailerRepo
+	ApiKey           api_key_svc.ApiKeyRepo
 }
 
 func New(cfg *config.Config, db db.DB, cacher cache.Cacher) *Repos {
@@ -54,5 +57,6 @@ func New(cfg *config.Config, db db.DB, cacher cache.Cacher) *Repos {
 		User:             user.NewUserRepo(cfg, db),
 		UserAuth:         user.NewUserAuthRepo(cfg, db),
 		Mailer:           mailer.NewMailerRepo(db, cacher),
+		ApiKey:           api_key.NewApiKeyRepo(db),
 	}
 }

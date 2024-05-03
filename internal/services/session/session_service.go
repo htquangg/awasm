@@ -100,7 +100,7 @@ func (s *SessionService) generateAccessToken(
 	sessionID string,
 ) (string, int64, error) {
 	if sessionID == "" {
-		return "", 0, errors.InternalServer(reason.RequiredSession)
+		return "", 0, errors.InternalServer(reason.AccessTokenSessionRequired)
 	}
 
 	session, exists, err := s.sessionRepo.GetSessionByID(ctx, sessionID)

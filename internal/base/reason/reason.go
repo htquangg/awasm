@@ -24,7 +24,7 @@ const (
 	DeploymentAlreadyActivated  = "error.deployment.already_activated"
 	EmailDuplicate              = "error.email.duplicate"
 	EmailNotFound               = "error.email.not_found"
-	RequiredSession             = "error.access_token.session_required"
+	AccessTokenSessionRequired  = "error.access_token.session_required"
 	SessionNotFound             = "error.session.not_found"
 	UserNotFound                = "error.user.not_found"
 	SRPNotFound                 = "error.srp.not_found"
@@ -34,4 +34,6 @@ const (
 	KeyAttributeNotFound        = "error.key_attribute.not_found"
 	OTPExpired                  = "error.otp.expired"
 	OTPIncorrect                = "error.otp.incorrect"
+	ApiKeyInvalid               = "error.api_key.invalid"
+	ApiKeyRequired              = "error.api_key.required"
 )

@@ -7,8 +7,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func bindPreviewApi(g *echo.Group, c *controllers.Controllers, _ *middleware.Middleware) {
+func bindPreviewApi(g *echo.Group, c *controllers.Controllers, mws *middleware.Middleware) {
 	subGroup := g.Group("/preview")
 
-	subGroup.Any("/:deploymentID/*", c.Preview.Serve)
+	subGroup.Any("/:deploymentID/*", c.Preview.Serve, mws.ApiKey.RequireApiKey)
 }

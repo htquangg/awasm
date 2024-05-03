@@ -70,6 +70,26 @@ func GetHash(data string, hashKey []byte) (string, error) {
 	return converter.ToB64(h.Sum(nil)), nil
 }
 
+func GetHMAC(data string, hashKey []byte) (string, error) {
+	h, err := blake2b.New256(hashKey)
+	if err != nil {
+		// The only possible error that can be returned here is if the key
+		// is larger than 64 bytes - which the blake2b hash will not accept.
+		// This is a case that is so easily avoidable when using this package
+		// and since chaining is convenient for this package.  We're going
+		// to do the below to handle this possible case so we don't have
+		// to return an error.
+		h, _ = blake2b.New256(hashKey[0:64])
+	}
+
+	_, err = h.Write([]byte(data))
+	if err != nil {
+		return "", err
+	}
+
+	return converter.ToURLB64(h.Sum(nil)), nil
+}
+
 func GetEncryptedToken(token string, publicKey string) (string, error) {
 	publicKeyBytes, err := converter.FromB64(publicKey)
 	if err != nil {

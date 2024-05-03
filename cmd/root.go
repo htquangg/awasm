@@ -37,7 +37,7 @@ To run awasm, use:
 func init() {
 	cobra.OnInitialize(initLog)
 
-	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd, deploymentsCmd, loginCmd, signupCmd, resetCmd} {
+	for _, cmd := range []*cobra.Command{runCmd, endpointsCmd, deploymentsCmd, loginCmd, signupCmd, apiKeysCmd, resetCmd} {
 		rootCmd.AddCommand(cmd)
 	}
 }

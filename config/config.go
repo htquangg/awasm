@@ -62,10 +62,14 @@ type (
 	}
 
 	Key struct {
-		Encryption      string `json:"encryption,omitempty" mapstructure:"encryption"       yaml:"encryption,omitempty"`
-		Hash            string `json:"hash,omitempty"       mapstructure:"hash"             yaml:"hash,omitempty"`
-		EncryptionBytes []byte `json:"-"                    mapstructure:"encryption_bytes" yaml:"-"`
-		HashBytes       []byte `json:"-"                    mapstructure:"hash_bytes"       yaml:"-"`
+		Encryption               string `json:"encryption,omitempty"          mapstructure:"encryption"                   yaml:"encryption,omitempty"`
+		Hash                     string `json:"hash,omitempty"                mapstructure:"hash"                         yaml:"hash,omitempty"`
+		ApiKeySignatureHMAC      string `json:"apiKeySignatureHmac,omitempty" mapstructure:"api_key_signature_hmac"       yaml:"api_key_signature_hmac,omitempty"`
+		ApiKeyDatabaseHMAC       string `json:"apiKeyDatabaseHmac,omitempty"  mapstructure:"api_key_database_hmac"        yaml:"api_key_database_hmac,omitempty"`
+		EncryptionBytes          []byte `json:"-"                             mapstructure:"encryption_bytes"             yaml:"-"`
+		HashBytes                []byte `json:"-"                             mapstructure:"hash_bytes"                   yaml:"-"`
+		ApiKeySignatureHMACBytes []byte `json:"-"                             mapstructure:"api_key_signature_hmac_bytes" yaml:"-"`
+		ApiKeyDatabaseHMACBytes  []byte `json:"-"                             mapstructure:"api_key_database_hmac_bytes"  yaml:"-"`
 	}
 
 	SMTP struct {

@@ -4,6 +4,7 @@ import (
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/protocluster"
 	"github.com/htquangg/a-wasm/internal/repos"
+	"github.com/htquangg/a-wasm/internal/services/api_key"
 	"github.com/htquangg/a-wasm/internal/services/auth"
 	"github.com/htquangg/a-wasm/internal/services/deployment"
 	"github.com/htquangg/a-wasm/internal/services/endpoint"
@@ -24,6 +25,7 @@ type Sevices struct {
 	Auth         *auth.AuthService
 	Session      *session.SessionService
 	User         *user.UserService
+	ApiKey       *api_key.ApiKeyService
 }
 
 func New(cfg *config.Config, repos *repos.Repos, protoCluster *protocluster.Cluster) *Sevices {
@@ -34,6 +36,7 @@ func New(cfg *config.Config, repos *repos.Repos, protoCluster *protocluster.Clus
 	authService := auth.NewAuthService(repos.Auth)
 	sessionService := session.NewSessionService(cfg, repos.Session)
 	userService := user.NewUserService(cfg, repos.User, repos.UserAuth, sessionService, mailerService)
+	apiKeyService := api_key.NewApiKeyService(cfg, repos.ApiKey)
 
 	return &Sevices{
 		cfg:          cfg,
@@ -45,5 +48,6 @@ func New(cfg *config.Config, repos *repos.Repos, protoCluster *protocluster.Clus
 		Auth:         authService,
 		Session:      sessionService,
 		User:         userService,
+		ApiKey:       apiKeyService,
 	}
 }

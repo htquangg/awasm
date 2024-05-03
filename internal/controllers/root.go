@@ -11,6 +11,7 @@ type Controllers struct {
 	Live       *LiveController
 	Preview    *PreviewController
 	User       *UserController
+	ApiKey     *ApiKeyController
 }
 
 func New(services *services.Sevices) *Controllers {
@@ -21,5 +22,6 @@ func New(services *services.Sevices) *Controllers {
 		Live:       NewLiveController(services.Endpoint),
 		Preview:    NewPreviewController(services.Deployment),
 		User:       NewUserController(services.User),
+		ApiKey:     NewApiKeyController(services.ApiKey),
 	}
 }
