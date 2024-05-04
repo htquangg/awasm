@@ -140,9 +140,21 @@ func LoadConfig() (*Config, error) {
 	}
 	cfg.Key.HashBytes = hashingKeyBytes
 
+	apiKeySignatureHMACBytes, err := converter.FromURLB64(cfg.Key.ApiKeySignatureHMAC)
+	if err != nil {
+		return nil, fmt.Errorf("could not decode api-key-signature-hmac: %v", err)
+	}
+	cfg.Key.ApiKeySignatureHMACBytes = apiKeySignatureHMACBytes
+
+	apiKeyDatabaseHMACBytes, err := converter.FromURLB64(cfg.Key.ApiKeyDatabaseHMAC)
+	if err != nil {
+		return nil, fmt.Errorf("could not decode api-key-database-hmac: %v", err)
+	}
+	cfg.Key.ApiKeyDatabaseHMACBytes = apiKeyDatabaseHMACBytes
+
 	jwtSecretBytes, err := converter.FromURLB64(cfg.JWT.Secret)
 	if err != nil {
-		return nil, fmt.Errorf("could not decode email-hash-key: %v", err)
+		return nil, fmt.Errorf("could not decode jwt-secret-key: %v", err)
 	}
 	cfg.JWT.SecretBytes = jwtSecretBytes
 
