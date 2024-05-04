@@ -3,12 +3,12 @@ package health
 import (
 	"context"
 
+	"github.com/segmentfault/pacman/errors"
+
 	"github.com/htquangg/a-wasm/internal/base/cache"
 	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/services/health"
-
-	"github.com/segmentfault/pacman/errors"
 )
 
 type healthRepo struct {

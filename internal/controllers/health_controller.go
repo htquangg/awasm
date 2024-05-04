@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/htquangg/a-wasm/internal/base/handler"
 	"github.com/htquangg/a-wasm/internal/services/health"
-
-	"github.com/labstack/echo/v4"
 )
 
 type HealthController struct {

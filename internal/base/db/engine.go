@@ -4,10 +4,11 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/htquangg/a-wasm/config"
 	_ "github.com/lib/pq"
 	"xorm.io/xorm"
 	"xorm.io/xorm/schemas"
+
+	"github.com/htquangg/a-wasm/config"
 )
 
 // Engine represents a xorm engine or session.

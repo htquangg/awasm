@@ -3,10 +3,10 @@ package handler
 import (
 	"context"
 
-	"github.com/htquangg/a-wasm/internal/constants"
-
 	"github.com/labstack/echo/v4"
 	"github.com/segmentfault/pacman/i18n"
+
+	"github.com/htquangg/a-wasm/internal/constants"
 )
 
 // GetLang get language from header

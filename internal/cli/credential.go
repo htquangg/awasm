@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/zalando/go-keyring"
+
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/cli/api"
 	"github.com/htquangg/a-wasm/internal/schemas"
-
-	"github.com/zalando/go-keyring"
 )
 
 const WarnAuthMessage = "not authenticated yet. Please run 'awasm login'"

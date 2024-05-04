@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
+	"github.com/segmentfault/pacman/errors"
+
 	"github.com/htquangg/a-wasm/internal/base/cache"
 	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/services/mailer"
-
-	"github.com/segmentfault/pacman/errors"
 )
 
 type mailerRepo struct {

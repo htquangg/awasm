@@ -6,12 +6,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
-	"github.com/htquangg/a-wasm/pkg/uid"
-
 	"github.com/stretchr/testify/require"
 	"github.com/tetratelabs/wazero"
 	"google.golang.org/protobuf/proto"
+
+	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
+	"github.com/htquangg/a-wasm/pkg/uid"
 )
 
 func TestRuntimeInvoke(t *testing.T) {

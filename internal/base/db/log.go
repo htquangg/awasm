@@ -4,10 +4,10 @@ import (
 	"os"
 	"sync/atomic"
 
+	xormlog "xorm.io/xorm/log"
+
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/pkg/logger"
-
-	xormlog "xorm.io/xorm/log"
 )
 
 type XORMLogBridge struct {

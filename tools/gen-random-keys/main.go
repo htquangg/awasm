@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/htquangg/a-wasm/pkg/crypto"
-
 	"golang.org/x/crypto/blake2b"
+
+	"github.com/htquangg/a-wasm/pkg/crypto"
 )
 
 func main() {

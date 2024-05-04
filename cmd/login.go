@@ -4,6 +4,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/fatih/color"
+	"github.com/manifoldco/promptui"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/cli"
 	"github.com/htquangg/a-wasm/internal/cli/api"
@@ -11,11 +16,6 @@ import (
 	"github.com/htquangg/a-wasm/pkg/converter"
 	"github.com/htquangg/a-wasm/pkg/crypto"
 	"github.com/htquangg/a-wasm/pkg/logger"
-
-	"github.com/fatih/color"
-	"github.com/manifoldco/promptui"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 const (

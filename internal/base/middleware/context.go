@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"github.com/htquangg/a-wasm/internal/entities"
-
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
+
+	"github.com/htquangg/a-wasm/internal/entities"
 )
 
 const (

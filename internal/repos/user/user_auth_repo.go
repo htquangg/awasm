@@ -4,6 +4,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/jinzhu/copier"
+	"github.com/segmentfault/pacman/errors"
+
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/base/reason"
@@ -11,9 +14,6 @@ import (
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/internal/services/user"
 	"github.com/htquangg/a-wasm/pkg/uid"
-	"github.com/jinzhu/copier"
-
-	"github.com/segmentfault/pacman/errors"
 )
 
 type userAuthRepo struct {

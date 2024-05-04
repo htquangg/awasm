@@ -1,9 +1,9 @@
 package schemas
 
 import (
-	"github.com/htquangg/a-wasm/internal/entities"
-
 	"github.com/jinzhu/copier"
+
+	"github.com/htquangg/a-wasm/internal/entities"
 )
 
 type AddDeploymentReq struct {

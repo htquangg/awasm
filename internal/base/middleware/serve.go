@@ -3,10 +3,11 @@ package middleware
 import (
 	"encoding/json"
 
-	"github.com/htquangg/a-wasm/internal/base/handler"
-	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/labstack/echo/v4"
 	"github.com/segmentfault/pacman/errors"
+
+	"github.com/htquangg/a-wasm/internal/base/handler"
+	"github.com/htquangg/a-wasm/internal/base/reason"
 )
 
 func Serve(ctx echo.Context, status int, data []byte, header []byte) error {

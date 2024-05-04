@@ -8,18 +8,18 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/fatih/color"
+	"github.com/labstack/echo-contrib/echoprometheus"
+	"github.com/labstack/echo/v4"
+	middleware_echo "github.com/labstack/echo/v4/middleware"
+	"github.com/segmentfault/pacman/errors"
+
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/handler"
 	"github.com/htquangg/a-wasm/internal/base/middleware"
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/controllers"
 	"github.com/htquangg/a-wasm/pkg/uid"
-
-	"github.com/fatih/color"
-	"github.com/labstack/echo-contrib/echoprometheus"
-	"github.com/labstack/echo/v4"
-	middleware_echo "github.com/labstack/echo/v4/middleware"
-	"github.com/segmentfault/pacman/errors"
 )
 
 type Server struct {

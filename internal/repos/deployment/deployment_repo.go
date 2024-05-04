@@ -3,12 +3,12 @@ package deployment
 import (
 	"context"
 
+	"github.com/segmentfault/pacman/errors"
+
 	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/services/deployment"
-
-	"github.com/segmentfault/pacman/errors"
 )
 
 type deploymentRepo struct {

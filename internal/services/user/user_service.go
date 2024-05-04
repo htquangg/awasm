@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/segmentfault/pacman/errors"
+
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/constants"
@@ -15,8 +17,6 @@ import (
 	"github.com/htquangg/a-wasm/pkg/converter"
 	"github.com/htquangg/a-wasm/pkg/crypto"
 	"github.com/htquangg/a-wasm/pkg/uid"
-
-	"github.com/segmentfault/pacman/errors"
 )
 
 type (

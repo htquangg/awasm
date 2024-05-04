@@ -6,12 +6,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/pkg/logger"
-
 	myTran "github.com/segmentfault/pacman/contrib/i18n"
 	"github.com/segmentfault/pacman/i18n"
 	"gopkg.in/yaml.v3"
+
+	"github.com/htquangg/a-wasm/config"
+	"github.com/htquangg/a-wasm/pkg/logger"
 )
 
 var GlobalTrans i18n.Translator

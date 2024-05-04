@@ -6,6 +6,11 @@ import (
 	"os"
 	"syscall"
 
+	"github.com/fatih/color"
+	"github.com/segmentfault/pacman"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/cache"
 	"github.com/htquangg/a-wasm/internal/base/db"
@@ -18,11 +23,6 @@ import (
 	"github.com/htquangg/a-wasm/internal/services"
 	"github.com/htquangg/a-wasm/internal/web"
 	"github.com/htquangg/a-wasm/pkg/logger"
-
-	"github.com/fatih/color"
-	"github.com/segmentfault/pacman"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var runCmd = &cobra.Command{

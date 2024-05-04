@@ -8,6 +8,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/segmentfault/pacman/errors"
+	"gopkg.in/gomail.v2"
+
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/handler"
 	"github.com/htquangg/a-wasm/internal/base/reason"
@@ -15,9 +18,6 @@ import (
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/pkg/logger"
-
-	"github.com/segmentfault/pacman/errors"
-	"gopkg.in/gomail.v2"
 )
 
 type (

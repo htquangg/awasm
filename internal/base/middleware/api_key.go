@@ -3,12 +3,12 @@ package middleware
 import (
 	"strings"
 
+	"github.com/labstack/echo/v4"
+	"github.com/segmentfault/pacman/errors"
+
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/services/api_key"
-	"github.com/segmentfault/pacman/errors"
-
-	"github.com/labstack/echo/v4"
 )
 
 const (

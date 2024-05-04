@@ -1,12 +1,12 @@
 package controllers
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/htquangg/a-wasm/internal/base/handler"
 	"github.com/htquangg/a-wasm/internal/base/middleware"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/internal/services/endpoint"
-
-	"github.com/labstack/echo/v4"
 )
 
 type EndpointController struct {

@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/repos/endpoint"
 	"github.com/htquangg/a-wasm/pkg/uid"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func buildEndpointEntity() *entities.Endpoint {

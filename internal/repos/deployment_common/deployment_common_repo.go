@@ -3,12 +3,12 @@ package deployment_common
 import (
 	"context"
 
+	"github.com/segmentfault/pacman/errors"
+
 	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/services/deployment_common"
-
-	"github.com/segmentfault/pacman/errors"
 )
 
 type deploymentCommonRepo struct {

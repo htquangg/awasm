@@ -5,12 +5,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/pkg/logger"
-
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // go build -ldflags "-X github.com/htquangg/a-wasm/cmd.Version=x.y.z"

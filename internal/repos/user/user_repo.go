@@ -3,14 +3,14 @@ package user
 import (
 	"context"
 
+	"github.com/segmentfault/pacman/errors"
+
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/services/user"
 	"github.com/htquangg/a-wasm/pkg/crypto"
-
-	"github.com/segmentfault/pacman/errors"
 )
 
 type userRepo struct {

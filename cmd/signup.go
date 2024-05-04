@@ -6,13 +6,6 @@ import (
 	"regexp"
 	"runtime"
 
-	"github.com/htquangg/a-wasm/internal/cli"
-	"github.com/htquangg/a-wasm/internal/cli/api"
-	"github.com/htquangg/a-wasm/internal/schemas"
-	"github.com/htquangg/a-wasm/pkg/converter"
-	"github.com/htquangg/a-wasm/pkg/crypto"
-	"github.com/htquangg/a-wasm/pkg/uid"
-
 	"github.com/fatih/color"
 	"github.com/kong/go-srp"
 	"github.com/manifoldco/promptui"
@@ -20,6 +13,13 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/argon2"
 	"golang.org/x/crypto/blake2b"
+
+	"github.com/htquangg/a-wasm/internal/cli"
+	"github.com/htquangg/a-wasm/internal/cli/api"
+	"github.com/htquangg/a-wasm/internal/schemas"
+	"github.com/htquangg/a-wasm/pkg/converter"
+	"github.com/htquangg/a-wasm/pkg/crypto"
+	"github.com/htquangg/a-wasm/pkg/uid"
 )
 
 const (

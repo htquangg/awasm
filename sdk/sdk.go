@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
-
 	"google.golang.org/protobuf/proto"
+
+	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
 )
 
 type ResponseWriter struct {

@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
+	"github.com/golang-jwt/jwt"
+	"github.com/segmentfault/pacman/errors"
+
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/schemas"
-
-	"github.com/golang-jwt/jwt"
-	"github.com/segmentfault/pacman/errors"
 )
 
 type (

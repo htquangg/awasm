@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-resty/resty/v2"
+
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/pkg/logger"
-
-	"github.com/go-resty/resty/v2"
 )
 
 func CallGetSRPAttribute(

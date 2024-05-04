@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/htquangg/a-wasm/config"
-
 	goredis_cache "github.com/go-redis/cache/v9"
 	goredis "github.com/redis/go-redis/v9"
+
+	"github.com/htquangg/a-wasm/config"
 )
 
 type Cacher interface {

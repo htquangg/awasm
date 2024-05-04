@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/htquangg/a-wasm/internal/schemas"
-
 	"github.com/go-resty/resty/v2"
+
+	"github.com/htquangg/a-wasm/internal/schemas"
 )
 
 func CallBeginEmailSignupProcess(

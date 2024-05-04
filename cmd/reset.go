@@ -3,9 +3,9 @@ package cmd
 import (
 	"os"
 
-	"github.com/htquangg/a-wasm/internal/cli"
-
 	"github.com/spf13/cobra"
+
+	"github.com/htquangg/a-wasm/internal/cli"
 )
 
 var resetCmd = &cobra.Command{

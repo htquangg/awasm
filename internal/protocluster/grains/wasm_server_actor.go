@@ -3,11 +3,11 @@ package grains
 import (
 	"time"
 
-	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
-	"github.com/htquangg/a-wasm/pkg/logger"
-
 	"github.com/asynkron/protoactor-go/actor"
 	"github.com/asynkron/protoactor-go/cluster"
+
+	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
+	"github.com/htquangg/a-wasm/pkg/logger"
 )
 
 const RequestRuntimeTimeout = 5 * time.Second

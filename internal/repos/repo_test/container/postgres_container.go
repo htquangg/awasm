@@ -8,11 +8,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/htquangg/a-wasm/config"
-
 	"github.com/docker/go-connections/nat"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
+
+	"github.com/htquangg/a-wasm/config"
 )
 
 type PostgresContainer struct {

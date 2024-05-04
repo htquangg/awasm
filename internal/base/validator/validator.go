@@ -8,10 +8,6 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/htquangg/a-wasm/internal/base/reason"
-	"github.com/htquangg/a-wasm/internal/base/translator"
-	"github.com/htquangg/a-wasm/pkg/logger"
-
 	"github.com/go-playground/locales"
 	english "github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
@@ -20,6 +16,10 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	myErrors "github.com/segmentfault/pacman/errors"
 	"github.com/segmentfault/pacman/i18n"
+
+	"github.com/htquangg/a-wasm/internal/base/reason"
+	"github.com/htquangg/a-wasm/internal/base/translator"
+	"github.com/htquangg/a-wasm/pkg/logger"
 )
 
 type TranslatorLocal struct {
