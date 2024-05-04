@@ -9,6 +9,7 @@ import (
 	"github.com/htquangg/a-wasm/internal/base/cache"
 	"github.com/htquangg/a-wasm/internal/base/db"
 	"github.com/htquangg/a-wasm/internal/base/reason"
+	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/services/mailer"
 )
 
@@ -25,7 +26,11 @@ func NewMailerRepo(db db.DB, cacher cache.Cacher) mailer.MailerRepo {
 }
 
 func (r *mailerRepo) SetCode(ctx context.Context, code string, content string, duration time.Duration) error {
-	err := r.cacher.Set(ctx, code, []byte(content), duration)
+	cacheKey := &cache.Key{
+		Namespace: constants.MailerOTPNameSpaceCache,
+		Key:       code,
+	}
+	err := r.cacher.Set(ctx, cacheKey, []byte(content), duration)
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
@@ -34,7 +39,11 @@ func (r *mailerRepo) SetCode(ctx context.Context, code string, content string, d
 }
 
 func (r *mailerRepo) GetCode(ctx context.Context, code string) (string, error) {
-	content, exist, err := r.cacher.Get(ctx, code)
+	cacheKey := &cache.Key{
+		Namespace: constants.MailerOTPNameSpaceCache,
+		Key:       code,
+	}
+	content, exist, err := r.cacher.Get(ctx, cacheKey)
 	if err != nil {
 		return "", errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
@@ -46,7 +55,11 @@ func (r *mailerRepo) GetCode(ctx context.Context, code string) (string, error) {
 }
 
 func (r *mailerRepo) DeleteCode(ctx context.Context, code string) error {
-	err := r.cacher.Delete(ctx, code)
+	cacheKey := &cache.Key{
+		Namespace: constants.MailerOTPNameSpaceCache,
+		Key:       code,
+	}
+	err := r.cacher.Delete(ctx, cacheKey)
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}

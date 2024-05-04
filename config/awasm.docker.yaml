@@ -34,6 +34,7 @@ key:
   hash: lXdxDsEADpazx2V9vR6tjnDa60CVdEaIp2z8jLChTR0oyqpcWm0fQcDq7dKAzq44ttGcN90TvjmsC67llMsz8w==
   api_key_signature_hmac: N3BGfY5GC9JNuWvjq2CADN7guXv_yHQETcRJtDFp2krcY8Z8IjKHxqMUHQoJZAWD_RTsjL72CkAw98P7JU7Vyw==
   api_key_database_hmac: 1cVQ7W1VtEl0guRH7fn710l52hJ-wGxGtKQZBQaNs0Md_tW5YBxWZh4iOxgOFMSu5f9aX12X_QZtoZqoGfL2YA==
+  cache_key_hmac: zSJlncUERaTItwqwyWlvD3N662EVvEWBVP36uSerGILD7FGxUSFx6hH5x41kjPhbuHqc8T6eeGiAzmPm30qnMg==
 
 smtp:
   from_email: support@awasm.com

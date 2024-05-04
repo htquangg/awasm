@@ -7,7 +7,9 @@ import (
 	"github.com/segmentfault/pacman/errors"
 
 	"github.com/htquangg/a-wasm/config"
+	"github.com/htquangg/a-wasm/internal/base/cache"
 	"github.com/htquangg/a-wasm/internal/base/reason"
+	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/services/api_key"
 )
 
@@ -18,12 +20,18 @@ const (
 
 type ApiKeyMiddleware struct {
 	cfg           *config.Config
+	cache         cache.Cacher
 	apiKeyService *api_key.ApiKeyService
 }
 
-func NewApiKeyMiddleware(cfg *config.Config, apiKeyService *api_key.ApiKeyService) *ApiKeyMiddleware {
+func NewApiKeyMiddleware(
+	cfg *config.Config,
+	cacher cache.Cacher,
+	apiKeyService *api_key.ApiKeyService,
+) *ApiKeyMiddleware {
 	return &ApiKeyMiddleware{
 		cfg:           cfg,
+		cache:         cacher,
 		apiKeyService: apiKeyService,
 	}
 }
@@ -35,9 +43,23 @@ func (m *ApiKeyMiddleware) RequireApiKey(next echo.HandlerFunc) echo.HandlerFunc
 			return err
 		}
 
-		_, err = m.apiKeyService.GetApiKeyWithKey(ctx.Request().Context(), key)
+		cacheKey := &cache.Key{
+			Namespace: constants.AuthorizedApiKeyNameSpaceCache,
+			Key:       key,
+		}
+		_, exists, err := m.cache.Fetch(
+			ctx.Request().Context(),
+			cacheKey,
+			constants.AuthorizedApiKeyTTLCache,
+			func() (interface{}, error) {
+				return m.apiKeyService.GetApiKeyWithKey(ctx.Request().Context(), key)
+			},
+		)
 		if err != nil {
 			return err
+		}
+		if !exists {
+			return errors.Unauthorized(reason.ApiKeyInvalid)
 		}
 
 		return next(ctx)

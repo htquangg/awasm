@@ -35,6 +35,12 @@ func main() {
 	}
 	apiKeyDatabaseHMAC := converter.ToURLB64(apiKeyDatabaseHMACBytes)
 
+	cacheKeyHMACBytes, err := crypto.GenerateRandomBytes(blake2b.Size)
+	if err != nil {
+		log.Fatal(err)
+	}
+	cacheKeyHMAC := converter.ToB64(cacheKeyHMACBytes)
+
 	jwtBytes, err := crypto.GenerateRandomBytes(blake2b.Size256)
 	if err != nil {
 		log.Fatal(err)
@@ -45,5 +51,6 @@ func main() {
 	fmt.Printf("key.hash: %s\n", hash)
 	fmt.Printf("key.api_key_signature_hmac: %s\n", apiKeySignatureHMAC)
 	fmt.Printf("key.api_key_database_hmac: %s\n", apiKeyDatabaseHMAC)
+	fmt.Printf("key.cache_key_hmac: %s\n", cacheKeyHMAC)
 	fmt.Printf("jwt.secret: %s\n", jwt)
 }

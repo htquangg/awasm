@@ -91,7 +91,7 @@ func initApp(ctx context.Context, cfg *config.Config) (*pacman.Application, erro
 		return nil, err
 	}
 
-	cache, err := cache.New(ctx, cfg.Redis)
+	cache, err := cache.New(ctx, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func initApp(ctx context.Context, cfg *config.Config) (*pacman.Application, erro
 
 	services := services.New(cfg, repos, cluster)
 
-	mws := middleware.NewMiddleware(cfg, services, repos)
+	mws := middleware.NewMiddleware(cfg, cache, services, repos)
 	controllers := controllers.New(services)
 
 	return pacman.NewApp(

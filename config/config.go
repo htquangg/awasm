@@ -66,10 +66,12 @@ type (
 		Hash                     string `json:"hash,omitempty"                mapstructure:"hash"                         yaml:"hash,omitempty"`
 		ApiKeySignatureHMAC      string `json:"apiKeySignatureHmac,omitempty" mapstructure:"api_key_signature_hmac"       yaml:"api_key_signature_hmac,omitempty"`
 		ApiKeyDatabaseHMAC       string `json:"apiKeyDatabaseHmac,omitempty"  mapstructure:"api_key_database_hmac"        yaml:"api_key_database_hmac,omitempty"`
+		CacheKeyHMAC             string `json:"cache_key_hmac,omitempty"      mapstructure:"cache_key_hmac"               yaml:"cache_key_hmac,omitempty"`
 		EncryptionBytes          []byte `json:"-"                             mapstructure:"encryption_bytes"             yaml:"-"`
 		HashBytes                []byte `json:"-"                             mapstructure:"hash_bytes"                   yaml:"-"`
 		ApiKeySignatureHMACBytes []byte `json:"-"                             mapstructure:"api_key_signature_hmac_bytes" yaml:"-"`
 		ApiKeyDatabaseHMACBytes  []byte `json:"-"                             mapstructure:"api_key_database_hmac_bytes"  yaml:"-"`
+		CacheKeyHMACBytes        []byte `json:""                              mapstructure:"cache_key_hmac_bytes"         yaml:""`
 	}
 
 	SMTP struct {
@@ -151,6 +153,12 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("could not decode api-key-database-hmac: %v", err)
 	}
 	cfg.Key.ApiKeyDatabaseHMACBytes = apiKeyDatabaseHMACBytes
+
+	cacheKeyHMACBytes, err := converter.FromB64(cfg.Key.CacheKeyHMAC)
+	if err != nil {
+		return nil, fmt.Errorf("could not decode cache-key-hmac: %v", err)
+	}
+	cfg.Key.CacheKeyHMACBytes = cacheKeyHMACBytes
 
 	jwtSecretBytes, err := converter.FromURLB64(cfg.JWT.Secret)
 	if err != nil {

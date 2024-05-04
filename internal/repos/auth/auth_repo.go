@@ -27,7 +27,11 @@ func NewAuthRepo(db db.DB, cacher cache.Cacher) auth.AuthRepo {
 }
 
 func (r *authRepo) GetUserCacheInfo(ctx context.Context, userID string) (userInfo *entities.UserCacheInfo, err error) {
-	userInfoCache, exist, err := r.cacher.Get(ctx, constants.UserInfoCacheKey+userID)
+	cacheKey := &cache.Key{
+		Namespace: constants.UserInfoNameSpaceCache,
+		Key:       userID,
+	}
+	userInfoCache, exist, err := r.cacher.Get(ctx, cacheKey)
 	if err != nil {
 		return nil, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
@@ -45,7 +49,11 @@ func (r *authRepo) SetUserCacheInfo(ctx context.Context, userID string, userInfo
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
 
-	err = r.cacher.Set(ctx, constants.UserInfoCacheKey+userID, cachePayload, constants.UserInfoCacheTime)
+	cacheKey := &cache.Key{
+		Namespace: constants.UserInfoNameSpaceCache,
+		Key:       userID,
+	}
+	err = r.cacher.Set(ctx, cacheKey, cachePayload, constants.UserInfoTTLCache)
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
@@ -54,7 +62,11 @@ func (r *authRepo) SetUserCacheInfo(ctx context.Context, userID string, userInfo
 }
 
 func (r *authRepo) RemoveUserCacheInfo(ctx context.Context, userID string) (err error) {
-	err = r.cacher.Delete(ctx, constants.UserInfoCacheKey+userID)
+	cacheKey := &cache.Key{
+		Namespace: constants.UserInfoNameSpaceCache,
+		Key:       userID,
+	}
+	err = r.cacher.Delete(ctx, cacheKey)
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
