@@ -5,6 +5,7 @@ import (
 
 	"github.com/htquangg/a-wasm/internal/base/handler"
 	"github.com/htquangg/a-wasm/internal/base/middleware"
+	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/internal/services/api_key"
 )
@@ -25,7 +26,7 @@ func (c *ApiKeyController) Add(ctx echo.Context) error {
 		return handler.HandleResponse(ctx, err, errField)
 	}
 
-	req.UserID = middleware.GetUserID(ctx)
+	req.UserID = middleware.GetUserID(ctx, entities.JWT)
 	resp, err := c.apiKeyService.AddApiKey(ctx.Request().Context(), req)
 
 	return handler.HandleResponse(ctx, err, resp)

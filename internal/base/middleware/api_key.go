@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -10,6 +11,7 @@ import (
 	"github.com/htquangg/a-wasm/internal/base/cache"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/constants"
+	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/internal/services/api_key"
 )
 
@@ -47,7 +49,7 @@ func (m *ApiKeyMiddleware) RequireApiKey(next echo.HandlerFunc) echo.HandlerFunc
 			Namespace: constants.AuthorizedApiKeyNameSpaceCache,
 			Key:       key,
 		}
-		_, exists, err := m.cache.Fetch(
+		apiKeyBytes, exists, err := m.cache.Fetch(
 			ctx.Request().Context(),
 			cacheKey,
 			constants.AuthorizedApiKeyTTLCache,
@@ -61,6 +63,13 @@ func (m *ApiKeyMiddleware) RequireApiKey(next echo.HandlerFunc) echo.HandlerFunc
 		if !exists {
 			return errors.Unauthorized(reason.ApiKeyInvalid)
 		}
+
+		apiKey := &schemas.GetApiKeyResp{}
+		err = json.Unmarshal(apiKeyBytes, apiKey)
+		if err != nil {
+			return errors.Unauthorized(reason.ApiKeyInvalid).WithError(err).WithStack()
+		}
+		withApiKey(ctx, apiKey)
 
 		return next(ctx)
 	}

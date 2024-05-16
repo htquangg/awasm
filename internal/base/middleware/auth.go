@@ -42,7 +42,28 @@ func (m *AuthMiddleware) RequireAuthentication(next echo.HandlerFunc) echo.Handl
 			return err
 		}
 
-		err = m.maybeLoadUserOrSession(ctx)
+		err = m.requireAuthentication(ctx)
+		if err != nil {
+			return err
+		}
+
+		return next(ctx)
+	}
+}
+
+func (m *AuthMiddleware) RequireSignUpAuthentication(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		token, err := m.extractBearerToken(ctx)
+		if err != nil {
+			return err
+		}
+
+		err = m.parseJWTClaims(ctx, token)
+		if err != nil {
+			return err
+		}
+
+		err = m.requireSignUpAuthentication(ctx)
 		if err != nil {
 			return err
 		}
@@ -96,7 +117,7 @@ func (m *AuthMiddleware) parseJWTClaims(echoCtx echo.Context, bearer string) err
 	return nil
 }
 
-func (m *AuthMiddleware) maybeLoadUserOrSession(ctx echo.Context) error {
+func (m *AuthMiddleware) requireAuthentication(ctx echo.Context) error {
 	claims := getClaims(ctx)
 
 	if claims == nil {
@@ -107,28 +128,52 @@ func (m *AuthMiddleware) maybeLoadUserOrSession(ctx echo.Context) error {
 		return errors.Unauthorized(reason.InvalidTokenError)
 	}
 
-	if claims.Subject != "" {
-		userID := claims.Subject
-		user, exists, err := m.userRepo.GetUserByID(ctx.Request().Context(), userID)
-		if err != nil {
-			return err
-		}
-		if !exists {
-			return errors.Forbidden(reason.UserNotFound)
-		}
-		withUser(ctx, user)
+	userID := claims.Subject
+	user, exists, err := m.userRepo.GetUserByID(ctx.Request().Context(), userID)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return errors.Forbidden(reason.UserNotFound)
+	}
+	withUser(ctx, user)
+
+	if claims.SessionID == "" {
+		return errors.Unauthorized(reason.InvalidTokenError)
 	}
 
-	if claims.SessionID != "" {
-		session, exists, err := m.sessionRepo.GetSessionByID(ctx.Request().Context(), claims.SessionID)
-		if err != nil {
-			return err
-		}
-		if !exists {
-			return errors.Forbidden(reason.SessionNotFound)
-		}
-		withSession(ctx, session)
+	session, exists, err := m.sessionRepo.GetSessionByID(ctx.Request().Context(), claims.SessionID)
+	if err != nil {
+		return err
 	}
+	if !exists {
+		return errors.Forbidden(reason.SessionNotFound)
+	}
+	withSession(ctx, session)
+
+	return nil
+}
+
+func (m *AuthMiddleware) requireSignUpAuthentication(ctx echo.Context) error {
+	claims := getClaims(ctx)
+
+	if claims == nil {
+		return errors.Unauthorized(reason.InvalidTokenError)
+	}
+
+	if claims.Subject == "" {
+		return errors.Unauthorized(reason.InvalidTokenError)
+	}
+
+	userID := claims.Subject
+	user, exists, err := m.userRepo.GetUserByID(ctx.Request().Context(), userID)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return errors.Forbidden(reason.UserNotFound)
+	}
+	withUser(ctx, user)
 
 	return nil
 }

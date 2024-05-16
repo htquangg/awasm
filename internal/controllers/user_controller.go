@@ -5,6 +5,7 @@ import (
 
 	"github.com/htquangg/a-wasm/internal/base/handler"
 	"github.com/htquangg/a-wasm/internal/base/middleware"
+	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/internal/services/user"
 	"github.com/htquangg/a-wasm/pkg/network"
@@ -63,7 +64,7 @@ func (c *UserController) SetupSRPAccountSignup(ctx echo.Context) error {
 		return handler.HandleResponse(ctx, err, errField)
 	}
 
-	userID := middleware.GetUserID(ctx)
+	userID := middleware.GetUserID(ctx, entities.JWT)
 	resp, err := c.userService.SetupSRPAccountSignup(ctx.Request().Context(), userID, req)
 
 	return handler.HandleResponse(ctx, err, resp)

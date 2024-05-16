@@ -59,7 +59,9 @@ func (s *EndpointService) Publish(
 	if !exists {
 		return nil, errors.BadRequest(reason.DeploymentNotFound)
 	}
-	if deployment.UserID != req.UserID {
+
+	canAccess := req.UserID == deployment.UserID
+	if !canAccess {
 		return nil, errors.Forbidden(reason.DeploymentAccessDenied)
 	}
 

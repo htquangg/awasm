@@ -5,6 +5,7 @@ type ServeDeploymentReq struct {
 	Method       string              `json:"method"`
 	URL          string              `json:"url"`
 	DeploymentID string              `json:"deploymentId"`
+	UserID       string              `json:"-"`
 	Body         []byte              `json:"body"`
 }
 

@@ -5,12 +5,14 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/htquangg/a-wasm/internal/entities"
+	"github.com/htquangg/a-wasm/internal/schemas"
 )
 
 const (
 	tokenKey   = "ctx-req-jwt"
 	userKey    = "ctx-req-user"
 	sessionKey = "ctx-req-session"
+	apiKey     = "ctx-api-key"
 )
 
 func withToken(ctx echo.Context, token *jwt.Token) {
@@ -46,13 +48,27 @@ func GetUser(ctx echo.Context) *entities.User {
 	return getUser(ctx)
 }
 
-func GetUserID(ctx echo.Context) string {
-	user := getUser(ctx)
-	if user == nil {
-		return ""
+func GetUserID(ctx echo.Context, authMode entities.AuthMode) string {
+	userID := ""
+
+	switch authMode {
+	case entities.JWT:
+		user := getUser(ctx)
+		if user != nil {
+			userID = user.ID
+		}
+
+	case entities.API_KEY:
+		apiKey := getApiKey(ctx)
+		if apiKey != nil {
+			userID = apiKey.UserID
+		}
+
+	default:
+		userID = ""
 	}
 
-	return user.ID
+	return userID
 }
 
 func getUser(ctx echo.Context) *entities.User {
@@ -83,4 +99,23 @@ func getSession(ctx echo.Context) *entities.Session {
 		return nil
 	}
 	return obj.(*entities.Session)
+}
+
+func withApiKey(ctx echo.Context, k *schemas.GetApiKeyResp) {
+	ctx.Set(apiKey, k)
+}
+
+func GetApiKey(ctx echo.Context) *schemas.GetApiKeyResp {
+	return getApiKey(ctx)
+}
+
+func getApiKey(ctx echo.Context) *schemas.GetApiKeyResp {
+	if ctx == nil {
+		return nil
+	}
+	obj := ctx.Get(apiKey)
+	if obj == nil {
+		return nil
+	}
+	return obj.(*schemas.GetApiKeyResp)
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/htquangg/a-wasm/internal/base/handler"
 	"github.com/htquangg/a-wasm/internal/base/middleware"
 	"github.com/htquangg/a-wasm/internal/base/reason"
+	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/schemas"
 	"github.com/htquangg/a-wasm/internal/services/deployment"
 )
@@ -38,7 +39,7 @@ func (c *DeploymentController) Add(ctx echo.Context) error {
 
 	req := &schemas.AddDeploymentReq{
 		EndpointID: endpointID,
-		UserID:     middleware.GetUserID(ctx),
+		UserID:     middleware.GetUserID(ctx, entities.JWT),
 		Data:       b,
 	}
 

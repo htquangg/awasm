@@ -87,6 +87,11 @@ func (s *DeploymentService) Serve(
 		return nil, errors.BadRequest(reason.DeploymentNotFound)
 	}
 
+	canAccess := req.UserID == deployment.UserID
+	if !canAccess {
+		return nil, errors.Forbidden(reason.DeploymentAccessDenied)
+	}
+
 	endpoint, exists, err := s.endpointRepo.GetEndpointByID(ctx, deployment.EndpointID)
 	if err != nil {
 		return nil, err

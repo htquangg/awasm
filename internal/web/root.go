@@ -137,7 +137,7 @@ func (s *Server) Shutdown() error {
 		defer cancel()
 
 		if err := s.srv.Shutdown(ctx); err != nil {
-			return fmt.Errorf("Web server failed to stop gracefully: %v", err)
+			return fmt.Errorf("web server failed to stop gracefully: %v", err)
 		}
 
 		return nil

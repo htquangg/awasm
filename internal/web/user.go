@@ -23,7 +23,7 @@ func bindUserApi(g *echo.Group, c *controllers.Controllers, mws *middleware.Midd
 	signupEmailGroup.POST(
 		"/complete",
 		c.User.CompleteEmailAccountSignup,
-		mws.Auth.RequireAuthentication,
+		mws.Auth.RequireSignUpAuthentication,
 		mws.Auth.RequireSignupToken,
 	)
 
@@ -34,5 +34,5 @@ func bindUserApi(g *echo.Group, c *controllers.Controllers, mws *middleware.Midd
 	// srp group
 	srpGroup := subGroup.Group("/srp")
 	srpGroup.GET("/attributes", c.User.GetSRPAttribute)
-	srpGroup.POST("/setup", c.User.SetupSRPAccountSignup, mws.Auth.RequireAuthentication, mws.Auth.RequireSignupToken)
+	srpGroup.POST("/setup", c.User.SetupSRPAccountSignup, mws.Auth.RequireSignUpAuthentication, mws.Auth.RequireSignupToken)
 }
