@@ -43,7 +43,9 @@ var createApiKeyCmd = &cobra.Command{
 			cli.HandleError(err, "Unable to authenticate")
 		}
 		if !isAuthenticated {
-			cli.PrintErrorMessageAndExit("Your login session has expired, please run [awasm login] and try again")
+			cli.PrintErrorMessageAndExit(
+				"Your login session has expired, please run [awasm login] and try again",
+			)
 		}
 
 		client := api.NewClient(&api.ClientOptions{

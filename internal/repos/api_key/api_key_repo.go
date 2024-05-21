@@ -30,7 +30,10 @@ func (r *apiKeyRepo) AddApiKey(ctx context.Context, apiKey *entities.ApiKey) err
 	return nil
 }
 
-func (r *apiKeyRepo) GetApiKeyByKey(ctx context.Context, key string) (apiKey *entities.ApiKey, exists bool, err error) {
+func (r *apiKeyRepo) GetApiKeyByKey(
+	ctx context.Context,
+	key string,
+) (apiKey *entities.ApiKey, exists bool, err error) {
 	apiKey = &entities.ApiKey{}
 	exists, err = r.db.Engine(ctx).Where("key = $1", key).Get(apiKey)
 	if err != nil {

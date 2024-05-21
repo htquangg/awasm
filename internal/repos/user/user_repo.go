@@ -37,7 +37,10 @@ func (r *userRepo) AddUser(ctx context.Context, user *entities.User) (err error)
 	return nil
 }
 
-func (r *userRepo) GetUserWithEmail(ctx context.Context, email string) (user *entities.User, exists bool, err error) {
+func (r *userRepo) GetUserWithEmail(
+	ctx context.Context,
+	email string,
+) (user *entities.User, exists bool, err error) {
 	var emailHash string
 	emailHash, err = crypto.GetHash(email, r.cfg.Key.HashBytes)
 	if err != nil {
@@ -54,13 +57,20 @@ func (r *userRepo) GetUserWithEmail(ctx context.Context, email string) (user *en
 	return user, exists, err
 }
 
-func (r *userRepo) GetUserByID(ctx context.Context, id string) (user *entities.User, exists bool, err error) {
+func (r *userRepo) GetUserByID(
+	ctx context.Context,
+	id string,
+) (user *entities.User, exists bool, err error) {
 	user = &entities.User{}
 	exists, err = r.db.Engine(ctx).Where("id = $1", id).Get(user)
 	if err != nil {
 		return nil, false, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
 	}
-	email, err := crypto.Decrypt(user.EncryptedEmail, r.cfg.Key.EncryptionBytes, user.EmailDecryptionNonce)
+	email, err := crypto.Decrypt(
+		user.EncryptedEmail,
+		r.cfg.Key.EncryptionBytes,
+		user.EmailDecryptionNonce,
+	)
 	if err != nil {
 		return nil, false, err
 	}

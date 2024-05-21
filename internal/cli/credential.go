@@ -22,12 +22,18 @@ type LoggedInUserDetails struct {
 func StoreUserCredsInKeyRing(userCred *schemas.UserCredential) error {
 	userCredMarshalled, err := json.Marshal(userCred)
 	if err != nil {
-		return fmt.Errorf("StoreUserCredsInKeyRing: something went wrong when marshaling user creds [err=%s]", err)
+		return fmt.Errorf(
+			"StoreUserCredsInKeyRing: something went wrong when marshaling user creds [err=%s]",
+			err,
+		)
 	}
 
 	err = SetValueInKeyring(userCred.Email, string(userCredMarshalled))
 	if err != nil {
-		return fmt.Errorf("StoreUserCredsInKeyRing: unable to store user credentials because [err=%s]", err)
+		return fmt.Errorf(
+			"StoreUserCredsInKeyRing: unable to store user credentials because [err=%s]",
+			err,
+		)
 	}
 
 	return err

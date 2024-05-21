@@ -97,7 +97,9 @@ func (r *runtimeActor) handleHTTPRequest(ctx actor.Context, msg *messages.HTTPRe
 	handleResponse(ctx, int32(status), res, header, msg.ID)
 }
 
-func ParseStdout(stdout io.Reader) (logs []byte, resp []byte, header []byte, status int, err error) {
+func ParseStdout(
+	stdout io.Reader,
+) (logs []byte, resp []byte, header []byte, status int, err error) {
 	stdoutb, err := io.ReadAll(stdout)
 	if err != nil {
 		return

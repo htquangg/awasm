@@ -32,7 +32,8 @@ func init() {
 	_ = createEndpointCmd.MarkFlagRequired("runtime")
 
 	// add publishEndpointCmd flag here
-	publishEndpointCmd.Flags().String("deployment-id", "", "The id of the deployment that you want to publish LIVE")
+	publishEndpointCmd.Flags().
+		String("deployment-id", "", "The id of the deployment that you want to publish LIVE")
 	_ = publishEndpointCmd.MarkFlagRequired("deployment-id")
 
 	endpointsCmd.AddCommand(createEndpointCmd, publishEndpointCmd)
@@ -63,7 +64,9 @@ var createEndpointCmd = &cobra.Command{
 			cli.HandleError(err, "unable to authenticate")
 		}
 		if !isAuthenticated {
-			cli.PrintErrorMessageAndExit("Your login session has expired, please run [awasm login] and try again")
+			cli.PrintErrorMessageAndExit(
+				"Your login session has expired, please run [awasm login] and try again",
+			)
 		}
 
 		client := api.NewClient(&api.ClientOptions{
@@ -98,7 +101,9 @@ var publishEndpointCmd = &cobra.Command{
 			cli.HandleError(err, "Unable to authenticate")
 		}
 		if !isAuthenticated {
-			cli.PrintErrorMessageAndExit("Your login session has expired, please run [awasm login] and try again")
+			cli.PrintErrorMessageAndExit(
+				"Your login session has expired, please run [awasm login] and try again",
+			)
 		}
 
 		client := api.NewClient(&api.ClientOptions{
@@ -106,9 +111,12 @@ var publishEndpointCmd = &cobra.Command{
 		})
 		client.HTTPClient.SetAuthToken(loggedInUserDetails.UserCredentials.AccessToken)
 
-		publicEndpointResp, err := api.CallPublishEndpoint(client.HTTPClient, &schemas.PublishEndpointReq{
-			DeploymentID: deploymentID,
-		})
+		publicEndpointResp, err := api.CallPublishEndpoint(
+			client.HTTPClient,
+			&schemas.PublishEndpointReq{
+				DeploymentID: deploymentID,
+			},
+		)
 		if err != nil {
 			cli.HandleError(err)
 		}

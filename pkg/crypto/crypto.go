@@ -24,12 +24,24 @@ import (
 func Encrypt(data string, encryptionKey []byte) (schemas.EncryptionResult, error) {
 	nonce, err := GenerateRandomBytes(24)
 	if err != nil {
-		return schemas.EncryptionResult{}, errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
+		return schemas.EncryptionResult{},
+			errors.InternalServer(reason.UnknownError).
+				WithError(err).
+				WithStack()
 	}
 
-	encryptedEmailBytes := secretbox.Seal(nil, []byte(data), (*[24]byte)(nonce), (*[32]byte)(encryptionKey))
+	encryptedEmailBytes := secretbox.Seal(
+		nil,
+		[]byte(data),
+		(*[24]byte)(nonce),
+		(*[32]byte)(encryptionKey),
+	)
 
-	return schemas.EncryptionResult{Cipher: encryptedEmailBytes, Nonce: nonce, Key: encryptionKey}, nil
+	return schemas.EncryptionResult{
+		Cipher: encryptedEmailBytes,
+		Nonce:  nonce,
+		Key:    encryptionKey,
+	}, nil
 }
 
 func GenerateKeyAndEncrypt(data string) (schemas.EncryptionResult, error) {
@@ -44,7 +56,10 @@ func GenerateKeyAndEncrypt(data string) (schemas.EncryptionResult, error) {
 func Decrypt(cipher []byte, key []byte, nonce []byte) (string, error) {
 	decryptedBytes, ok := secretbox.Open(nil, cipher[:], (*[24]byte)(nonce), (*[32]byte)(key))
 	if !ok {
-		return "", errors.InternalServer(reason.UnknownError).WithMsg("Decryption failed.").WithStack()
+		return "",
+			errors.InternalServer(reason.UnknownError).
+				WithMsg("Decryption failed.").
+				WithStack()
 	}
 
 	return string(decryptedBytes), nil

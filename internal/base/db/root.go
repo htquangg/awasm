@@ -18,7 +18,10 @@ import (
 type (
 	DB interface {
 		Engine(ctx context.Context) Engine
-		WithTx(parentCtx context.Context, f func(ctx context.Context) (interface{}, error)) (interface{}, error)
+		WithTx(
+			parentCtx context.Context,
+			f func(ctx context.Context) (interface{}, error),
+		) (interface{}, error)
 		InTransaction(ctx context.Context) bool
 		Exec(ctx context.Context, sqlAndArgs ...any) (sql.Result, error)
 		Query(ctx context.Context, sqlAndArgs ...any) ([]map[string][]byte, error)
@@ -85,7 +88,10 @@ func (db *db) engine(ctx context.Context) Engine {
 	return nil
 }
 
-func (db *db) WithTx(parentCtx context.Context, f func(ctx context.Context) (interface{}, error)) (interface{}, error) {
+func (db *db) WithTx(
+	parentCtx context.Context,
+	f func(ctx context.Context) (interface{}, error),
+) (interface{}, error) {
 	if sess, ok := db.inTransaction(parentCtx); ok {
 		result, err := f(newContext(parentCtx, sess, true))
 		if err != nil {

@@ -29,14 +29,26 @@ type (
 	UserAuthRepo interface {
 		AddSRPChallenge(ctx context.Context, srpChallege *entities.SrpChallenge) error
 		AddSrpAuthTemp(ctx context.Context, srpAuthTemp *entities.SrpAuthTemp) error
-		CompleteEmailAccountSignup(ctx context.Context, accountInfo *schemas.CompleteEmailSignupInfo) error
+		CompleteEmailAccountSignup(
+			ctx context.Context,
+			accountInfo *schemas.CompleteEmailSignupInfo,
+		) error
 		GetTempSRPSetupByID(ctx context.Context, id string) (*entities.SrpAuthTemp, bool, error)
 		GetSRPChallengeByID(ctx context.Context, id string) (*entities.SrpChallenge, bool, error)
 		IncrementSrpChallengeAttemptCount(ctx context.Context, id string) error
 		SetSrpChallengeVerified(ctx context.Context, challengeID string) error
-		GetKeyAttributeWithUserID(ctx context.Context, userID string) (*entities.KeyAttribute, bool, error)
-		GetSRPAttribute(ctx context.Context, userID string) (*schemas.GetSRPAttributeResp, bool, error)
-		GetSRPAuthWithSRPUserID(ctx context.Context, srpUserID string) (*entities.SrpAuth, bool, error)
+		GetKeyAttributeWithUserID(
+			ctx context.Context,
+			userID string,
+		) (*entities.KeyAttribute, bool, error)
+		GetSRPAttribute(
+			ctx context.Context,
+			userID string,
+		) (*schemas.GetSRPAttributeResp, bool, error)
+		GetSRPAuthWithSRPUserID(
+			ctx context.Context,
+			srpUserID string,
+		) (*entities.SrpAuth, bool, error)
 	}
 
 	UserService struct {
@@ -88,7 +100,10 @@ func (s *UserService) GetSRPAttribute(
 	return resp, nil
 }
 
-func (s *UserService) BeginEmailSignupProcess(ctx context.Context, req *schemas.BeginEmailSignupProcessReq) error {
+func (s *UserService) BeginEmailSignupProcess(
+	ctx context.Context,
+	req *schemas.BeginEmailSignupProcessReq,
+) error {
 	email := strings.ToLower(req.Email)
 	user, exists, err := s.userRepo.GetUserWithEmail(ctx, email)
 	if err != nil {
@@ -133,7 +148,12 @@ func (s *UserService) VerifyEmailSignup(
 ) (*schemas.CommonTokenResp, error) {
 	email := strings.ToLower(req.Email)
 
-	check, err := s.mailerService.VerifyCode(ctx, email, schemas.EmailVerificationSourceType, req.OTP)
+	check, err := s.mailerService.VerifyCode(
+		ctx,
+		email,
+		schemas.EmailVerificationSourceType,
+		req.OTP,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +185,12 @@ func (s *UserService) SetupSRPAccountSignup(
 	userID string,
 	req *schemas.SetupSRPAccountSignupReq,
 ) (*schemas.SetupSRPAccountSignupResp, error) {
-	srpB, challengeID, err := s.createAndInsertSRPChallenge(ctx, req.SRPUserID, req.SRPVerifier, req.SRPA)
+	srpB, challengeID, err := s.createAndInsertSRPChallenge(
+		ctx,
+		req.SRPUserID,
+		req.SRPVerifier,
+		req.SRPA,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -225,10 +250,15 @@ func (s *UserService) CompleteEmailAccountSignup(
 		return nil, errors.BadRequest(reason.KeyAttributeNotFound)
 	}
 
-	accessTokenResp, err := s.sessionService.IssueRefreshToken(ctx, user, entities.EmailSignup, &entities.GrantParams{
-		IP:        req.IP,
-		UserAgent: req.UserAgent,
-	})
+	accessTokenResp, err := s.sessionService.IssueRefreshToken(
+		ctx,
+		user,
+		entities.EmailSignup,
+		&entities.GrantParams{
+			IP:        req.IP,
+			UserAgent: req.UserAgent,
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -263,7 +293,12 @@ func (s *UserService) ChallengeEmailLogin(
 		return nil, errors.BadRequest(reason.SRPNotFound)
 	}
 
-	srpB, challengeID, err := s.createAndInsertSRPChallenge(ctx, req.SRPUserID, srpAuth.Verifier, req.SRPA)
+	srpB, challengeID, err := s.createAndInsertSRPChallenge(
+		ctx,
+		req.SRPUserID,
+		srpAuth.Verifier,
+		req.SRPA,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -307,7 +342,12 @@ func (s *UserService) VerifyEmailLogin(
 		return nil, errors.BadRequest(reason.KeyAttributeNotFound)
 	}
 
-	accessTokenResp, err := s.sessionService.IssueRefreshToken(ctx, user, entities.EmailSignup, &entities.GrantParams{})
+	accessTokenResp, err := s.sessionService.IssueRefreshToken(
+		ctx,
+		user,
+		entities.EmailSignup,
+		&entities.GrantParams{},
+	)
 	if err != nil {
 		return nil, err
 	}

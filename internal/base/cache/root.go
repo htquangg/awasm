@@ -146,7 +146,12 @@ func (c *cache) Get(ctx context.Context, k *Key) ([]byte, bool, error) {
 	return value, true, nil
 }
 
-func (c *cache) Fetch(ctx context.Context, k *Key, ttl time.Duration, f FetchFunc) ([]byte, bool, error) {
+func (c *cache) Fetch(
+	ctx context.Context,
+	k *Key,
+	ttl time.Duration,
+	f FetchFunc,
+) ([]byte, bool, error) {
 	key, err := k.Compute(c.keyFunc)
 	if err != nil {
 		return nil, false, fmt.Errorf("failed to compute key: %w", err)

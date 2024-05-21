@@ -34,7 +34,9 @@ func CallCheckPasswordStrength(
 		)
 	}
 	if pwned {
-		return fmt.Errorf("Password is known to be weak and easy to guess, please choose a different one.")
+		return fmt.Errorf(
+			"Password is known to be weak and easy to guess, please choose a different one.",
+		)
 	}
 
 	return nil

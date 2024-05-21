@@ -32,7 +32,8 @@ var loginCmd = &cobra.Command{
 	Args:                  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		currentLoggedInUserDetails, isAuthenticated, err := cli.GetCurrentLoggedInUserDetails()
-		if err != nil && (strings.Contains(err.Error(), "we couldn't find your logged in details")) {
+		if err != nil &&
+			(strings.Contains(err.Error(), "we couldn't find your logged in details")) {
 			logger.Debug(err)
 		} else if err != nil {
 			cli.HandleError(err)
@@ -88,9 +89,12 @@ func loginCredential(userCredential *schemas.UserCredential) {
 	})
 
 	// [1]. Get srp attribute
-	getSRPAttributeResp, err := api.CallGetSRPAttribute(client.HTTPClient, &schemas.GetSRPAttributeReq{
-		Email: email,
-	})
+	getSRPAttributeResp, err := api.CallGetSRPAttribute(
+		client.HTTPClient,
+		&schemas.GetSRPAttributeReq{
+			Email: email,
+		},
+	)
 	if err != nil {
 		cli.HandleError(err)
 	}
@@ -105,15 +109,22 @@ func loginCredential(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	srpClient, err := generateSRPClient(getSRPAttributeResp.SRPSalt, getSRPAttributeResp.SRPUserID, loginSubKey)
+	srpClient, err := generateSRPClient(
+		getSRPAttributeResp.SRPSalt,
+		getSRPAttributeResp.SRPUserID,
+		loginSubKey,
+	)
 	if err != nil {
 		cli.HandleError(err)
 	}
 
-	challengeEmailLoginResp, err := api.CallChallengeEmailLogin(client.HTTPClient, &schemas.ChallengeEmailLoginReq{
-		SRPUserID: getSRPAttributeResp.SRPUserID,
-		SRPA:      converter.ToB64(srpClient.ComputeA()),
-	})
+	challengeEmailLoginResp, err := api.CallChallengeEmailLogin(
+		client.HTTPClient,
+		&schemas.ChallengeEmailLoginReq{
+			SRPUserID: getSRPAttributeResp.SRPUserID,
+			SRPA:      converter.ToB64(srpClient.ComputeA()),
+		},
+	)
 	if err != nil {
 		cli.HandleError(err)
 	}
@@ -125,11 +136,14 @@ func loginCredential(userCredential *schemas.UserCredential) {
 	}
 	srpClient.SetB(srpBBytes)
 	srpM1 := converter.ToB64(srpClient.ComputeM1())
-	verifyEmailLoginResp, err := api.CallVerifyEmailLogin(client.HTTPClient, &schemas.VerifyEmailLoginReq{
-		ChallengeID: challengeEmailLoginResp.ChallengeID,
-		SRPUserID:   getSRPAttributeResp.SRPUserID,
-		SRPM1:       srpM1,
-	})
+	verifyEmailLoginResp, err := api.CallVerifyEmailLogin(
+		client.HTTPClient,
+		&schemas.VerifyEmailLoginReq{
+			ChallengeID: challengeEmailLoginResp.ChallengeID,
+			SRPUserID:   getSRPAttributeResp.SRPUserID,
+			SRPM1:       srpM1,
+		},
+	)
 	if err != nil {
 		cli.HandleError(err)
 	}
@@ -153,7 +167,9 @@ func loginCredential(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	encryptedSecretKeyBytes, err := converter.FromB64(verifyEmailLoginResp.KeyAttribute.EncryptedSecretKey)
+	encryptedSecretKeyBytes, err := converter.FromB64(
+		verifyEmailLoginResp.KeyAttribute.EncryptedSecretKey,
+	)
 	if err != nil {
 		cli.HandleError(err)
 	}
@@ -163,7 +179,11 @@ func loginCredential(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	privateKey, err := crypto.Decrypt(encryptedSecretKeyBytes, masterKeyBytes, keyEncryptionNonceBytes)
+	privateKey, err := crypto.Decrypt(
+		encryptedSecretKeyBytes,
+		masterKeyBytes,
+		keyEncryptionNonceBytes,
+	)
 	if err != nil {
 		cli.HandleError(err)
 	}
@@ -194,7 +214,11 @@ func loginCredential(userCredential *schemas.UserCredential) {
 }
 
 func userLoginMenu(currentLoggedInUserEmail string) (bool, error) {
-	label := fmt.Sprintf("Current logged in user email: %s on domain: %s", currentLoggedInUserEmail, config.AWASM_URL)
+	label := fmt.Sprintf(
+		"Current logged in user email: %s on domain: %s",
+		currentLoggedInUserEmail,
+		config.AWASM_URL,
+	)
 
 	prompt := promptui.Select{
 		Label: label,

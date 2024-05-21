@@ -66,13 +66,18 @@ func (Session) TableName() string {
 	return "sessions"
 }
 
-func (s *Session) CalculateAALAndAMR(user *User) (aal AuthenticatorAssuranceLevel, amr []AMREntry, err error) {
+func (s *Session) CalculateAALAndAMR(
+	user *User,
+) (aal AuthenticatorAssuranceLevel, amr []AMREntry, err error) {
 	amr, aal = []AMREntry{}, AAL1
 	for _, claim := range s.AMRClaims {
 		if claim.AuthenticationMethod == TOTPSignIn.String() {
 			aal = AAL2
 		}
-		amr = append(amr, AMREntry{Method: claim.GetAuthenticationMethod(), Timestamp: claim.UpdatedAt.Unix()})
+		amr = append(
+			amr,
+			AMREntry{Method: claim.GetAuthenticationMethod(), Timestamp: claim.UpdatedAt.Unix()},
+		)
 	}
 
 	// makes sure that the AMR claims are always ordered most-recent first

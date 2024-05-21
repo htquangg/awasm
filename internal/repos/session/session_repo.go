@@ -110,7 +110,10 @@ func (r *sessionRepo) GetSessionByID(
 	if session.AMRClaims == nil {
 		amrClaims, err := r.getAMRClaimsWithSessionID(ctx, session.ID)
 		if err != nil {
-			return nil, false, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+			return nil, false,
+				errors.InternalServer(reason.DatabaseError).
+					WithError(err).
+					WithStack()
 		}
 		session.AMRClaims = amrClaims
 	}

@@ -25,7 +25,12 @@ func NewMailerRepo(db db.DB, cacher cache.Cacher) mailer.MailerRepo {
 	}
 }
 
-func (r *mailerRepo) SetCode(ctx context.Context, code string, content string, duration time.Duration) error {
+func (r *mailerRepo) SetCode(
+	ctx context.Context,
+	code string,
+	content string,
+	duration time.Duration,
+) error {
 	cacheKey := &cache.Key{
 		Namespace: constants.MailerOTPNameSpaceCache,
 		Key:       code,

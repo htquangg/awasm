@@ -26,9 +26,11 @@ var deploymentsCmd = &cobra.Command{
 
 func init() {
 	// add createDeploymentCmd flag here
-	createDeploymentCmd.Flags().String("endpoint-id", "", "The id of the endpoint to where you want to deploy")
+	createDeploymentCmd.Flags().
+		String("endpoint-id", "", "The id of the endpoint to where you want to deploy")
 	_ = createDeploymentCmd.MarkFlagRequired("endpoint-id")
-	createDeploymentCmd.Flags().String("file", "", "The file location of your code that you want to deploy")
+	createDeploymentCmd.Flags().
+		String("file", "", "The file location of your code that you want to deploy")
 	_ = createDeploymentCmd.MarkFlagRequired("file")
 	deploymentsCmd.AddCommand(createDeploymentCmd)
 }
@@ -58,7 +60,9 @@ var createDeploymentCmd = &cobra.Command{
 			cli.HandleError(err, "Unable to authenticate")
 		}
 		if !isAuthenticated {
-			cli.PrintErrorMessageAndExit("Your login session has expired, please run [awasm login] and try again")
+			cli.PrintErrorMessageAndExit(
+				"Your login session has expired, please run [awasm login] and try again",
+			)
 		}
 
 		client := api.NewClient(&api.ClientOptions{
@@ -66,10 +70,12 @@ var createDeploymentCmd = &cobra.Command{
 		})
 		client.HTTPClient.SetAuthToken(loggedInUserDetails.UserCredentials.AccessToken)
 
-		addDeploymentResp, err := api.CallAddDeployment(client.HTTPClient, &schemas.AddDeploymentReq{
-			EndpointID: endpointID,
-			Data:       b,
-		},
+		addDeploymentResp, err := api.CallAddDeployment(
+			client.HTTPClient,
+			&schemas.AddDeploymentReq{
+				EndpointID: endpointID,
+				Data:       b,
+			},
 		)
 		if err != nil {
 			cli.HandleError(err)

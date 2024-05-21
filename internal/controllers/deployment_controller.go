@@ -18,7 +18,9 @@ type DeploymentController struct {
 	deploymentService *deployment.DeploymentService
 }
 
-func NewDeploymentController(deploymentService *deployment.DeploymentService) *DeploymentController {
+func NewDeploymentController(
+	deploymentService *deployment.DeploymentService,
+) *DeploymentController {
 	return &DeploymentController{
 		deploymentService: deploymentService,
 	}

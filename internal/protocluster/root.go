@@ -33,7 +33,13 @@ func New(ctx context.Context, db db.DB) *Cluster {
 	provider := automanaged.New()
 	config := remote.Configure("127.0.0.1", 0)
 	lookup := disthash.New()
-	clusterConfig := cluster.Configure("awasm-cluster", provider, lookup, config, cluster.WithKinds(kinds...))
+	clusterConfig := cluster.Configure(
+		"awasm-cluster",
+		provider,
+		lookup,
+		config,
+		cluster.WithKinds(kinds...),
+	)
 
 	cluster := &Cluster{
 		ctx:   ctx,

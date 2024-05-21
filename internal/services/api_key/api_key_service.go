@@ -40,7 +40,10 @@ func NewApiKeyService(cfg *config.Config, apiKeyRepo ApiKeyRepo) *ApiKeyService 
 	}
 }
 
-func (s *ApiKeyService) AddApiKey(ctx context.Context, req *schemas.AddApiKeyReq) (*schemas.AddApiKeyResp, error) {
+func (s *ApiKeyService) AddApiKey(
+	ctx context.Context,
+	req *schemas.AddApiKeyReq,
+) (*schemas.AddApiKeyResp, error) {
 	fullApiKey, err := s.generateApiKey(req.UserID)
 	if err != nil {
 		return nil, errors.InternalServer(reason.UnknownError).WithError(err).WithStack()
@@ -76,7 +79,10 @@ func (s *ApiKeyService) AddApiKey(ctx context.Context, req *schemas.AddApiKeyReq
 	}, nil
 }
 
-func (s *ApiKeyService) GetApiKeyWithKey(ctx context.Context, key string) (*schemas.GetApiKeyResp, error) {
+func (s *ApiKeyService) GetApiKeyWithKey(
+	ctx context.Context,
+	key string,
+) (*schemas.GetApiKeyResp, error) {
 	parts := strings.SplitN(key, ".", 3)
 	if len(parts) != 3 {
 		return nil, errors.Unauthorized(reason.ApiKeyInvalid)

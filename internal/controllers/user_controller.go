@@ -78,7 +78,11 @@ func (c *UserController) CompleteEmailAccountSignup(ctx echo.Context) error {
 	req.IP = network.GetClientIP(ctx)
 	req.UserAgent = ctx.Request().UserAgent()
 
-	resp, err := c.userService.CompleteEmailAccountSignup(ctx.Request().Context(), middleware.GetUser(ctx), req)
+	resp, err := c.userService.CompleteEmailAccountSignup(
+		ctx.Request().Context(),
+		middleware.GetUser(ctx),
+		req,
+	)
 
 	return handler.HandleResponse(ctx, err, resp)
 }

@@ -26,7 +26,10 @@ func NewAuthRepo(db db.DB, cacher cache.Cacher) auth.AuthRepo {
 	}
 }
 
-func (r *authRepo) GetUserCacheInfo(ctx context.Context, userID string) (userInfo *entities.UserCacheInfo, err error) {
+func (r *authRepo) GetUserCacheInfo(
+	ctx context.Context,
+	userID string,
+) (userInfo *entities.UserCacheInfo, err error) {
 	cacheKey := &cache.Key{
 		Namespace: constants.UserInfoNameSpaceCache,
 		Key:       userID,
@@ -43,7 +46,11 @@ func (r *authRepo) GetUserCacheInfo(ctx context.Context, userID string) (userInf
 	return userInfo, nil
 }
 
-func (r *authRepo) SetUserCacheInfo(ctx context.Context, userID string, userInfo *entities.UserCacheInfo) error {
+func (r *authRepo) SetUserCacheInfo(
+	ctx context.Context,
+	userID string,
+	userInfo *entities.UserCacheInfo,
+) error {
 	cachePayload, err := json.Marshal(userInfo)
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()

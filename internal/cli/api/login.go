@@ -43,7 +43,10 @@ func CallChallengeEmailLogin(
 		SetBody(req).
 		Post("/v1/users/auth/email/login/challenge")
 	if err != nil {
-		return nil, fmt.Errorf("CallChallengeEmailLogin: Unable to complete api request [err=%s]", err)
+		return nil, fmt.Errorf(
+			"CallChallengeEmailLogin: Unable to complete api request [err=%s]",
+			err,
+		)
 	}
 	if resp.IsError() || result.Code != http.StatusOK {
 		return nil, fmt.Errorf("CallChallengeEmailLogin: Unsuccessful response [response=%s]", resp)

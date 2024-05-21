@@ -22,7 +22,11 @@ type AuthMiddleware struct {
 	sessionRepo session.SessionRepo
 }
 
-func NewAuthMiddleware(cfg *config.Config, userRepo user.UserRepo, sessionRepo session.SessionRepo) *AuthMiddleware {
+func NewAuthMiddleware(
+	cfg *config.Config,
+	userRepo user.UserRepo,
+	sessionRepo session.SessionRepo,
+) *AuthMiddleware {
 	return &AuthMiddleware{
 		cfg:         cfg,
 		userRepo:    userRepo,
@@ -105,9 +109,13 @@ func (m *AuthMiddleware) parseJWTClaims(echoCtx echo.Context, bearer string) err
 	p := jwt.Parser{
 		ValidMethods: []string{jwt.SigningMethodHS256.Name},
 	}
-	token, err := p.ParseWithClaims(bearer, &entities.AccessTokenClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return (m.cfg.JWT.SecretBytes), nil
-	})
+	token, err := p.ParseWithClaims(
+		bearer,
+		&entities.AccessTokenClaims{},
+		func(t *jwt.Token) (interface{}, error) {
+			return (m.cfg.JWT.SecretBytes), nil
+		},
+	)
 	if err != nil {
 		return errors.Unauthorized(reason.InvalidTokenError)
 	}

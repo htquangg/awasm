@@ -85,10 +85,13 @@ func signupCredential(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	verifyEmailSignupResp, err := api.CallVerifyEmailSignup(client.HTTPClient, &schemas.VerifyEmailSignupReq{
-		Email: email,
-		OTP:   otp,
-	})
+	verifyEmailSignupResp, err := api.CallVerifyEmailSignup(
+		client.HTTPClient,
+		&schemas.VerifyEmailSignupReq{
+			Email: email,
+			OTP:   otp,
+		},
+	)
 	if err != nil {
 		cli.HandleError(err)
 	}
@@ -160,7 +163,11 @@ func signupCredential(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	privateKey, err := crypto.Decrypt(encryptedSecretKeyBytes, masterKeyBytes, keyEncryptionNonceBytes)
+	privateKey, err := crypto.Decrypt(
+		encryptedSecretKeyBytes,
+		masterKeyBytes,
+		keyEncryptionNonceBytes,
+	)
 	if err != nil {
 		cli.HandleError(err)
 	}
@@ -194,7 +201,10 @@ func signupCredential(userCredential *schemas.UserCredential) {
 
 func askForCredential() (email string, password string, err error) {
 	validateEmail := func(input string) error {
-		matched, err := regexp.MatchString("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", input)
+		matched, err := regexp.MatchString(
+			"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",
+			input,
+		)
 		if err != nil || !matched {
 			return errors.New("this doesn't look like an email address")
 		}
@@ -287,18 +297,22 @@ func generateKeyAndSRPAttributes(
 	}
 
 	return masterKey, &schemas.KeyAttributeInfo{
-		MemLimit:                          memLimit,
-		OpsLimit:                          opsLimit,
-		KekSalt:                           converter.ToB64(kekSaltBytes),
-		EncryptedKey:                      converter.ToB64(masterKeyEncryptedWithKek.Cipher),
-		KeyDecryptionNonce:                converter.ToB64(masterKeyEncryptedWithKek.Nonce),
-		PublicKey:                         publicKey,
-		EncryptedSecretKey:                converter.ToB64(encryptedKeyPairAttributes.Cipher),
-		SecretKeyDecryptionNonce:          converter.ToB64(encryptedKeyPairAttributes.Nonce),
-		MasterKeyEncryptedWithRecoveryKey: converter.ToB64(masterKeyEncryptedWithRecoveryKey.Cipher),
-		MasterKeyDecryptionNonce:          converter.ToB64(masterKeyEncryptedWithKek.Nonce),
-		RecoveryKeyEncryptedWithMasterKey: converter.ToB64(recoveryKeyEncryptedWithMasterKey.Cipher),
-		RecoveryKeyDecryptionNonce:        converter.ToB64(recoveryKeyEncryptedWithMasterKey.Nonce),
+		MemLimit:                 memLimit,
+		OpsLimit:                 opsLimit,
+		KekSalt:                  converter.ToB64(kekSaltBytes),
+		EncryptedKey:             converter.ToB64(masterKeyEncryptedWithKek.Cipher),
+		KeyDecryptionNonce:       converter.ToB64(masterKeyEncryptedWithKek.Nonce),
+		PublicKey:                publicKey,
+		EncryptedSecretKey:       converter.ToB64(encryptedKeyPairAttributes.Cipher),
+		SecretKeyDecryptionNonce: converter.ToB64(encryptedKeyPairAttributes.Nonce),
+		MasterKeyEncryptedWithRecoveryKey: converter.ToB64(
+			masterKeyEncryptedWithRecoveryKey.Cipher,
+		),
+		MasterKeyDecryptionNonce: converter.ToB64(masterKeyEncryptedWithKek.Nonce),
+		RecoveryKeyEncryptedWithMasterKey: converter.ToB64(
+			recoveryKeyEncryptedWithMasterKey.Cipher,
+		),
+		RecoveryKeyDecryptionNonce: converter.ToB64(recoveryKeyEncryptedWithMasterKey.Nonce),
 	}, setupSRPAccountSignupReq, nil
 }
 
@@ -317,7 +331,12 @@ func generateSRPSetupAttribute(loginSubKey string) (*schemas.SetupSRPAccountSign
 
 	srpUserID := uid.ID()
 
-	srpVerifierBytes := srp.ComputeVerifier(srpParams, srpSaltBytes, []byte(srpUserID), loginSubKeyBytes)
+	srpVerifierBytes := srp.ComputeVerifier(
+		srpParams,
+		srpSaltBytes,
+		[]byte(srpUserID),
+		loginSubKeyBytes,
+	)
 
 	return &schemas.SetupSRPAccountSignupReq{
 		SRPUserID:   srpUserID,
@@ -326,7 +345,11 @@ func generateSRPSetupAttribute(loginSubKey string) (*schemas.SetupSRPAccountSign
 	}, nil
 }
 
-func generateSRPClient(srpSalt string, srpUserID string, loginSubKey string) (*srp.SRPClient, error) {
+func generateSRPClient(
+	srpSalt string,
+	srpUserID string,
+	loginSubKey string,
+) (*srp.SRPClient, error) {
 	clientSecret := srp.GenKey()
 	srpParams := srp.GetParams(SRP_4096_PARAMS)
 
@@ -340,7 +363,13 @@ func generateSRPClient(srpSalt string, srpUserID string, loginSubKey string) (*s
 		return nil, err
 	}
 
-	return srp.NewClient(srpParams, srpSaltBytes, []byte(srpUserID), loginSubKeyBytes, clientSecret), nil
+	return srp.NewClient(
+		srpParams,
+		srpSaltBytes,
+		[]byte(srpUserID),
+		loginSubKeyBytes,
+		clientSecret,
+	), nil
 }
 
 func deriveKey(
@@ -349,5 +378,12 @@ func deriveKey(
 ) (kekBytes []byte, memLimit int, opsLimit int) {
 	memLimit = 64 * 1024
 	opsLimit = runtime.NumCPU()
-	return argon2.IDKey([]byte(passphrase), salt, 1, uint32(memLimit), uint8(opsLimit), 32), memLimit, opsLimit
+	return argon2.IDKey(
+		[]byte(passphrase),
+		salt,
+		1,
+		uint32(memLimit),
+		uint8(opsLimit),
+		32,
+	), memLimit, opsLimit
 }

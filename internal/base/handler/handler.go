@@ -19,7 +19,10 @@ func HandleResponse(ctx echo.Context, err error, data interface{}) error {
 	lang := GetLang(ctx)
 	// no error
 	if err == nil {
-		return ctx.JSON(http.StatusOK, NewRespBodyData(http.StatusOK, reason.Success, data).TrMsg(lang))
+		return ctx.JSON(
+			http.StatusOK,
+			NewRespBodyData(http.StatusOK, reason.Success, data).TrMsg(lang),
+		)
 	}
 
 	var myErr *errors.Error

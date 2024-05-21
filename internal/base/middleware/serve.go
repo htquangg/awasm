@@ -15,7 +15,11 @@ func Serve(ctx echo.Context, status int, data []byte, header []byte) error {
 
 	err := json.Unmarshal(header, &headers)
 	if err != nil {
-		return handler.HandleResponse(ctx, errors.InternalServer(reason.UnknownError).WithError(err), data)
+		return handler.HandleResponse(
+			ctx,
+			errors.InternalServer(reason.UnknownError).WithError(err),
+			data,
+		)
 	}
 
 	for k, vv := range headers {

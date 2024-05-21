@@ -81,7 +81,7 @@ lint: ## lint
 .PHONY: format
 format: ## format
 	@echo "Formating ..."
-	golines -m 120 -w --ignore-generated .
+	golines -m 100 -w --ignore-generated .
 	openshift-goimports .
 	gofumpt -l -w .
 	@echo "Formatting complete"

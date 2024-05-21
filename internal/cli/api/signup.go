@@ -21,10 +21,16 @@ func CallBeginEmailSignupProcess(
 		SetBody(req).
 		Post("/v1/users/auth/email/signup/challenge")
 	if err != nil {
-		return nil, fmt.Errorf("CallBeginEmailSignupProcess: Unable to complete api request [err=%s]", err)
+		return nil, fmt.Errorf(
+			"CallBeginEmailSignupProcess: Unable to complete api request [err=%s]",
+			err,
+		)
 	}
 	if resp.IsError() || result.Code != http.StatusOK {
-		return nil, fmt.Errorf("CallBeginEmailSignupProcess: Unsuccessful response [response=%s]", resp)
+		return nil, fmt.Errorf(
+			"CallBeginEmailSignupProcess: Unsuccessful response [response=%s]",
+			resp,
+		)
 	}
 
 	return result.Data, nil
@@ -42,7 +48,10 @@ func CallVerifyEmailSignup(
 		SetBody(req).
 		Post("/v1/users/auth/email/signup/verify")
 	if err != nil {
-		return nil, fmt.Errorf("CallVerifyEmailSignup: Unable to complete api request [err=%s]", err)
+		return nil, fmt.Errorf(
+			"CallVerifyEmailSignup: Unable to complete api request [err=%s]",
+			err,
+		)
 	}
 	if resp.IsError() || result.Code != http.StatusOK {
 		return nil, fmt.Errorf("CallVerifyEmailSignup: Unsuccessful response [response=%s]", resp)
@@ -63,10 +72,16 @@ func CallSetupSRPAccountSignup(
 		SetBody(req).
 		Post("/v1/users/srp/setup")
 	if err != nil {
-		return nil, fmt.Errorf("CallSetupSRPAccountSignup: Unable to complete api request [err=%s]", err)
+		return nil, fmt.Errorf(
+			"CallSetupSRPAccountSignup: Unable to complete api request [err=%s]",
+			err,
+		)
 	}
 	if resp.IsError() || result.Code != http.StatusOK {
-		return nil, fmt.Errorf("CallSetupSRPAccountSignup: Unsuccessful response [response=%s]", resp)
+		return nil, fmt.Errorf(
+			"CallSetupSRPAccountSignup: Unsuccessful response [response=%s]",
+			resp,
+		)
 	}
 
 	return result.Data, nil
@@ -84,10 +99,16 @@ func CallCompleteEmailAccountSignup(
 		SetBody(req).
 		Post("/v1/users/auth/email/signup/complete")
 	if err != nil {
-		return nil, fmt.Errorf("CallCompleteEmailAccountSignup: Unable to complete api request [err=%s]", err)
+		return nil, fmt.Errorf(
+			"CallCompleteEmailAccountSignup: Unable to complete api request [err=%s]",
+			err,
+		)
 	}
 	if resp.IsError() || result.Code != http.StatusOK {
-		return nil, fmt.Errorf("CallCompleteEmailAccountSignup: Unsuccessful response [response=%s]", resp)
+		return nil, fmt.Errorf(
+			"CallCompleteEmailAccountSignup: Unsuccessful response [response=%s]",
+			resp,
+		)
 	}
 
 	return result.Data, nil

@@ -44,7 +44,10 @@ func (r *userAuthRepo) GetSRPAuthWithSRPUserID(
 	return srpAuth, exists, err
 }
 
-func (r *userAuthRepo) GetSRPAttribute(ctx context.Context, userID string) (*schemas.GetSRPAttributeResp, bool, error) {
+func (r *userAuthRepo) GetSRPAttribute(
+	ctx context.Context,
+	userID string,
+) (*schemas.GetSRPAttributeResp, bool, error) {
 	respFromDB := make([]*struct {
 		SRPUserID string `json:"srpUserId"`
 		Salt      string `json:"salt"`
@@ -74,7 +77,10 @@ func (r *userAuthRepo) GetSRPAttribute(ctx context.Context, userID string) (*sch
 	return getSRPAttributeResp, true, nil
 }
 
-func (r *userAuthRepo) AddSRPChallenge(ctx context.Context, srpChallege *entities.SrpChallenge) (err error) {
+func (r *userAuthRepo) AddSRPChallenge(
+	ctx context.Context,
+	srpChallege *entities.SrpChallenge,
+) (err error) {
 	_, err = r.db.Engine(ctx).Insert(srpChallege)
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
@@ -83,7 +89,10 @@ func (r *userAuthRepo) AddSRPChallenge(ctx context.Context, srpChallege *entitie
 	return nil
 }
 
-func (r *userAuthRepo) AddSrpAuthTemp(ctx context.Context, srpAuthTemp *entities.SrpAuthTemp) (err error) {
+func (r *userAuthRepo) AddSrpAuthTemp(
+	ctx context.Context,
+	srpAuthTemp *entities.SrpAuthTemp,
+) (err error) {
 	_, err = r.db.Engine(ctx).Insert(srpAuthTemp)
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
@@ -183,7 +192,10 @@ func (r *userAuthRepo) GetTempSRPSetupByID(
 	return srpAuthTemp, exists, err
 }
 
-func (r *userAuthRepo) IncrementSrpChallengeAttemptCount(ctx context.Context, id string) (err error) {
+func (r *userAuthRepo) IncrementSrpChallengeAttemptCount(
+	ctx context.Context,
+	id string,
+) (err error) {
 	_, err = r.db.Engine(ctx).Incr("attempt_count").ID(id).Update(new(entities.SrpChallenge))
 	if err != nil {
 		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
@@ -192,7 +204,10 @@ func (r *userAuthRepo) IncrementSrpChallengeAttemptCount(ctx context.Context, id
 	return err
 }
 
-func (r *userAuthRepo) SetSrpChallengeVerified(ctx context.Context, challengeID string) (err error) {
+func (r *userAuthRepo) SetSrpChallengeVerified(
+	ctx context.Context,
+	challengeID string,
+) (err error) {
 	now := time.Now()
 	srpChallenge := &entities.SrpChallenge{
 		VerifiedAt: &now,

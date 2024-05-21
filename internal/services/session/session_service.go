@@ -44,7 +44,12 @@ func (s *SessionService) IssueRefreshToken(
 	authenticationMethod entities.AuthenticationMethod,
 	params *entities.GrantParams,
 ) (*schemas.AccessTokenResp, error) {
-	refreshToken, err := s.sessionRepo.CreateRefreshToken(ctx, user.ID, authenticationMethod, params)
+	refreshToken, err := s.sessionRepo.CreateRefreshToken(
+		ctx,
+		user.ID,
+		authenticationMethod,
+		params,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -74,9 +79,13 @@ func (s *SessionService) IssueSignupToken(
 	expiresAt := issuedAt.Add(constants.ExpiresInTokenSignup).Unix()
 
 	claims := &entities.CommonTokenClaims{
-		StandardClaims: jwt.StandardClaims{Subject: user.ID, IssuedAt: issuedAt.Unix(), ExpiresAt: expiresAt},
-		Email:          user.Email,
-		Scope:          entities.SignupTokenScope.Ptr(),
+		StandardClaims: jwt.StandardClaims{
+			Subject:   user.ID,
+			IssuedAt:  issuedAt.Unix(),
+			ExpiresAt: expiresAt,
+		},
+		Email: user.Email,
+		Scope: entities.SignupTokenScope.Ptr(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -121,9 +130,13 @@ func (s *SessionService) generateAccessToken(
 
 	claims := &entities.AccessTokenClaims{
 		CommonTokenClaims: entities.CommonTokenClaims{
-			StandardClaims: jwt.StandardClaims{Subject: user.ID, IssuedAt: issuedAt.Unix(), ExpiresAt: expiresAt},
-			Email:          user.Email,
-			Scope:          entities.AccessTokenScope.Ptr(),
+			StandardClaims: jwt.StandardClaims{
+				Subject:   user.ID,
+				IssuedAt:  issuedAt.Unix(),
+				ExpiresAt: expiresAt,
+			},
+			Email: user.Email,
+			Scope: entities.AccessTokenScope.Ptr(),
 		},
 		AuthenticatorAssuranceLevel:   aal.String(),
 		AuthenticationMethodReference: amr,

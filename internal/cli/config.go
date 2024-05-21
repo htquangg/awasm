@@ -88,7 +88,12 @@ func GetFullConfigFilePath() (fullPathToFile string, fullPathToDirectory string,
 		return "", "", err
 	}
 
-	fullPath := fmt.Sprintf("%s/%s/%s", homeDir, constants.CONFIG_FOLDER_NAME, constants.CONFIG_FILE_NAME)
+	fullPath := fmt.Sprintf(
+		"%s/%s/%s",
+		homeDir,
+		constants.CONFIG_FOLDER_NAME,
+		constants.CONFIG_FILE_NAME,
+	)
 	fullDirPath := fmt.Sprintf("%s/%s", homeDir, constants.CONFIG_FOLDER_NAME)
 	return fullPath, fullDirPath, err
 }

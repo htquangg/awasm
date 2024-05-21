@@ -7,7 +7,10 @@ import (
 )
 
 type AuthRepo interface {
-	GetUserCacheInfo(ctx context.Context, userID string) (userInfo *entities.UserCacheInfo, err error)
+	GetUserCacheInfo(
+		ctx context.Context,
+		userID string,
+	) (userInfo *entities.UserCacheInfo, err error)
 	SetUserCacheInfo(ctx context.Context, userID string, userInfo *entities.UserCacheInfo) error
 	RemoveUserCacheInfo(ctx context.Context, userID string) (err error)
 }
