@@ -1,0 +1,19 @@
+# An Ingress with 2 hosts and 3 endpoints
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: awasm-ingress
+  namespace: awasm
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: api.awasm.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: awasm-service
+            port:
+              number: 8080

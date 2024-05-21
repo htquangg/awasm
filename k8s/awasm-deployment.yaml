@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: awasm-deployment
+  namespace: awasm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: awasm
+  template:
+    metadata:
+      labels:
+        app: awasm
+    spec:
+      containers:
+        - name: awasm
+          image: htquangg/awasm
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: awasm-config-volume
+              mountPath: /awasm/awasm.yaml
+              subPath: awasm.k8s.yaml
+          livenessProbe:
+            httpGet:
+              path: /api/v1/healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 15
+      volumes:
+        - name: awasm-config-volume
+          configMap:
+            name: awasm-config
