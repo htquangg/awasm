@@ -26,7 +26,7 @@ func (c *EndpointController) Add(ctx echo.Context) error {
 		return handler.HandleResponse(ctx, err, errField)
 	}
 
-	req.UserID = middleware.GetUserID(ctx, entities.JWT)
+	req.UserID = middleware.GetUserID(ctx, entities.AuthModeJwt)
 	resp, err := c.endpointService.AddEndpoint(ctx.Request().Context(), req)
 
 	return handler.HandleResponse(ctx, err, resp)

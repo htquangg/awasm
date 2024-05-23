@@ -40,7 +40,7 @@ func (s *sessionRepo) CreateRefreshToken(
 		UserID: userID,
 		Token:  token,
 	}
-	defaultAAL := entities.AAL1.String()
+	defaultAAL := entities.Aal1.String()
 	session := &entities.Session{
 		ID:        uid.ID(),
 		UserID:    userID,

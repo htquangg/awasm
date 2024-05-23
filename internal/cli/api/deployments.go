@@ -17,7 +17,7 @@ func CallAddDeployment(
 	resp, err := httpClient.
 		R().
 		SetResult(&result).
-		SetHeader("User-Agent", USER_AGENT).
+		SetHeader("User-Agent", UserAgent).
 		SetBody(req.Data).
 		Post(fmt.Sprintf("/v1/endpoints/%s/deployments", req.EndpointID))
 	if err != nil {

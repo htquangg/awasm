@@ -18,11 +18,17 @@ import (
 	"github.com/htquangg/a-wasm/pkg/logger"
 )
 
+type Prompt string
+
 const (
-	ADD_USER       = "Add a new account login"
-	REPLACE_USER   = "Override current logged in user"
-	EXIT_USER_MENU = "Exit"
+	AddUser       Prompt = "Add a new account login"
+	ReplaceUser   Prompt = "Override current logged in user"
+	ExistUserMenu Prompt = "Exit"
 )
+
+func (p Prompt) String() string {
+	return string(p)
+}
 
 var loginCmd = &cobra.Command{
 	Example:               "awasm login",
@@ -217,16 +223,17 @@ func userLoginMenu(currentLoggedInUserEmail string) (bool, error) {
 	label := fmt.Sprintf(
 		"Current logged in user email: %s on domain: %s",
 		currentLoggedInUserEmail,
-		config.AWASM_URL,
+		config.AwasmUrl,
 	)
 
 	prompt := promptui.Select{
 		Label: label,
-		Items: []string{ADD_USER, REPLACE_USER, EXIT_USER_MENU},
+		Items: []Prompt{AddUser, ReplaceUser, ExistUserMenu},
 	}
 	_, result, err := prompt.Run()
 	if err != nil {
 		return false, err
 	}
-	return result != EXIT_USER_MENU, err
+
+	return result != ExistUserMenu.String(), err
 }

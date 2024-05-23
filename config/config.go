@@ -11,7 +11,7 @@ import (
 	"github.com/htquangg/a-wasm/pkg/converter"
 )
 
-var AWASM_URL string
+var AwasmUrl string
 
 type (
 	Config struct {

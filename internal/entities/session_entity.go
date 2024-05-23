@@ -8,18 +8,18 @@ import (
 type AuthenticatorAssuranceLevel int
 
 const (
-	AAL1 AuthenticatorAssuranceLevel = iota
-	AAL2
-	AAL3
+	Aal1 AuthenticatorAssuranceLevel = iota
+	Aal2
+	Aal3
 )
 
 func (aal AuthenticatorAssuranceLevel) String() string {
 	switch aal {
-	case AAL1:
+	case Aal1:
 		return "aal1"
-	case AAL2:
+	case Aal2:
 		return "aal2"
-	case AAL3:
+	case Aal3:
 		return "aal3"
 	default:
 		return ""
@@ -69,10 +69,10 @@ func (Session) TableName() string {
 func (s *Session) CalculateAALAndAMR(
 	user *User,
 ) (aal AuthenticatorAssuranceLevel, amr []AMREntry, err error) {
-	amr, aal = []AMREntry{}, AAL1
+	amr, aal = []AMREntry{}, Aal1
 	for _, claim := range s.AMRClaims {
 		if claim.AuthenticationMethod == TOTPSignIn.String() {
-			aal = AAL2
+			aal = Aal2
 		}
 		amr = append(
 			amr,

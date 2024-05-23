@@ -17,7 +17,7 @@ func CallAddApiKey(
 	resp, err := httpClient.
 		R().
 		SetResult(&result).
-		SetHeader("User-Agent", USER_AGENT).
+		SetHeader("User-Agent", UserAgent).
 		SetBody(req).
 		Post("/v1/api-keys")
 	if err != nil {

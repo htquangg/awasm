@@ -1,7 +1,7 @@
 package api
 
 const (
-	USER_AGENT = "awasm-cli"
+	UserAgent = "awasm-cli"
 )
 
 type AwasmResp[T any] struct {

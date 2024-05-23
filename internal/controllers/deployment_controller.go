@@ -41,7 +41,7 @@ func (c *DeploymentController) Add(ctx echo.Context) error {
 
 	req := &schemas.AddDeploymentReq{
 		EndpointID: endpointID,
-		UserID:     middleware.GetUserID(ctx, entities.JWT),
+		UserID:     middleware.GetUserID(ctx, entities.AuthModeJwt),
 		Data:       b,
 	}
 

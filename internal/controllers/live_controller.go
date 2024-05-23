@@ -30,7 +30,7 @@ func (c *LiveController) Publish(ctx echo.Context) error {
 		return handler.HandleResponse(ctx, err, errField)
 	}
 
-	req.UserID = middleware.GetUserID(ctx, entities.JWT)
+	req.UserID = middleware.GetUserID(ctx, entities.AuthModeJwt)
 	resp, err := c.endpointService.Publish(ctx.Request().Context(), req)
 
 	return handler.HandleResponse(ctx, err, resp)

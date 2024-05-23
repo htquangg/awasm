@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	SRP_4096_PARAMS = 4096
+	Srp4096Params = 4096
 )
 
 var signupCmd = &cobra.Command{
@@ -317,7 +317,7 @@ func generateKeyAndSRPAttributes(
 }
 
 func generateSRPSetupAttribute(loginSubKey string) (*schemas.SetupSRPAccountSignupReq, error) {
-	srpParams := srp.GetParams(SRP_4096_PARAMS)
+	srpParams := srp.GetParams(Srp4096Params)
 
 	loginSubKeyBytes, err := converter.FromB64(loginSubKey)
 	if err != nil {
@@ -351,7 +351,7 @@ func generateSRPClient(
 	loginSubKey string,
 ) (*srp.SRPClient, error) {
 	clientSecret := srp.GenKey()
-	srpParams := srp.GetParams(SRP_4096_PARAMS)
+	srpParams := srp.GetParams(Srp4096Params)
 
 	loginSubKeyBytes, err := converter.FromB64(loginSubKey)
 	if err != nil {

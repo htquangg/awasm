@@ -16,3 +16,10 @@ repos:
       - id: golangci-lint
         args: ["--config=.golangci.yml"]
         exclude: ^ui/
+  - repo: local
+    hooks:
+      - id: format
+        name: format
+        entry: /usr/bin/env bash -c 'make format'
+        language: script
+        description: "Checks files formatting with golines, openshift-goimports, gofumpt"

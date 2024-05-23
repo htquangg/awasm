@@ -94,7 +94,7 @@ func GetCurrentLoggedInUserDetails() (*LoggedInUserDetails, bool, error) {
 	}
 
 	if configFile.LoggedInUserDomain != "" {
-		config.AWASM_URL = configFile.LoggedInUserDomain
+		config.AwasmUrl = configFile.LoggedInUserDomain
 	}
 
 	client := api.NewClient(&api.ClientOptions{})

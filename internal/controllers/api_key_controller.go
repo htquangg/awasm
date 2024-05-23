@@ -26,7 +26,7 @@ func (c *ApiKeyController) Add(ctx echo.Context) error {
 		return handler.HandleResponse(ctx, err, errField)
 	}
 
-	req.UserID = middleware.GetUserID(ctx, entities.JWT)
+	req.UserID = middleware.GetUserID(ctx, entities.AuthModeJwt)
 	resp, err := c.apiKeyService.AddApiKey(ctx.Request().Context(), req)
 
 	return handler.HandleResponse(ctx, err, resp)

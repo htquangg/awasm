@@ -64,7 +64,7 @@ func (c *UserController) SetupSRPAccountSignup(ctx echo.Context) error {
 		return handler.HandleResponse(ctx, err, errField)
 	}
 
-	userID := middleware.GetUserID(ctx, entities.JWT)
+	userID := middleware.GetUserID(ctx, entities.AuthModeJwt)
 	resp, err := c.userService.SetupSRPAccountSignup(ctx.Request().Context(), userID, req)
 
 	return handler.HandleResponse(ctx, err, resp)

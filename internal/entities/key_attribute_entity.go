@@ -7,7 +7,7 @@ type KeyAttribute struct {
 	KeyDecryptionNonce                string `xorm:"not null TEXT key_decryption_nonce"`
 	PublicKey                         string `xorm:"not null TEXT public_key"`
 	EncryptedSecretKey                string `xorm:"not null TEXT encrypted_secret_key"`
-	SecretKeyDecryptionNonce          string `xorm:"not null TEXT secret_key_decryption_none"`
+	SecretKeyDecryptionNonce          string `xorm:"not null TEXT secret_key_decryption_nonce"`
 	MasterKeyEncryptedWithRecoveryKey string `xorm:"not null TEXT master_key_encrypted_with_recovery_key"`
 	MasterKeyDecryptionNonce          string `xorm:"not null TEXT master_key_decryption_nonce"`
 	RecoveryKeyEncryptedWithMasterKey string `xorm:"not null TEXT recovery_key_encrypted_with_master_key"`

@@ -52,13 +52,13 @@ func GetUserID(ctx echo.Context, authMode entities.AuthMode) string {
 	userID := ""
 
 	switch authMode {
-	case entities.JWT:
+	case entities.AuthModeJwt:
 		user := getUser(ctx)
 		if user != nil {
 			userID = user.ID
 		}
 
-	case entities.API_KEY:
+	case entities.AuthModeApiKey:
 		apiKey := getApiKey(ctx)
 		if apiKey != nil {
 			userID = apiKey.UserID

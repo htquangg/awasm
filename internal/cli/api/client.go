@@ -36,7 +36,7 @@ func NewClient(p *ClientOptions) *Client {
 		})
 	}
 
-	httpClient.SetBaseURL(config.AWASM_URL)
+	httpClient.SetBaseURL(config.AwasmUrl)
 
 	return &Client{
 		HTTPClient: httpClient,

@@ -17,7 +17,7 @@ func CallAddEndpoint(
 	resp, err := httpClient.
 		R().
 		SetResult(&result).
-		SetHeader("User-Agent", USER_AGENT).
+		SetHeader("User-Agent", UserAgent).
 		SetBody(req).
 		Post("/v1/endpoints")
 	if err != nil {
@@ -38,7 +38,7 @@ func CallPublishEndpoint(
 	resp, err := httpClient.
 		R().
 		SetResult(&result).
-		SetHeader("User-Agent", USER_AGENT).
+		SetHeader("User-Agent", UserAgent).
 		SetBody(req).
 		Post("/v1/live/publish")
 	if err != nil {

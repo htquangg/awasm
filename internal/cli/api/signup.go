@@ -17,7 +17,7 @@ func CallBeginEmailSignupProcess(
 	resp, err := httpClient.
 		R().
 		SetResult(&result).
-		SetHeader("User-Agent", USER_AGENT).
+		SetHeader("User-Agent", UserAgent).
 		SetBody(req).
 		Post("/v1/users/auth/email/signup/challenge")
 	if err != nil {
@@ -44,7 +44,7 @@ func CallVerifyEmailSignup(
 	resp, err := httpClient.
 		R().
 		SetResult(&result).
-		SetHeader("User-Agent", USER_AGENT).
+		SetHeader("User-Agent", UserAgent).
 		SetBody(req).
 		Post("/v1/users/auth/email/signup/verify")
 	if err != nil {
@@ -68,7 +68,7 @@ func CallSetupSRPAccountSignup(
 	resp, err := httpClient.
 		R().
 		SetResult(&result).
-		SetHeader("User-Agent", USER_AGENT).
+		SetHeader("User-Agent", UserAgent).
 		SetBody(req).
 		Post("/v1/users/srp/setup")
 	if err != nil {
@@ -95,7 +95,7 @@ func CallCompleteEmailAccountSignup(
 	resp, err := httpClient.
 		R().
 		SetResult(&result).
-		SetHeader("User-Agent", USER_AGENT).
+		SetHeader("User-Agent", UserAgent).
 		SetBody(req).
 		Post("/v1/users/auth/email/signup/complete")
 	if err != nil {

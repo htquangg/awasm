@@ -19,7 +19,7 @@ func (factorState FactorState) String() string {
 	return ""
 }
 
-const TOTP = "totp"
+const Totp = "totp"
 
 type AuthenticationMethod int
 

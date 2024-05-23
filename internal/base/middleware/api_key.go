@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	// APIKeyHeader is the authorization header required for APIKey protected requests.
-	APIKeyHeader = "X-AWASM-API-Key"
+	// ApiKeyHeader is the authorization header required for APIKey protected requests.
+	ApiKeyHeader = "X-AWASM-API-Key"
 )
 
 type ApiKeyMiddleware struct {
@@ -76,7 +76,7 @@ func (m *ApiKeyMiddleware) RequireApiKey(next echo.HandlerFunc) echo.HandlerFunc
 }
 
 func (m *ApiKeyMiddleware) extractApiKey(ctx echo.Context) (string, error) {
-	apiKey := strings.TrimSpace(ctx.Request().Header.Get(APIKeyHeader))
+	apiKey := strings.TrimSpace(ctx.Request().Header.Get(ApiKeyHeader))
 	if apiKey == "" {
 		return "", errors.Unauthorized(reason.ApiKeyRequired)
 	}

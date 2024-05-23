@@ -32,7 +32,7 @@ func WriteInitalConfig(userCredentials *schemas.UserCredential) error {
 
 	loggedInUser := &schemas.LoggedInUser{
 		Email:  userCredentials.Email,
-		Domain: config.AWASM_URL,
+		Domain: config.AwasmUrl,
 	}
 	if existingConfigFile == nil {
 		existingConfigFile = &schemas.ConfigFile{}
@@ -51,7 +51,7 @@ func WriteInitalConfig(userCredentials *schemas.UserCredential) error {
 
 	configFile := &schemas.ConfigFile{
 		LoggedInUserEmail:  userCredentials.Email,
-		LoggedInUserDomain: config.AWASM_URL,
+		LoggedInUserDomain: config.AwasmUrl,
 		LoggedInUsers:      existingConfigFile.LoggedInUsers,
 	}
 
@@ -91,10 +91,10 @@ func GetFullConfigFilePath() (fullPathToFile string, fullPathToDirectory string,
 	fullPath := fmt.Sprintf(
 		"%s/%s/%s",
 		homeDir,
-		constants.CONFIG_FOLDER_NAME,
-		constants.CONFIG_FILE_NAME,
+		constants.ConfigFolderName,
+		constants.ConfigFileName,
 	)
-	fullDirPath := fmt.Sprintf("%s/%s", homeDir, constants.CONFIG_FOLDER_NAME)
+	fullDirPath := fmt.Sprintf("%s/%s", homeDir, constants.ConfigFolderName)
 	return fullPath, fullDirPath, err
 }
 

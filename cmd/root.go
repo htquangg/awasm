@@ -76,7 +76,7 @@ func Execute() {
 	initLog()
 
 	rootCmd.PersistentFlags().
-		StringVar(&config.AWASM_URL, "domain", constants.AWASM_DEFAULT_API_URL, "Point the CLI to your own backend [can also set via environment variable name: AWASM_API_URL]")
+		StringVar(&config.AwasmUrl, "domain", constants.AwasmDefaultApiUrl, "Point the CLI to your own backend [can also set via environment variable name: AWASM_API_URL]")
 	rootCmd.PersistentFlags().Bool("debug", false, "Indicate whether the debug mode is turned on")
 	ensure(viper.BindPFlag("cli.debug", rootCmd.PersistentFlags().Lookup("debug")))
 
@@ -84,7 +84,7 @@ func Execute() {
 	// this is used to allow overrides of the default value
 	if !rootCmd.Flag("domain").Changed {
 		if envAwasmBackendUrl, ok := os.LookupEnv("AWASM_API_URL"); ok {
-			config.AWASM_URL = envAwasmBackendUrl
+			config.AwasmUrl = envAwasmBackendUrl
 		}
 	}
 

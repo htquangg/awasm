@@ -37,7 +37,7 @@ func (c *PreviewController) Serve(ctx echo.Context) error {
 			nil)
 	}
 
-	userID := middleware.GetUserID(ctx, entities.API_KEY)
+	userID := middleware.GetUserID(ctx, entities.AuthModeApiKey)
 
 	req := &schemas.ServeDeploymentReq{
 		DeploymentID: deploymentID,

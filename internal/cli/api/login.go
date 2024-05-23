@@ -18,7 +18,7 @@ func CallGetSRPAttribute(
 	resp, err := httpClient.
 		R().
 		SetResult(&result).
-		SetHeader("User-Agent", USER_AGENT).
+		SetHeader("User-Agent", UserAgent).
 		SetBody(req).
 		Get(fmt.Sprintf("/v1/users/srp/attributes?email=%s", req.Email))
 	if err != nil {
@@ -39,7 +39,7 @@ func CallChallengeEmailLogin(
 	resp, err := httpClient.
 		R().
 		SetResult(&result).
-		SetHeader("User-Agent", USER_AGENT).
+		SetHeader("User-Agent", UserAgent).
 		SetBody(req).
 		Post("/v1/users/auth/email/login/challenge")
 	if err != nil {
@@ -63,7 +63,7 @@ func CallVerifyEmailLogin(
 	resp, err := httpClient.
 		R().
 		SetResult(&result).
-		SetHeader("User-Agent", USER_AGENT).
+		SetHeader("User-Agent", UserAgent).
 		SetBody(req).
 		Post("/v1/users/auth/email/login/verify")
 	if err != nil {
@@ -83,7 +83,7 @@ func CallIsAuthenticated(
 	resp, err := httpClient.
 		R().
 		SetResult(&result).
-		SetHeader("User-Agent", USER_AGENT).
+		SetHeader("User-Agent", UserAgent).
 		Post("/v1/users/auth/check")
 	if err != nil {
 		return false
