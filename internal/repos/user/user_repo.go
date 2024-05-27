@@ -28,6 +28,13 @@ func NewUserRepo(
 	}
 }
 
+func (r *userRepo) WithTx(
+	parentCtx context.Context,
+	f func(ctx context.Context) (interface{}, error),
+) (interface{}, error) {
+	return r.db.WithTx(parentCtx, f)
+}
+
 func (r *userRepo) AddUser(ctx context.Context, user *entities.User) (err error) {
 	_, err = r.db.Engine(ctx).Insert(user)
 	if err != nil {

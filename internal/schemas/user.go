@@ -40,7 +40,6 @@ type CompleteEmailSignupInfo struct {
 }
 
 type CompleteEmailSignupResp struct {
-	*AccessTokenResp
 	KeyAttribute *KeyAttributeInfo `json:"keyAttribute"`
 	SRPM2        string            `json:"srpM2"`
 }
@@ -108,4 +107,14 @@ type ConfigFile struct {
 type LoggedInUser struct {
 	Email  string `json:"email"`
 	Domain string `json:"domain"`
+}
+
+type RefreshTokenReq struct {
+	RefreshToken string `validate:"required" json:"refreshToken"`
+	IP           string `                    json:"-"`
+	UserAgent    string `                    json:"-"`
+}
+
+type RefreshTokenResp struct {
+	*AccessTokenResp
 }

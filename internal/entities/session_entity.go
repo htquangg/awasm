@@ -26,6 +26,15 @@ func (aal AuthenticatorAssuranceLevel) String() string {
 	}
 }
 
+type SessionValidityReason = int
+
+const (
+	SessionValid SessionValidityReason = iota << 1
+	SessionPastNotAfter
+	SessionPastTimebox
+	SessionTimedOut
+)
+
 type AMREntry struct {
 	Method    string `json:"method"`
 	Provider  string `json:"provider,omitempty"`
@@ -49,17 +58,18 @@ func (s sortAMREntries) Swap(i, j int) {
 }
 
 type Session struct {
-	CreatedAt  time.Time      `xorm:"created TIMESTAMPZ created_at"`
-	DeletedAt  *time.Time     `xorm:"TIMESTAMPZ deleted_at"`
-	LastUsedAt *time.Time     `xorm:"TIMESTAMPZ last_used_at"`
-	NotAfter   *time.Time     `xorm:"not null TIMESTAMPZ not_after"`
-	ID         string         `xorm:"not null pk VARCHAR(36) id"`
-	UserID     string         `xorm:"not null VARCHAR(36) user_id"`
-	AAL        string         `xorm:"not null TEXT aal"`
-	IP         string         `xorm:"not null TEXT default '' ip"`
-	UserAgent  string         `xorm:"not null TEXT default '' user_agent"`
-	FactorID   string         `xorm:"not null VARCHAR(36) default '' factor_id"`
-	AMRClaims  []*MFAAMRClaim `xorm:"-"`
+	CreatedAt   time.Time      `xorm:"created TIMESTAMPZ created_at"`
+	DeletedAt   *time.Time     `xorm:"TIMESTAMPZ deleted_at"`
+	LastUsedAt  *time.Time     `xorm:"TIMESTAMPZ last_used_at"`
+	NotAfter    *time.Time     `xorm:"null TIMESTAMPZ not_after"`
+	RefreshedAt *time.Time     `xorm:"null TIMESTAMPZ refreshed_at"`
+	ID          string         `xorm:"not null pk VARCHAR(36) id"`
+	UserID      string         `xorm:"not null VARCHAR(36) user_id"`
+	AAL         string         `xorm:"not null TEXT aal"`
+	IP          string         `xorm:"not null TEXT default '' ip"`
+	UserAgent   string         `xorm:"not null TEXT default '' user_agent"`
+	FactorID    string         `xorm:"not null VARCHAR(36) default '' factor_id"`
+	AMRClaims   []*MFAAMRClaim `xorm:"-"`
 }
 
 func (Session) TableName() string {
@@ -93,4 +103,45 @@ func (s *Session) CalculateAALAndAMR(
 	})
 
 	return aal, amr, nil
+}
+
+func (s *Session) CheckValidity(
+	now time.Time,
+	refreshTokenTime *time.Time,
+	timebox, inactivityTimeout *time.Duration,
+) SessionValidityReason {
+	if s.NotAfter != nil && now.After(*s.NotAfter) {
+		return SessionPastNotAfter
+	}
+
+	if timebox != nil && *timebox != 0 && now.After(s.CreatedAt.Add(*timebox)) {
+		return SessionPastTimebox
+	}
+
+	if inactivityTimeout != nil && *inactivityTimeout != 0 &&
+		now.After(s.LastRefreshedAt(refreshTokenTime).Add(*inactivityTimeout)) {
+		return SessionTimedOut
+	}
+
+	return SessionValid
+}
+
+func (s *Session) LastRefreshedAt(refreshTokenTime *time.Time) time.Time {
+	refreshedAt := s.RefreshedAt
+
+	if refreshedAt == nil || refreshedAt.IsZero() {
+		if refreshTokenTime != nil {
+			rtt := *refreshTokenTime
+
+			if rtt.IsZero() {
+				return s.CreatedAt
+			} else if rtt.After(s.CreatedAt) {
+				return rtt
+			}
+		}
+
+		return s.CreatedAt
+	}
+
+	return *refreshedAt
 }

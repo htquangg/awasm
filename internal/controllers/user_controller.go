@@ -25,6 +25,19 @@ func (c *UserController) CheckAuth(ctx echo.Context) error {
 	return handler.HandleResponse(ctx, nil, nil)
 }
 
+func (c *UserController) RefreshToken(ctx echo.Context) error {
+	req := &schemas.RefreshTokenReq{}
+	if err, errField := handler.BindAndValidate(ctx, req); err != nil {
+		return handler.HandleResponse(ctx, err, errField)
+	}
+	req.IP = network.GetClientIP(ctx)
+	req.UserAgent = ctx.Request().UserAgent()
+
+	resp, err := c.userService.RefreshTokenGrant(ctx.Request().Context(), req)
+
+	return handler.HandleResponse(ctx, err, resp)
+}
+
 func (c *UserController) GetSRPAttribute(ctx echo.Context) error {
 	req := &schemas.GetSRPAttributeReq{}
 	if err, errField := handler.BindAndValidate(ctx, req); err != nil {

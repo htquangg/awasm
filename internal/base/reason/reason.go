@@ -26,6 +26,7 @@ const (
 	EmailNotFound               = "error.email.not_found"
 	AccessTokenSessionRequired  = "error.access_token.session_required"
 	SessionNotFound             = "error.session.not_found"
+	SessionExpired              = "error.session.expired"
 	UserNotFound                = "error.user.not_found"
 	SRPNotFound                 = "error.srp.not_found"
 	SRPAlreadyVerified          = "error.srp.already_verified"
@@ -36,4 +37,6 @@ const (
 	OTPIncorrect                = "error.otp.incorrect"
 	ApiKeyInvalid               = "error.api_key.invalid"
 	ApiKeyRequired              = "error.api_key.required"
+	RefreshTokenNotFound        = "error.refresh_token.not_found"
+	RefreshTokenExpired         = "error.refresh_token.expired"
 )

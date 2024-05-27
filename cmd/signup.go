@@ -139,7 +139,7 @@ func signupCredential(userCredential *schemas.UserCredential) {
 	}
 	srpClient.SetB(srpBBytes)
 	srpM1 := converter.ToB64(srpClient.ComputeM1())
-	completeEmailAccountSignupResp, err := api.CallCompleteEmailAccountSignup(
+	_, err = api.CallCompleteEmailAccountSignup(
 		client.HTTPClient,
 		&schemas.CompleteEmailSignupReq{
 			SetupID:      setupSRPAccountSignupResp.SetupID,
@@ -163,7 +163,7 @@ func signupCredential(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	privateKey, err := crypto.Decrypt(
+	_, err = crypto.Decrypt(
 		encryptedSecretKeyBytes,
 		masterKeyBytes,
 		keyEncryptionNonceBytes,
@@ -171,22 +171,6 @@ func signupCredential(userCredential *schemas.UserCredential) {
 	if err != nil {
 		cli.HandleError(err)
 	}
-	tokenEnc, err := crypto.GetDecryptedToken(
-		completeEmailAccountSignupResp.EncryptedToken,
-		keyAttribute.PublicKey,
-		privateKey,
-	)
-	if err != nil {
-		cli.HandleError(err)
-	}
-	tokenEncBytes, err := converter.FromB64(tokenEnc)
-	if err != nil {
-		cli.HandleError(err)
-	}
-	token := string(tokenEncBytes)
-
-	// set the jwt token to request
-	client.HTTPClient.SetAuthToken(token)
 
 	// updating user credential
 	kekEncrypted, err := crypto.GenerateKeyAndEncrypt(converter.ToB64(kekBytes))
@@ -194,7 +178,6 @@ func signupCredential(userCredential *schemas.UserCredential) {
 		cli.HandleError(err)
 	}
 	userCredential.Email = email
-	userCredential.AccessToken = token
 	userCredential.KeyAttribute = keyAttribute
 	userCredential.KekEncrypted = &kekEncrypted
 }

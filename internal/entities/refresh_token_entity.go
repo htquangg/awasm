@@ -27,6 +27,7 @@ type RefreshToken struct {
 	CreatedAt time.Time `xorm:"created TIMESTAMPZ created_at"`
 	UpdatedAt time.Time `xorm:"updated TIMESTAMPZ updated_at"`
 	ID        string    `xorm:"not null pk VARCHAR(36) id"`
+	Parent    string    `xorm:"null VARCHAR(36) parent"`
 	UserID    string    `xorm:"not null VARCHAR(36) user_id"`
 	Token     string    `xorm:"not null VARCHAR(255) token"`
 	SessionID string    `xorm:"not null VARCHAR(36) session_id"`
@@ -45,9 +46,9 @@ type GrantParams struct {
 }
 
 type CommonTokenClaims struct {
-	Scope *ClaimScope `json:"scope"`
 	jwt.StandardClaims
-	Email string `json:"email"`
+	Scope *ClaimScope `json:"scope"`
+	Email string      `json:"email"`
 }
 
 func (w *CommonTokenClaims) GetScope() ClaimScope {

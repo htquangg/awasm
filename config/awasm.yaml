@@ -53,5 +53,12 @@ logging:
   use_local_time: false
   use_compress: true
 
+session:
+  timebox: "720h"
+  inactivity_timeout: "72h"
+
+security:
+  refresh_token_reuse_interval: 0
+
 i18n:
   bundle_dir: "./i18n"

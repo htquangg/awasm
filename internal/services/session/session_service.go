@@ -12,29 +12,61 @@ import (
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/schemas"
+	"github.com/htquangg/a-wasm/internal/services/user_common"
+	"github.com/htquangg/a-wasm/pkg/crypto"
+	"github.com/htquangg/a-wasm/pkg/uid"
 )
 
 type (
 	SessionRepo interface {
-		CreateRefreshToken(
+		WithTx(
+			parentCtx context.Context,
+			f func(ctx context.Context) (interface{}, error),
+		) (interface{}, error)
+		AddRefreshToken(ctx context.Context, refreshToken *entities.RefreshToken) error
+		AddSession(ctx context.Context, session *entities.Session) error
+		AddClaimToSession(
 			ctx context.Context,
-			userID string,
+			sessionID string,
 			authenticationMethod entities.AuthenticationMethod,
-			params *entities.GrantParams,
-		) (*entities.RefreshToken, error)
-		GetSessionByID(ctx context.Context, id string) (*entities.Session, bool, error)
+		) error
+		UpdateRefreshTokenCols(
+			ctx context.Context,
+			refreshToken *entities.RefreshToken,
+			cols ...string,
+		) error
+		GetSessionByID(
+			ctx context.Context,
+			id string,
+			forUpdate bool,
+		) (*entities.Session, bool, error)
+		GetRefreshTokenByToken(
+			ctx context.Context,
+			token string,
+			forUpdate bool,
+		) (*entities.RefreshToken, *entities.Session, error)
+		GetCurrentlyActiveRefreshTokenBySessionID(
+			ctx context.Context,
+			sessionID string,
+		) (*entities.RefreshToken, bool, error)
 	}
 
 	SessionService struct {
-		cfg         *config.Config
-		sessionRepo SessionRepo
+		cfg            *config.Config
+		sessionRepo    SessionRepo
+		userCommonRepo user_common.UserCommonRepo
 	}
 )
 
-func NewSessionService(cfg *config.Config, sessionRepo SessionRepo) *SessionService {
+func NewSessionService(
+	cfg *config.Config,
+	sessionRepo SessionRepo,
+	userCommonRepo user_common.UserCommonRepo,
+) *SessionService {
 	return &SessionService{
-		cfg:         cfg,
-		sessionRepo: sessionRepo,
+		cfg:            cfg,
+		sessionRepo:    sessionRepo,
+		userCommonRepo: userCommonRepo,
 	}
 }
 
@@ -44,17 +76,29 @@ func (s *SessionService) IssueRefreshToken(
 	authenticationMethod entities.AuthenticationMethod,
 	params *entities.GrantParams,
 ) (*schemas.AccessTokenResp, error) {
-	refreshToken, err := s.sessionRepo.CreateRefreshToken(
-		ctx,
-		user.ID,
-		authenticationMethod,
-		params,
-	)
-	if err != nil {
-		return nil, err
-	}
+	var refreshToken *entities.RefreshToken
+	var accessToken string
+	var expiresAt int64
 
-	accessToken, expiresAt, err := s.generateAccessToken(ctx, user, refreshToken.SessionID)
+	_, err := s.sessionRepo.WithTx(ctx, func(ctx context.Context) (interface{}, error) {
+		var terr error
+
+		refreshToken, terr = s.grantAuthenticatedUser(ctx, user, params)
+		if terr != nil {
+			return nil, terr
+		}
+
+		if terr := s.sessionRepo.AddClaimToSession(ctx, refreshToken.SessionID, authenticationMethod); terr != nil {
+			return nil, terr
+		}
+
+		accessToken, expiresAt, terr = s.generateAccessToken(ctx, user, refreshToken.SessionID)
+		if terr != nil {
+			return nil, terr
+		}
+
+		return refreshToken, nil
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -68,6 +112,135 @@ func (s *SessionService) IssueRefreshToken(
 		},
 		RefreshToken: refreshToken.Token,
 	}, nil
+}
+
+func (s *SessionService) GetUserWithRefreshToken(
+	ctx context.Context,
+	token string,
+	forUpdate bool,
+) (*entities.User, *entities.RefreshToken, *entities.Session, error) {
+	refreshToken, session, err := s.sessionRepo.GetRefreshTokenByToken(ctx, token, forUpdate)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	user, exists, err := s.userCommonRepo.GetUserByID(ctx, refreshToken.UserID)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	if !exists {
+		return nil, nil, nil, errors.BadRequest(reason.UserNotFound)
+	}
+
+	return user, refreshToken, session, nil
+}
+
+func (s *SessionService) GrantRefreshTokenSwap(
+	ctx context.Context,
+	user *entities.User,
+	oldRefreshToken *entities.RefreshToken,
+) (*entities.RefreshToken, error) {
+	refreshToken := &entities.RefreshToken{}
+
+	_, err := s.sessionRepo.WithTx(ctx, func(ctx context.Context) (interface{}, error) {
+		var terr error
+
+		oldRefreshToken.Revoked = true
+		terr = s.sessionRepo.UpdateRefreshTokenCols(ctx, oldRefreshToken, "revoked")
+		if terr != nil {
+			return nil, terr
+		}
+
+		refreshToken, terr = s.createRefreshToken(
+			ctx,
+			user,
+			oldRefreshToken,
+			&entities.GrantParams{},
+		)
+		if terr != nil {
+			return nil, terr
+		}
+
+		return nil, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return refreshToken, nil
+}
+
+func (s *SessionService) GetCurrentlyActiveRefreshTokenBySessionID(
+	ctx context.Context,
+	sessionID string,
+) (*entities.RefreshToken, error) {
+	refreshToken, exists, err := s.sessionRepo.GetCurrentlyActiveRefreshTokenBySessionID(
+		ctx,
+		sessionID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		return nil, errors.BadRequest(reason.RefreshTokenNotFound)
+	}
+
+	return refreshToken, nil
+}
+
+func (s *SessionService) grantAuthenticatedUser(
+	ctx context.Context,
+	user *entities.User,
+	params *entities.GrantParams,
+) (*entities.RefreshToken, error) {
+	return s.createRefreshToken(ctx, user, nil, params)
+}
+
+func (s *SessionService) createRefreshToken(
+	ctx context.Context,
+	user *entities.User,
+	oldToken *entities.RefreshToken,
+	params *entities.GrantParams,
+) (*entities.RefreshToken, error) {
+	token, err := crypto.GenerateURLSafeRandomString(entities.TokenLength)
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken := &entities.RefreshToken{
+		ID:     uid.ID(),
+		UserID: user.ID,
+		Token:  token,
+	}
+	if oldToken != nil {
+		refreshToken.Parent = oldToken.Token
+		refreshToken.SessionID = oldToken.SessionID
+	}
+
+	if refreshToken.SessionID == "" {
+		defaultAAL := entities.Aal1.String()
+		session := &entities.Session{
+			ID:        uid.ID(),
+			UserID:    refreshToken.UserID,
+			AAL:       defaultAAL,
+			IP:        params.IP,
+			UserAgent: params.UserAgent,
+		}
+
+		err = s.sessionRepo.AddSession(ctx, session)
+		if err != nil {
+			return nil, err
+		}
+
+		refreshToken.SessionID = session.ID
+	}
+
+	err = s.sessionRepo.AddRefreshToken(ctx, refreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	return refreshToken, nil
 }
 
 func (s *SessionService) IssueSignupToken(
@@ -103,6 +276,14 @@ func (s *SessionService) IssueSignupToken(
 	}, nil
 }
 
+func (s *SessionService) GenerateAccessToken(
+	ctx context.Context,
+	user *entities.User,
+	sessionID string,
+) (string, int64, error) {
+	return s.generateAccessToken(ctx, user, sessionID)
+}
+
 func (s *SessionService) generateAccessToken(
 	ctx context.Context,
 	user *entities.User,
@@ -112,7 +293,7 @@ func (s *SessionService) generateAccessToken(
 		return "", 0, errors.InternalServer(reason.AccessTokenSessionRequired)
 	}
 
-	session, exists, err := s.sessionRepo.GetSessionByID(ctx, sessionID)
+	session, exists, err := s.sessionRepo.GetSessionByID(ctx, sessionID, false)
 	if err != nil {
 		return "", 0, err
 	}

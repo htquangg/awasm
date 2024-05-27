@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/spf13/viper"
 
@@ -15,15 +16,17 @@ var AwasmUrl string
 
 type (
 	Config struct {
-		Server     *Server  `json:"server,omitempty"     mapstructure:"server"      yaml:"server,omitempty"`
-		DB         *DB      `json:"db,omitempty"         mapstructure:"db"          yaml:"db,omitempty"`
-		Redis      *Redis   `json:"redis,omitempty"      mapstructure:"redis"       yaml:"redis,omitempty"`
-		JWT        *JWT     `json:"jwt,omitempty"        mapstructure:"jwt"         yaml:"jwt,omitempty"`
-		Key        *Key     `json:"key,omitempty"        mapstructure:"key"         yaml:"key,omitempty"`
-		SMTP       *SMTP    `json:"smtp"                 mapstructure:"smtp"        yaml:"smtp"`
-		Logging    *Logging `json:"logging"              mapstructure:"logging"     yaml:"logging"`
-		I18n       *I18n    `json:"i18n,omitempty"       mapstructure:"i18n"        yaml:"i18n,omitempty"`
-		IngressURL string   `json:"ingressURL,omitempty" mapstructure:"ingress_url" yaml:"ingress_url,omitempty"`
+		Server     *Server   `json:"server,omitempty"     mapstructure:"server"      yaml:"server,omitempty"`
+		DB         *DB       `json:"db,omitempty"         mapstructure:"db"          yaml:"db,omitempty"`
+		Redis      *Redis    `json:"redis,omitempty"      mapstructure:"redis"       yaml:"redis,omitempty"`
+		JWT        *JWT      `json:"jwt,omitempty"        mapstructure:"jwt"         yaml:"jwt,omitempty"`
+		Key        *Key      `json:"key,omitempty"        mapstructure:"key"         yaml:"key,omitempty"`
+		SMTP       *SMTP     `json:"smtp"                 mapstructure:"smtp"        yaml:"smtp"`
+		Logging    *Logging  `json:"logging"              mapstructure:"logging"     yaml:"logging"`
+		Session    *Session  `json:"session"              mapstructure:"session"     yaml:"session"`
+		Security   *Security `json:"security"             mapstructure:"security"    yaml:"security"`
+		I18n       *I18n     `json:"i18n,omitempty"       mapstructure:"i18n"        yaml:"i18n,omitempty"`
+		IngressURL string    `json:"ingressURL,omitempty" mapstructure:"ingress_url" yaml:"ingress_url,omitempty"`
 	}
 
 	Server struct {
@@ -92,6 +95,15 @@ type (
 		MaxAge       int    `json:"maxAge"       mapstructure:"max_age"        yaml:"max_age"`
 		UseLocalTime bool   `json:"useLocalTime" mapstructure:"use_local_time" yaml:"use_local_time"`
 		UseCompress  bool   `json:"useCompress"  mapstructure:"use_compress"   yaml:"use_compress"`
+	}
+
+	Session struct {
+		Timebox           *time.Duration `json:"timebox"                      mapstructure:"timebox"            yaml:"timebox"`
+		InactivityTimeout *time.Duration `json:"inactivity_timeout,omitempty" mapstructure:"inactivity_timeout" yaml:"inactivity_timeout,omitempty"`
+	}
+
+	Security struct {
+		RefreshTokenReuseInterval int `json:"refresh_token_reuse_interval" mapstructure:"refresh_token_reuse_interval" yaml:"refresh_token_reuse_interval"`
 	}
 
 	I18n struct {

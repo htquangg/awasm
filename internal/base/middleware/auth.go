@@ -150,7 +150,11 @@ func (m *AuthMiddleware) requireAuthentication(ctx echo.Context) error {
 		return errors.Unauthorized(reason.InvalidTokenError)
 	}
 
-	session, exists, err := m.sessionRepo.GetSessionByID(ctx.Request().Context(), claims.SessionID)
+	session, exists, err := m.sessionRepo.GetSessionByID(
+		ctx.Request().Context(),
+		claims.SessionID,
+		false,
+	)
 	if err != nil {
 		return err
 	}

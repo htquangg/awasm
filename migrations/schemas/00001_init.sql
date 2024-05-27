@@ -170,6 +170,7 @@ CREATE TABLE IF NOT EXISTS sessions
     ip           TEXT                    NULL,
     user_agent   TEXT                    NULL,
     not_after    TIMESTAMPTZ             NULL,
+    refreshed_at TIMESTAMPTZ             NULL,
     CONSTRAINT fk_sessions_user_id
         FOREIGN KEY (user_id)
             REFERENCES users (id)
@@ -199,6 +200,7 @@ CREATE TABLE IF NOT EXISTS refresh_tokens
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     token      varchar(255)              NOT NULL,
+    parent     varchar(255)              NULL,
     user_id    varchar(36)               NOT NULL,
     session_id varchar(36)               NOT NULL,
     revoked    bool                      NULL,

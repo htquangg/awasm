@@ -44,7 +44,7 @@ func New(cfg *config.Config, repos *repos.Repos, protoCluster *protocluster.Clus
 		protoCluster,
 	)
 	authService := auth.NewAuthService(repos.Auth)
-	sessionService := session.NewSessionService(cfg, repos.Session)
+	sessionService := session.NewSessionService(cfg, repos.Session, repos.UserCommon)
 	userService := user.NewUserService(
 		cfg,
 		repos.User,

@@ -14,6 +14,7 @@ func bindUserApi(g *echo.Group, c *controllers.Controllers, mws *middleware.Midd
 	authGroup := subGroup.Group("/auth")
 
 	authGroup.POST("/check", c.User.CheckAuth, mws.Auth.RequireAuthentication)
+	authGroup.POST("/refresh-token", c.User.RefreshToken)
 
 	emailAuthGroup := authGroup.Group("/email")
 

@@ -11,8 +11,6 @@ import (
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/entities"
 	"github.com/htquangg/a-wasm/internal/services/session"
-	"github.com/htquangg/a-wasm/pkg/crypto"
-	"github.com/htquangg/a-wasm/pkg/uid"
 )
 
 type sessionRepo struct {
@@ -25,56 +23,72 @@ func NewSessionRepo(db db.DB) session.SessionRepo {
 	}
 }
 
-func (s *sessionRepo) CreateRefreshToken(
-	ctx context.Context,
-	userID string,
-	authenticationMethod entities.AuthenticationMethod,
-	params *entities.GrantParams,
-) (*entities.RefreshToken, error) {
-	token, err := crypto.GenerateURLSafeRandomString(entities.TokenLength)
-	if err != nil {
-		return nil, err
-	}
-	refreshToken := &entities.RefreshToken{
-		ID:     uid.ID(),
-		UserID: userID,
-		Token:  token,
-	}
-	defaultAAL := entities.Aal1.String()
-	session := &entities.Session{
-		ID:        uid.ID(),
-		UserID:    userID,
-		AAL:       defaultAAL,
-		IP:        params.IP,
-		UserAgent: params.UserAgent,
-	}
-
-	if _, err = s.db.WithTx(ctx, func(ctxTx context.Context) (interface{}, error) {
-		// 1. Create session
-		if _, terr := s.db.Engine(ctxTx).Insert(session); terr != nil {
-			return nil, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
-		}
-
-		// 2. Update session into refresh token
-		refreshToken.SessionID = session.ID
-		if _, terr := s.db.Engine(ctxTx).Insert(refreshToken); terr != nil {
-			return nil, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
-		}
-
-		// 3. Update AMR Claims
-		if terr := s.addClaimToSession(ctxTx, session.ID, authenticationMethod); terr != nil {
-			return nil, terr
-		}
-
-		return nil, nil
-	}); err != nil {
-		return nil, err
-	}
-
-	return refreshToken, nil
+func (s *sessionRepo) WithTx(
+	parentCtx context.Context,
+	f func(ctx context.Context) (interface{}, error),
+) (interface{}, error) {
+	return s.db.WithTx(parentCtx, f)
 }
 
-func (s *sessionRepo) addClaimToSession(
+func (s *sessionRepo) AddRefreshToken(
+	ctx context.Context,
+	refreshToken *entities.RefreshToken,
+) (err error) {
+	_, err = s.db.Engine(ctx).Insert(refreshToken)
+	if err != nil {
+		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+
+	return nil
+}
+
+func (s *sessionRepo) GetRefreshTokenByToken(
+	ctx context.Context,
+	token string,
+	forUpdate bool,
+) (*entities.RefreshToken, *entities.Session, error) {
+	refreshToken := &entities.RefreshToken{}
+
+	var exists bool
+	var err error
+
+	if forUpdate {
+		exists, err = s.db.Engine(ctx).
+			SQL(fmt.Sprintf("SELECT * FROM %q WHERE token = $1 LIMIT 1 FOR UPDATE SKIP LOCKED", refreshToken.TableName()), token).
+			Get(refreshToken)
+	} else {
+		exists, err = s.db.Engine(ctx).Where("token = $1", token).Get(refreshToken)
+	}
+	if err != nil {
+		return nil, nil, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+	if !exists {
+		return nil, nil, errors.BadRequest(reason.RefreshTokenNotFound)
+	}
+
+	var session *entities.Session
+
+	session, exists, err = s.GetSessionByID(ctx, refreshToken.SessionID, forUpdate)
+	if err != nil {
+		return nil, nil, err
+	}
+	if !exists {
+		return nil, nil, errors.BadRequest(reason.SessionNotFound)
+	}
+
+	return refreshToken, session, nil
+}
+
+func (s *sessionRepo) AddSession(ctx context.Context, session *entities.Session) (err error) {
+	_, err = s.db.Engine(ctx).Insert(session)
+	if err != nil {
+		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+
+	return nil
+}
+
+func (s *sessionRepo) AddClaimToSession(
 	ctx context.Context,
 	sessionID string,
 	authenticationMethod entities.AuthenticationMethod,
@@ -100,11 +114,25 @@ func (s *sessionRepo) addClaimToSession(
 func (r *sessionRepo) GetSessionByID(
 	ctx context.Context,
 	id string,
+	forUpdate bool,
 ) (*entities.Session, bool, error) {
 	session := &entities.Session{}
-	exists, err := r.db.Engine(ctx).ID(id).Get(session)
+
+	var exists bool
+	var err error
+
+	if forUpdate {
+		exists, err = r.db.Engine(ctx).
+			SQL(fmt.Sprintf("SELECT * FROM %q WHERE id = $1 LIMIT 1 FOR UPDATE SKIP LOCKED", session.TableName()), id).
+			Get(session)
+	} else {
+		exists, err = r.db.Engine(ctx).ID(id).Get(session)
+	}
 	if err != nil {
 		return nil, false, errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+	if !exists {
+		return nil, false, errors.BadRequest(reason.SessionNotFound)
 	}
 
 	if session.AMRClaims == nil {
@@ -119,6 +147,32 @@ func (r *sessionRepo) GetSessionByID(
 	}
 
 	return session, exists, nil
+}
+
+func (r *sessionRepo) GetCurrentlyActiveRefreshTokenBySessionID(
+	ctx context.Context,
+	sessionID string,
+) (*entities.RefreshToken, bool, error) {
+	refreshToken := &entities.RefreshToken{}
+
+	exists, err := r.db.Engine(ctx).
+		Where("session_id = $1 AND revoked IS false", sessionID).
+		Get(refreshToken)
+
+	return refreshToken, exists, err
+}
+
+func (r *sessionRepo) UpdateRefreshTokenCols(
+	ctx context.Context,
+	refreshToken *entities.RefreshToken,
+	cols ...string,
+) error {
+	_, err := r.db.Engine(ctx).ID(refreshToken.ID).Cols(cols...).Update(refreshToken)
+	if err != nil {
+		return errors.InternalServer(reason.DatabaseError).WithError(err).WithStack()
+	}
+
+	return nil
 }
 
 func (r *sessionRepo) getAMRClaimsWithSessionID(

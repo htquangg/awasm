@@ -1,18 +1,18 @@
 version: "3.8"
 
 services:
-  awasm:
-    build:
-      context: ./../..
-    ports:
-      - 8080:8080 # API
-      - 2112:2112 # Prometheus metrics
-    environment:
-      - TZ=UTC
-    depends_on:
-      - postgres
-    networks:
-      - awasm-network
+  # awasm:
+  #   build:
+  #     context: ./../..
+  #   ports:
+  #     - 8080:8080 # API
+  #     - 2112:2112 # Prometheus metrics
+  #   environment:
+  #     - TZ=UTC
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - awasm-network
 
   postgres:
     image: postgres:12
@@ -53,7 +53,8 @@ services:
       - awasm-network
 
   smtp:
-    image: lytrax/mailhog:latest # https://github.com/mailhog/MailHog/issues/353#issuecomment-821137362
+    # image: lytrax/mailhog:latest # https://github.com/mailhog/MailHog/issues/353#issuecomment-821137362
+    image: jcalonso/mailhog:v1.0.1
     restart: always
     logging:
       driver: "none" # disable saving logs

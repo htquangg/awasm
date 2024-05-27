@@ -2,12 +2,14 @@ package user
 
 import (
 	"context"
+	"math/rand"
 	"strings"
 	"time"
 
 	"github.com/segmentfault/pacman/errors"
 
 	"github.com/htquangg/a-wasm/config"
+	"github.com/htquangg/a-wasm/internal/base/handler"
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/entities"
@@ -19,8 +21,14 @@ import (
 	"github.com/htquangg/a-wasm/pkg/uid"
 )
 
+const retryLoopDuration = 5 * time.Second
+
 type (
 	UserRepo interface {
+		WithTx(
+			parentCtx context.Context,
+			f func(ctx context.Context) (interface{}, error),
+		) (interface{}, error)
 		AddUser(ctx context.Context, user *entities.User) error
 		GetUserByID(ctx context.Context, id string) (*entities.User, bool, error)
 		GetUserWithEmail(ctx context.Context, email string) (*entities.User, bool, error)
@@ -74,6 +82,170 @@ func NewUserService(
 		sessionService: sessionService,
 		mailerService:  mailerSercice,
 	}
+}
+
+func (s *UserService) RefreshTokenGrant(
+	ctx context.Context,
+	req *schemas.RefreshTokenReq,
+) (*schemas.RefreshTokenResp, error) {
+	retryStart := time.Now()
+	retry := true
+
+	for retry && time.Since(retryStart).Seconds() < retryLoopDuration.Seconds() {
+		retry = false
+
+		user, refreshToken, session, err := s.sessionService.GetUserWithRefreshToken(
+			ctx,
+			req.RefreshToken,
+			false,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if session != nil {
+			result := session.CheckValidity(
+				retryStart,
+				&refreshToken.UpdatedAt,
+				s.cfg.Session.Timebox,
+				s.cfg.Session.InactivityTimeout,
+			)
+
+			switch result {
+			case entities.SessionValid:
+				// do nothing
+
+			case entities.SessionTimedOut:
+				return nil, errors.BadRequest(reason.RefreshTokenExpired)
+
+			default:
+				return nil, errors.BadRequest(reason.SessionExpired)
+			}
+		}
+
+		var accessToken string
+		var expiresAt int64
+		var newAccessTokenResp *schemas.AccessTokenResp
+
+		_, err = s.userRepo.WithTx(ctx, func(ctx context.Context) (interface{}, error) {
+			user, refreshToken, session, terr := s.sessionService.GetUserWithRefreshToken(
+				ctx,
+				req.RefreshToken,
+				true,
+			)
+			if terr != nil {
+				if handler.IsNotfoundError(terr) {
+					// because forUpdate was set, and the
+					// previous check outside the
+					// transaction found a user and
+					// session, but now we're getting a
+					// IsNotFoundError, this means that the
+					// user is locked and we need to retry
+					// in a few milliseconds
+					retry = true
+					return nil, terr
+				}
+
+				return nil, terr
+			}
+
+			var issuedToken *entities.RefreshToken
+
+			if refreshToken.Revoked {
+				activeRefreshToken, err := s.sessionService.GetCurrentlyActiveRefreshTokenBySessionID(
+					ctx,
+					session.ID,
+				)
+				if err != nil {
+					if !handler.IsNotfoundError(err) {
+						return nil, err
+					}
+				}
+
+				if activeRefreshToken != nil && activeRefreshToken.Parent == refreshToken.Token {
+					// Token was revoked, but it's the
+					// parent of the currently active one.
+					// This indicates that the client was
+					// not able to store the result when it
+					// refreshed token. This case is
+					// allowed, provided we return back the
+					// active refresh token instead of
+					// creating a new one.
+					issuedToken = activeRefreshToken
+				} else {
+					// For a revoked refresh token to be reused, it
+					// has to fall within the reuse interval.
+					reuseUntil := refreshToken.UpdatedAt.Add(
+						time.Second * time.Duration(s.cfg.Security.RefreshTokenReuseInterval))
+
+					if time.Now().After(reuseUntil) {
+						return nil, errors.BadRequest(reason.RefreshTokenExpired)
+					}
+				}
+			}
+
+			if issuedToken == nil {
+				newToken, terr := s.sessionService.GrantRefreshTokenSwap(ctx, user, refreshToken)
+				if terr != nil {
+					return nil, terr
+				}
+
+				issuedToken = newToken
+			}
+
+			accessToken, expiresAt, terr = s.sessionService.GenerateAccessToken(
+				ctx,
+				user,
+				issuedToken.SessionID,
+			)
+			if terr != nil {
+				return nil, terr
+			}
+
+			newAccessTokenResp = &schemas.AccessTokenResp{
+				CommonTokenResp: schemas.CommonTokenResp{
+					AccessToken: accessToken,
+					TokenType:   "bearer",
+					ExpiresIn:   s.cfg.JWT.Exp,
+					ExpiresAt:   expiresAt,
+				},
+				RefreshToken: issuedToken.Token,
+			}
+
+			return nil, nil
+		})
+		if err != nil {
+			if retry && handler.IsNotfoundError(err) {
+				time.Sleep(time.Duration(10+rand.Intn(20)) * time.Millisecond)
+				continue
+			}
+
+			return nil, err
+		}
+
+		keyAttribute, exists, err := s.userAuthRepo.GetKeyAttributeWithUserID(ctx, user.ID)
+		if err != nil {
+			return nil, err
+		}
+		if !exists {
+			return nil, errors.BadRequest(reason.KeyAttributeNotFound)
+		}
+
+		newAccessTokenResp.EncryptedToken, err = crypto.GetEncryptedToken(
+			converter.ToB64([]byte(newAccessTokenResp.CommonTokenResp.AccessToken)),
+			keyAttribute.PublicKey,
+		)
+		if err != nil {
+			return nil, err
+		}
+		newAccessTokenResp.CommonTokenResp.AccessToken = ""
+
+		return &schemas.RefreshTokenResp{
+			AccessTokenResp: newAccessTokenResp,
+		}, nil
+	}
+
+	return nil, errors.Conflict(reason.TooManyWrongAttemptsError)
 }
 
 func (s *UserService) GetSRPAttribute(
@@ -250,34 +422,12 @@ func (s *UserService) CompleteEmailAccountSignup(
 		return nil, errors.BadRequest(reason.KeyAttributeNotFound)
 	}
 
-	accessTokenResp, err := s.sessionService.IssueRefreshToken(
-		ctx,
-		user,
-		entities.EmailSignup,
-		&entities.GrantParams{
-			IP:        req.IP,
-			UserAgent: req.UserAgent,
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	accessTokenResp.EncryptedToken, err = crypto.GetEncryptedToken(
-		converter.ToB64([]byte(accessTokenResp.CommonTokenResp.AccessToken)),
-		keyAttribute.PublicKey,
-	)
-	if err != nil {
-		return nil, err
-	}
-	accessTokenResp.CommonTokenResp.AccessToken = ""
-
 	keyAttributeInfo := &schemas.KeyAttributeInfo{}
 	keyAttributeInfo.ConvertFromKeyAttributeEntity(keyAttribute)
 
 	return &schemas.CompleteEmailSignupResp{
-		AccessTokenResp: accessTokenResp,
-		KeyAttribute:    keyAttributeInfo,
-		SRPM2:           *srpM2,
+		KeyAttribute: keyAttributeInfo,
+		SRPM2:        *srpM2,
 	}, nil
 }
 
