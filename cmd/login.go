@@ -213,8 +213,6 @@ func loginCredential(userCredential *schemas.UserCredential) {
 		cli.HandleError(err)
 	}
 
-	fmt.Printf("refreshed token: %s", verifyEmailLoginResp.RefreshToken)
-
 	userCredential.Email = email
 	userCredential.AccessToken = token
 	userCredential.KeyAttribute = verifyEmailLoginResp.KeyAttribute
