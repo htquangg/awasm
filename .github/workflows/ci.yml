@@ -6,28 +6,22 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-22.04
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup go
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
           cache: true
-
       - name: Install dependencies go
         run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.57.2
-
       - name: Run go linter
         run: make lint
-
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: ${{ vars.TERRAFORM_VERSION }}
-
+          terraform_version: ${{ vars.TF_VERSION }}
       - name: Terraform lint
         run: |
           cd terraform/
@@ -39,32 +33,47 @@ jobs:
     name: Test
     runs-on: ubuntu-22.04
     needs: [lint]
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup go
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
           cache: true
-
       - name: Build go
         run: make build
-
       - name: Test go
         run: make test
         env:
           PWD: ${{ github.workspace }}
 
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-22.04
+    needs: [test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set vars
+        run: |
+          if [[ $GITHUB_REF == 'refs/head/main' ]]; then
+            echo "staging" > .workspace
+          fi
+      - name: Push to ECR
+        env:
+          AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws ecr get-login-password --region ${{ vars.AWS_REGION }} | docker login --username AWS --password-stdin ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
+          docker build --compress -t ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.IMAGE_REPO_NAME }}:$GITHUB_SHA .
+          docker push ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.IMAGE_REPO_NAME }}:$GITHUB_SHA
 
   telegram-sync:
     name: Telegram sync
     runs-on: ubuntu-22.04
-    needs: [lint, test]
+    needs: [lint, test, deploy]
     if: always()
-
     steps:
       - name: Telegram notification
         uses: appleboy/telegram-action@master

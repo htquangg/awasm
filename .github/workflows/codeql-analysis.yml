@@ -8,20 +8,16 @@ jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-22.04
-
     strategy:
       fail-fast: false
       matrix:
         language: ['go', 'javascript']
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
-
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
