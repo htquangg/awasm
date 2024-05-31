@@ -10,8 +10,14 @@ repos:
         exclude: \.sql
       - id: check-yaml
         args: ["--allow-multiple-documents"]
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.90.0
+    hooks:
+      - id: terraform_docs
+      - id: terraform_tflint
+      - id: terraform_fmt
   - repo: https://github.com/golangci/golangci-lint
-    rev: v1.57.1
+    rev: v1.59.0
     hooks:
       - id: golangci-lint
         args: ["--config=.golangci.yml"]
@@ -22,4 +28,5 @@ repos:
         name: format
         entry: /usr/bin/env bash -c 'make format'
         language: script
+        files: \.(go)$
         description: "Checks files formatting with golines, openshift-goimports, gofumpt"
