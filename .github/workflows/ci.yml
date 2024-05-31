@@ -3,36 +3,70 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
+  lint:
+    name: Lint
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Go
+      - name: Setup go
         uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
           cache: true
 
-      - name: Build
+      - name: Install dependencies go
+        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.57.2
+
+      - name: Run go linter
+        run: make lint
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ vars.TERRAFORM_VERSION }}
+
+      - name: Terraform lint
+        run: |
+          cd terraform/
+          terraform init -backend=false
+          terraform fmt -check
+          terraform validate
+
+  test:
+    name: Test
+    runs-on: ubuntu-22.04
+    needs: [lint]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+          cache: true
+
+      - name: Build go
         run: make build
 
-      - name: Test
+      - name: Test go
         run: make test
         env:
           PWD: ${{ github.workspace }}
 
-      - name: Install dependencies
-        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.57.2
 
-      - name: Run linter
-        run: make lint
+  telegram-sync:
+    name: Telegram sync
+    runs-on: ubuntu-22.04
+    needs: [lint, test]
+    if: always()
 
+    steps:
       - name: Telegram notification
-        if: always()
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
@@ -43,6 +77,6 @@ jobs:
             `Commit message`: *${{ github.event.commits[0].message }}*
             `Repository`: *${{ github.repository }}*
 
-            *${{github.repository}}* - a *${{ github.event_name }}* to *${{ github.ref }}* triggered by ${{ github.actor }} has status *${{ job.status }}* ${{ job.status == 'success' && '&#9989;' || '&#10060;' }}
+            *${{ github.repository }}* - a *${{ github.event_name }}* to *${{ github.ref }}* triggered by ${{ github.actor }} has status *${{ contains(needs.*.result, 'failure') && 'failure' || 'success' }}* ${{ contains(needs.*.result, 'failure') && '&#10060;' || '&#9989;' }}
 
-            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+            See changes: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
