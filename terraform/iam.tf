@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "tf_backend" {
 }
 
 resource "aws_iam_policy" "tf_backend" {
-  name        = "${var.prefix}-${terraform.workspace}-s3-dynamodb"
+  name        = "${local.prefix}-s3-dynamodb"
   description = "Allow user to use S3 and DynamoDB for TF backend resources"
   policy      = data.aws_iam_policy_document.tf_backend.json
 }
@@ -70,7 +70,7 @@ data "aws_iam_policy_document" "ecr" {
 }
 
 resource "aws_iam_policy" "ecr" {
-  name        = "${var.prefix}-${terraform.workspace}-ecr"
+  name        = "${local.prefix}-ecr"
   description = "Allow user to manage ECR resources"
   policy      = data.aws_iam_policy_document.ecr.json
 }
@@ -126,7 +126,7 @@ data "aws_iam_policy_document" "ec2" {
 }
 
 resource "aws_iam_policy" "ec2" {
-  name        = "${var.prefix}-${terraform.workspace}-ec2"
+  name        = "${local.prefix}-ec2"
   description = "Allow user to manage EC2 resources."
   policy      = data.aws_iam_policy_document.ec2.json
 }

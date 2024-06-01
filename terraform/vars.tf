@@ -5,7 +5,12 @@ variable "region" {
 
 variable "prefix" {
   type    = string
-  default = "dev-awasm"
+  default = "awasm"
+}
+
+variable "project" {
+  type    = string
+  default = "awasm"
 }
 
 variable "tf_state_bucket" {
@@ -20,10 +25,10 @@ variable "tf_state_lock_table" {
 
 variable "iam_user" {
   type    = string
-  default = "dev-awasm-cd-001"
+  default = "awasm-cd-001"
 }
 
 variable "ecr_name" {
   type    = string
-  default = "dev-awasm"
+  default = "stg-awasm"
 }

@@ -4,11 +4,13 @@ provider "aws" {
   default_tags {
     tags = {
       Environment = terraform.workspace
-      Project     = "awasm"
+      Project     = var.project
     }
   }
 }
 
 locals {
-  prefix = "${var.prefix}-${terraform.workspace}"
+  prefix = "${terraform.workspace}-${var.prefix}"
 }
+
+data "aws_region" "current" {}
