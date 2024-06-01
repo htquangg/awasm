@@ -1,0 +1,33 @@
+name: Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Which environment to remove AWS resources for?
+        options:
+          - default
+          - stg
+          - prod
+
+jobs:
+  destroy:
+    name: Destroy
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ vars.TF_VERSION }}
+      - name: Terraform destroy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          export TF_WORKSPACE=${{ github.event.inputs.environment }}
+          cd terraform/
+          terraform init
+          terraform destroy -auto-approve
