@@ -167,3 +167,72 @@ resource "aws_iam_user_policy_attachment" "rds" {
   user       = aws_iam_user.cd.name
   policy_arn = aws_iam_policy.rds.arn
 }
+
+#########################
+# Policy for IAM access #
+#########################
+
+data "aws_iam_policy_document" "iam" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "iam:ListInstanceProfilesForRole",
+      "iam:ListAttachedRolePolicies",
+      "iam:DeleteRole",
+      "iam:ListPolicyVersions",
+      "iam:DeletePolicy",
+      "iam:DetachRolePolicy",
+      "iam:ListRolePolicies",
+      "iam:GetRole",
+      "iam:GetPolicyVersion",
+      "iam:GetPolicy",
+      "iam:CreateRole",
+      "iam:CreatePolicy",
+      "iam:AttachRolePolicy",
+      "iam:TagRole",
+      "iam:TagPolicy",
+      "iam:PassRole"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "iam" {
+  name        = "${local.prefix}-iam"
+  description = "Allow user to manage IAM resources."
+  policy      = data.aws_iam_policy_document.iam.json
+}
+
+resource "aws_iam_user_policy_attachment" "iam" {
+  user       = aws_iam_user.cd.name
+  policy_arn = aws_iam_policy.iam.arn
+}
+
+################################
+# Policy for CloudWatch access #
+################################
+
+data "aws_iam_policy_document" "logs" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:DeleteLogGroup",
+      "logs:DescribeLogGroups",
+      "logs:CreateLogGroup",
+      "logs:TagResource",
+      "logs:ListTagsLogGroup"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "logs" {
+  name        = "${local.prefix}-logs"
+  description = "Allow user to manage CloudWatch resources."
+  policy      = data.aws_iam_policy_document.logs.json
+}
+
+resource "aws_iam_user_policy_attachment" "logs" {
+  user       = aws_iam_user.cd.name
+  policy_arn = aws_iam_policy.logs.arn
+}
