@@ -32,3 +32,15 @@ variable "ecr_name" {
   type    = string
   default = "stg-awasm"
 }
+
+variable "db_username" {
+  description = "Username for the recipe app api database"
+  type        = string
+  default     = "awasm"
+}
+
+variable "db_password" {
+  description = "Password for the Terraform database"
+  type        = string
+  sensitive   = true
+}
