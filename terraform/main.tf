@@ -8,3 +8,7 @@ provider "aws" {
     }
   }
 }
+
+locals {
+  prefix = "${var.prefix}-${terraform.workspace}"
+}
