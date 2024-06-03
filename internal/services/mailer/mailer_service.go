@@ -2,14 +2,10 @@ package mailer
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
-	"mime"
-	"os"
 	"time"
 
 	"github.com/segmentfault/pacman/errors"
-	"gopkg.in/gomail.v2"
 
 	"github.com/htquangg/a-wasm/config"
 	"github.com/htquangg/a-wasm/internal/base/handler"
@@ -17,7 +13,6 @@ import (
 	"github.com/htquangg/a-wasm/internal/base/translator"
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/internal/schemas"
-	"github.com/htquangg/a-wasm/pkg/logger"
 )
 
 type (
@@ -29,13 +24,21 @@ type (
 
 	MailerService struct {
 		cfg        *config.Config
+		provider   mailerProvider
 		mailerRepo MailerRepo
+	}
+
+	mailerProvider interface {
+		Send(ctx context.Context, toEmailAddr, subject, body string) error
 	}
 )
 
 func NewMailerService(cfg *config.Config, mailerRepo MailerRepo) *MailerService {
+	provider := providerFor(cfg.Mailer)
+
 	return &MailerService{
 		cfg:        cfg,
+		provider:   provider,
 		mailerRepo: mailerRepo,
 	}
 }
@@ -87,29 +90,7 @@ func (s *MailerService) SendAndSaveCodeWithTime(
 }
 
 func (s *MailerService) Send(ctx context.Context, toEmailAddr, subject, body string) error {
-	logger.Infof("try to send email to %s", toEmailAddr)
-
-	msg := gomail.NewMessage()
-	fromName := mime.QEncoding.Encode("utf-8", s.cfg.SMTP.FromName)
-	msg.SetHeader("From", fmt.Sprintf("%s <%s>", fromName, s.cfg.SMTP.FromEmail))
-	msg.SetHeader("To", toEmailAddr)
-	msg.SetHeader("Subject", subject)
-	msg.SetBody("text/html", body)
-
-	d := gomail.NewDialer(s.cfg.SMTP.Host, s.cfg.SMTP.Port, s.cfg.SMTP.User, s.cfg.SMTP.Password)
-	if s.cfg.SMTP.RequireTLS {
-		d.SSL = true
-	}
-	if len(os.Getenv("SKIP_SMTP_TLS_VERIFY")) > 0 {
-		d.TLSConfig = &tls.Config{ServerName: d.Host, InsecureSkipVerify: true}
-	}
-
-	err := d.DialAndSend(msg)
-	if err != nil {
-		return errors.InternalServer(reason.MailServerError).WithError(err).WithStack()
-	}
-
-	return nil
+	return s.provider.Send(ctx, toEmailAddr, subject, body)
 }
 
 func (s *MailerService) EmailVerificationTemplate(
@@ -157,4 +138,15 @@ func (s *MailerService) VerifyCode(
 	}
 
 	return false, nil
+}
+
+func providerFor(cfg *config.Mailer) mailerProvider {
+	switch typ := cfg.ProviderType; typ {
+	case config.ProviderTypeSMTP:
+		return newSMTP(cfg)
+	case config.ProviderTypeNoop:
+		fallthrough
+	default:
+		return newNoop()
+	}
 }

@@ -15,6 +15,13 @@ import (
 
 var AwasmUrl string
 
+type MailerProviderType string
+
+const (
+	ProviderTypeNoop MailerProviderType = "NOOP"
+	ProviderTypeSMTP MailerProviderType = "SIMPLE_SMTP"
+)
+
 type (
 	Config struct {
 		HTTP       *HTTP     `json:"http,omitempty"       mapstructure:"http"        yaml:"http,omitempty"`
@@ -22,7 +29,7 @@ type (
 		Redis      *Redis    `json:"redis,omitempty"      mapstructure:"redis"       yaml:"redis,omitempty"`
 		JWT        *JWT      `json:"jwt,omitempty"        mapstructure:"jwt"         yaml:"jwt,omitempty"`
 		Key        *Key      `json:"key,omitempty"        mapstructure:"key"         yaml:"key,omitempty"`
-		SMTP       *SMTP     `json:"smtp"                 mapstructure:"smtp"        yaml:"smtp"`
+		Mailer     *Mailer   `json:"mailer"               mapstructure:"mailer"      yaml:"mailer"`
 		Logging    *Logging  `json:"logging"              mapstructure:"logging"     yaml:"logging"`
 		Session    *Session  `json:"session"              mapstructure:"session"     yaml:"session"`
 		Security   *Security `json:"security"             mapstructure:"security"    yaml:"security"`
@@ -70,7 +77,7 @@ type (
 		Hash                     string `json:"hash,omitempty"                mapstructure:"hash"                         yaml:"hash,omitempty"`
 		ApiKeySignatureHMAC      string `json:"apiKeySignatureHmac,omitempty" mapstructure:"api_key_signature_hmac"       yaml:"api_key_signature_hmac,omitempty"`
 		ApiKeyDatabaseHMAC       string `json:"apiKeyDatabaseHmac,omitempty"  mapstructure:"api_key_database_hmac"        yaml:"api_key_database_hmac,omitempty"`
-		CacheKeyHMAC             string `json:"cache_key_hmac,omitempty"      mapstructure:"cache_key_hmac"               yaml:"cache_key_hmac,omitempty"`
+		CacheKeyHMAC             string `json:"cacheKeyHmac,omitempty"        mapstructure:"cache_key_hmac"               yaml:"cache_key_hmac,omitempty"`
 		EncryptionBytes          []byte `json:"-"                             mapstructure:"encryption_bytes"             yaml:"-"`
 		HashBytes                []byte `json:"-"                             mapstructure:"hash_bytes"                   yaml:"-"`
 		ApiKeySignatureHMACBytes []byte `json:"-"                             mapstructure:"api_key_signature_hmac_bytes" yaml:"-"`
@@ -78,14 +85,15 @@ type (
 		CacheKeyHMACBytes        []byte `json:""                              mapstructure:"cache_key_hmac_bytes"         yaml:""`
 	}
 
-	SMTP struct {
-		FromEmail  string `json:"from_email,omitempty" mapstructure:"from_email"  yaml:"from_email,omitempty"`
-		FromName   string `json:"from_name"            mapstructure:"from_name"   yaml:"from_name"`
-		User       string `json:"user"                 mapstructure:"user"        yaml:"user"`
-		Password   string `json:"password"             mapstructure:"password"    yaml:"password"`
-		Host       string `json:"host,omitempty"       mapstructure:"host"        yaml:"host,omitempty"`
-		Port       int    `json:"port,omitempty"       mapstructure:"port"        yaml:"port,omitempty"`
-		RequireTLS bool   `json:"requireTLS"           mapstructure:"require_tls" yaml:"require_tls"`
+	Mailer struct {
+		ProviderType MailerProviderType `json:"providerType,omitempty" mapstructure:"provider_type" yaml:"provider_type,omitempty"`
+		FromEmail    string             `json:"fromEmail,omitempty"    mapstructure:"from_email"    yaml:"from_email,omitempty"`
+		FromName     string             `json:"fromName"               mapstructure:"from_name"     yaml:"from_name"`
+		User         string             `json:"user"                   mapstructure:"user"          yaml:"user"`
+		Password     string             `json:"password"               mapstructure:"password"      yaml:"password"`
+		Host         string             `json:"host,omitempty"         mapstructure:"host"          yaml:"host,omitempty"`
+		Port         int                `json:"port,omitempty"         mapstructure:"port"          yaml:"port,omitempty"`
+		RequireTLS   bool               `json:"requireTLS"             mapstructure:"require_tls"   yaml:"require_tls"`
 	}
 
 	Logging struct {
@@ -99,16 +107,16 @@ type (
 	}
 
 	Session struct {
-		Timebox           *time.Duration `json:"timebox"                      mapstructure:"timebox"            yaml:"timebox"`
-		InactivityTimeout *time.Duration `json:"inactivity_timeout,omitempty" mapstructure:"inactivity_timeout" yaml:"inactivity_timeout,omitempty"`
+		Timebox           *time.Duration `json:"timebox"                     mapstructure:"timebox"            yaml:"timebox"`
+		InactivityTimeout *time.Duration `json:"inactivityTimeout,omitempty" mapstructure:"inactivity_timeout" yaml:"inactivity_timeout,omitempty"`
 	}
 
 	Security struct {
-		RefreshTokenReuseInterval int `json:"refresh_token_reuse_interval" mapstructure:"refresh_token_reuse_interval" yaml:"refresh_token_reuse_interval"`
+		RefreshTokenReuseInterval int `json:"refreshTokenReuseInterval" mapstructure:"refresh_token_reuse_interval" yaml:"refresh_token_reuse_interval"`
 	}
 
 	I18n struct {
-		BundleDir string `json:"bundle_dir,omitempty" mapstructure:"bundle_dir" yaml:"bundle_dir,omitempty"`
+		BundleDir string `json:"bundleDir,omitempty" mapstructure:"bundle_dir" yaml:"bundle_dir,omitempty"`
 	}
 )
 
@@ -228,10 +236,11 @@ func loadDefaultConfig() {
 	viper.SetDefault("redis.pool_size", 50)
 	viper.SetDefault("redis.require_tls", false)
 
-	viper.SetDefault("smtp.from_name", "Local Awasm")
-	viper.SetDefault("smtp.user", "")
-	viper.SetDefault("smtp.password", "")
-	viper.SetDefault("smtp.require_tls", false)
+	viper.SetDefault("mailer.provider_type", ProviderTypeNoop)
+	viper.SetDefault("mailer.from_name", "Local Awasm")
+	viper.SetDefault("mailer.user", "")
+	viper.SetDefault("mailer.password", "")
+	viper.SetDefault("mailer.require_tls", false)
 
 	viper.SetDefault("logging.filename", "logs/awasm.log")
 	viper.SetDefault("logging.level", "info")

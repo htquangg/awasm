@@ -36,7 +36,8 @@ key:
   api_key_database_hmac: 1cVQ7W1VtEl0guRH7fn710l52hJ-wGxGtKQZBQaNs0Md_tW5YBxWZh4iOxgOFMSu5f9aX12X_QZtoZqoGfL2YA==
   cache_key_hmac: zSJlncUERaTItwqwyWlvD3N662EVvEWBVP36uSerGILD7FGxUSFx6hH5x41kjPhbuHqc8T6eeGiAzmPm30qnMg==
 
-smtp:
+mailer:
+  provider_type: NOOP
   from_email: support@awasm.com
   from_name: Local Awasm
   host: 127.0.0.1
