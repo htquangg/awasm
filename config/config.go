@@ -11,6 +11,7 @@ import (
 
 	"github.com/htquangg/a-wasm/internal/constants"
 	"github.com/htquangg/a-wasm/pkg/converter"
+	"github.com/htquangg/a-wasm/pkg/logger"
 )
 
 var AwasmUrl string
@@ -43,18 +44,18 @@ type (
 	}
 
 	DB struct {
-		Host            string `json:"host,omitempty"     mapstructure:"host"              yaml:"host,omitempty"`
-		User            string `json:"user,omitempty"     mapstructure:"user"              yaml:"user,omitempty"`
-		Password        string `json:"password,omitempty" mapstructure:"password"          yaml:"password,omitempty"`
-		Schema          string `json:"schema,omitempty"   mapstructure:"schema"            yaml:"schema,omitempty"`
-		Charset         string `json:"charset"            mapstructure:"charset"           yaml:"charset"`
-		SslMode         string `json:"sslMode"            mapstructure:"ssl_mode"          yaml:"ssl_mode"`
-		MigrationDir    string `json:"migrationDir"       mapstructure:"migration_dir"     yaml:"migration_dir"`
-		MaxIdleConns    int    `json:"maxIdleConns"       mapstructure:"max_idle_conns"    yaml:"max_idle_conns"`
-		MaxOpenConns    int    `json:"maxOpenConns"       mapstructure:"max_open_conns"    yaml:"max_open_conns"`
-		ConnMaxLifetime int    `json:"connMaxLifetime"    mapstructure:"conn_max_lifetime" yaml:"conn_max_lifetime"`
-		Port            int    `json:"port,omitempty"     mapstructure:"port"              yaml:"port,omitempty"`
-		LogSQL          bool   `json:"logSql"             mapstructure:"log_sql"           yaml:"log_sql"`
+		Host             string `json:"host,omitempty"     mapstructure:"host"               yaml:"host,omitempty"`
+		User             string `json:"user,omitempty"     mapstructure:"user"               yaml:"user,omitempty"`
+		Password         string `json:"password,omitempty" mapstructure:"password"           yaml:"password,omitempty"`
+		Schema           string `json:"schema,omitempty"   mapstructure:"schema"             yaml:"schema,omitempty"`
+		Charset          string `json:"charset"            mapstructure:"charset"            yaml:"charset"`
+		SslMode          string `json:"sslMode"            mapstructure:"ssl_mode"           yaml:"ssl_mode"`
+		MigrationDirPath string `json:"migrationDirPath"   mapstructure:"migration_dir_path" yaml:"migration_dir_path"`
+		MaxIdleConns     int    `json:"maxIdleConns"       mapstructure:"max_idle_conns"     yaml:"max_idle_conns"`
+		MaxOpenConns     int    `json:"maxOpenConns"       mapstructure:"max_open_conns"     yaml:"max_open_conns"`
+		ConnMaxLifetime  int    `json:"connMaxLifetime"    mapstructure:"conn_max_lifetime"  yaml:"conn_max_lifetime"`
+		Port             int    `json:"port,omitempty"     mapstructure:"port"               yaml:"port,omitempty"`
+		LogSQL           bool   `json:"logSql"             mapstructure:"log_sql"            yaml:"log_sql"`
 	}
 
 	Redis struct {
@@ -126,7 +127,12 @@ func LoadConfig() (*Config, error) {
 	// Load the configuration from the file
 	var configPath string
 
-	if viper.GetString("server.config-path") != "" {
+	// TOIMPROVE:
+	// Will remove configuration from env, if i can find the way to inject configuration to the unit test.
+	configPathFromEnv := os.Getenv(constants.ConfigPathEnv)
+	if configPathFromEnv != "" {
+		configPath = configPathFromEnv
+	} else if viper.GetString("server.config-path") != "" {
 		configPath = viper.GetString("server.config-path")
 	} else {
 		rootPath, err := getConfigRootPath()
@@ -136,7 +142,7 @@ func LoadConfig() (*Config, error) {
 		configPath = fmt.Sprintf("%s/awasm.yaml", rootPath)
 	}
 
-	fmt.Printf("Load config from %s\n", configPath)
+	logger.Infof("Load config from %s\n", configPath)
 
 	viper.SetConfigType(constants.Yaml)
 	viper.SetConfigFile(configPath)
@@ -145,7 +151,7 @@ func LoadConfig() (*Config, error) {
 	}
 
 	// setup viper to be able to read env variables with a configured prefix
-	viper.SetEnvPrefix("awasm")
+	viper.SetEnvPrefix(constants.PrefixEnv)
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()
 
@@ -190,12 +196,12 @@ func LoadConfig() (*Config, error) {
 	}
 	cfg.JWT.SecretBytes = jwtSecretBytes
 
-	if cfg.DB.MigrationDir == "" {
+	if cfg.DB.MigrationDirPath == "" {
 		migrationDirPathFromEnv := os.Getenv(constants.MigrationDirPath)
 		if migrationDirPathFromEnv != "" {
-			cfg.DB.MigrationDir = migrationDirPathFromEnv
+			cfg.DB.MigrationDirPath = migrationDirPathFromEnv
 		} else {
-			cfg.DB.MigrationDir, err = getMigrationDirPath()
+			cfg.DB.MigrationDirPath, err = getMigrationDirPath()
 			if err != nil {
 				return nil, err
 			}

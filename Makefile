@@ -60,7 +60,7 @@ air-run: ## live reloading the application and serve
 .PHONY: test
 test: ## run the go tests
 	@echo "Running tests"
-	@MIGRATION_DIR_PATH=$(PWD)/migrations/schemas CONFIG_PATH=$(PWD)/config/awasm.yaml go test ./... -v --cover
+	@AWASM_DB_MIGRATION_DIR_PATH=$(PWD)/migrations/schemas AWASM_CONFIG_PATH=$(PWD)/config/awasm.yaml go test ./... -v --cover
 
 test-report: ## run the go tests and report
 	@echo "Running tests"

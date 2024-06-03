@@ -3,11 +3,11 @@ package constants
 import "time"
 
 const (
-	AppEnv           = "APP_ENV"
-	ConfigPath       = "CONFIG_PATH"
-	MigrationDirPath = "MIGRATION_DIR_PATH"
-	LogLevel         = "LOG_LEVEL"
-	LogPath          = "LOG_PATH"
+	PrefixEnv        = "AWASM"
+	ConfigPathEnv    = PrefixEnv + "_" + "CONFIG_PATH"
+	MigrationDirPath = PrefixEnv + "_" + "DB_MIGRATION_DIR_PATH"
+	LogLevelEnv      = PrefixEnv + "_" + "LOG_LEVEL"
+	LogPathEnv       = PrefixEnv + "_" + "LOG_PATH"
 
 	Yaml = "yaml"
 

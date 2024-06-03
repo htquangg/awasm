@@ -99,8 +99,8 @@ func Execute() {
 }
 
 func initLog() {
-	logPath := os.Getenv(constants.LogPath)
-	logLevel := os.Getenv(constants.LogLevel)
+	logPath := os.Getenv(constants.LogPathEnv)
+	logLevel := os.Getenv(constants.LogLevelEnv)
 
 	logger.SetLogger(logger.NewZapLogger(
 		logger.WithZapFilename(logPath),

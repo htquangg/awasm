@@ -16,7 +16,7 @@ type XORMLogBridge struct {
 }
 
 func NewXORMLogger(showSQL bool) xormlog.Logger {
-	logLevel := os.Getenv(constants.LogLevel)
+	logLevel := os.Getenv(constants.LogLevelEnv)
 	l := &XORMLogBridge{
 		logLevel: logLevel,
 	}
