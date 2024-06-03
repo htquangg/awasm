@@ -17,7 +17,7 @@ import (
 
 const (
 	// ApiKeyHeader is the authorization header required for APIKey protected requests.
-	ApiKeyHeader = "X-AWASM-API-Key"
+	ApiKeyHeader = "X-AWASM-API-KEY"
 )
 
 type ApiKeyMiddleware struct {

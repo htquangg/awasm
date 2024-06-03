@@ -1,6 +1,6 @@
 ingress_url: http://0.0.0.0:8080
 
-server:
+http:
   addr: 0.0.0.0:8080
   show_start_banner: true
 

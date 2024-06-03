@@ -24,14 +24,14 @@ import (
 
 type Server struct {
 	ctx context.Context
-	cfg *config.Server
+	cfg *config.HTTP
 	e   *echo.Echo
 	srv *http.Server
 }
 
 func New(
 	ctx context.Context,
-	cfg *config.Server,
+	cfg *config.HTTP,
 	controllers *controllers.Controllers,
 	mws *middleware.Middleware,
 ) *Server {

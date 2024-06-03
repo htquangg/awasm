@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/spf13/viper"
@@ -16,7 +17,7 @@ var AwasmUrl string
 
 type (
 	Config struct {
-		Server     *Server   `json:"server,omitempty"     mapstructure:"server"      yaml:"server,omitempty"`
+		HTTP       *HTTP     `json:"http,omitempty"       mapstructure:"http"        yaml:"http,omitempty"`
 		DB         *DB       `json:"db,omitempty"         mapstructure:"db"          yaml:"db,omitempty"`
 		Redis      *Redis    `json:"redis,omitempty"      mapstructure:"redis"       yaml:"redis,omitempty"`
 		JWT        *JWT      `json:"jwt,omitempty"        mapstructure:"jwt"         yaml:"jwt,omitempty"`
@@ -29,7 +30,7 @@ type (
 		IngressURL string    `json:"ingressURL,omitempty" mapstructure:"ingress_url" yaml:"ingress_url,omitempty"`
 	}
 
-	Server struct {
+	HTTP struct {
 		Addr            string `json:"addr"            mapstructure:"addr"              yaml:"addr"`
 		ShowStartBanner bool   `json:"showStartBanner" mapstructure:"show_start_banner" yaml:"show_start_banner"`
 	}
@@ -114,12 +115,10 @@ type (
 func LoadConfig() (*Config, error) {
 	loadDefaultConfig()
 
+	// Load the configuration from the file
 	var configPath string
 
-	configPathFromEnv := os.Getenv(constants.ConfigPath)
-	if configPathFromEnv != "" {
-		configPath = configPathFromEnv
-	} else if viper.GetString("server.config-path") != "" {
+	if viper.GetString("server.config-path") != "" {
 		configPath = viper.GetString("server.config-path")
 	} else {
 		rootPath, err := getConfigRootPath()
@@ -136,6 +135,11 @@ func LoadConfig() (*Config, error) {
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, err
 	}
+
+	// setup viper to be able to read env variables with a configured prefix
+	viper.SetEnvPrefix("awasm")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+	viper.AutomaticEnv()
 
 	cfg := &Config{}
 	if err := viper.Unmarshal(cfg); err != nil {

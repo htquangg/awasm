@@ -39,7 +39,6 @@ RUN apk update \
 
 ARG TZ
 ENV TZ=${TZ:-"UTC"}
-ENV CONFIG_PATH /awasm/awasm.yaml
 
 COPY --from=builder /usr/bin/awasm /usr/bin/awasm
 COPY --from=builder /awasm/i18n ./i18n
@@ -49,4 +48,4 @@ RUN chmod 755 /usr/bin/awasm
 
 EXPOSE 8080
 
-CMD ["awasm", "run"]
+CMD ["awasm", "run", "--config-path", "/awasm/awasm.yaml"]

@@ -119,7 +119,7 @@ func initApp(ctx context.Context, cfg *config.Config) (*pacman.Application, erro
 			},
 		),
 		pacman.WithServer(
-			web.New(ctx, cfg.Server, controllers, mws),
+			web.New(ctx, cfg.HTTP, controllers, mws),
 			cluster,
 		),
 	), nil
