@@ -33,8 +33,13 @@ variable "ecr_name" {
   default = "stg-awasm"
 }
 
+variable "ecr_app_image" {
+  type        = string
+  description = "Path to the ECR repo with the API image"
+}
+
 variable "db_username" {
-  description = "Username for the recipe app api database"
+  description = "Username for the app api database"
   type        = string
   default     = "awasm"
 }
@@ -43,4 +48,9 @@ variable "db_password" {
   description = "Password for the Terraform database"
   type        = string
   sensitive   = true
+}
+
+variable "db_schema" {
+  type    = string
+  default = "stg_local_awasm_001"
 }

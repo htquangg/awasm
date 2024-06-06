@@ -12,7 +12,7 @@ resource "aws_db_subnet_group" "main" {
 
 resource "aws_db_instance" "main" {
   identifier                 = "${local.prefix}-db"
-  db_name                    = "awasm"
+  db_name                    = var.db_schema
   allocated_storage          = 20
   storage_type               = "gp2"
   engine                     = "postgres"
