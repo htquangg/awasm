@@ -1,18 +1,18 @@
 version: "3.8"
 
 services:
-  # awasm:
-  #   build:
-  #     context: ./../..
-  #   ports:
-  #     - 8080:8080 # API
-  #     - 2112:2112 # Prometheus metrics
-  #   environment:
-  #     - TZ=UTC
-  #   depends_on:
-  #     - postgres
-  #   networks:
-  #     - awasm-network
+  awasm:
+    build:
+      context: ./../..
+    ports:
+      - 8080:8080 # API
+      - 2112:2112 # Prometheus metrics
+    environment:
+      - TZ=UTC
+    depends_on:
+      - postgres
+    networks:
+      - awasm-network
 
   postgres:
     image: postgres:14.12
@@ -42,7 +42,7 @@ services:
       - awasm-network
 
   redis:
-    image: redis:6.2.5
+    image: redis:7-alpine
     ports:
       - 6379:6379
     environment:
