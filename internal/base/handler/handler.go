@@ -6,7 +6,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/segmentfault/pacman/errors"
-	myErrors "github.com/segmentfault/pacman/errors"
 
 	"github.com/htquangg/a-wasm/internal/base/reason"
 	"github.com/htquangg/a-wasm/internal/base/validator"
@@ -65,7 +64,7 @@ func BindAndValidate(ctx echo.Context, data interface{}) (err error, errField an
 	ctx.Set(constants.AcceptLanguageFlag, lang)
 	if err := ctx.Bind(data); err != nil {
 		logger.Errorf("http_handle BindAndCheck fail, %s", err.Error())
-		return myErrors.New(http.StatusBadRequest, reason.RequestFormatError), nil
+		return errors.New(http.StatusBadRequest, reason.RequestFormatError), nil
 	}
 
 	errField, err = validator.GetValidatorByLang(lang).Check(data)
@@ -73,6 +72,6 @@ func BindAndValidate(ctx echo.Context, data interface{}) (err error, errField an
 	return err, errField
 }
 
-func isInternalServer(err *myErrors.Error) bool {
+func isInternalServer(err *errors.Error) bool {
 	return err.Code >= http.StatusInternalServerError
 }

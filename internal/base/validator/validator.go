@@ -2,7 +2,7 @@
 package validator
 
 import (
-	"errors"
+	std_errors "errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -14,7 +14,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/translations/en"
 	"github.com/microcosm-cc/bluemonday"
-	myErrors "github.com/segmentfault/pacman/errors"
+	"github.com/segmentfault/pacman/errors"
 	"github.com/segmentfault/pacman/i18n"
 
 	"github.com/htquangg/a-wasm/internal/base/reason"
@@ -160,9 +160,9 @@ func (m *MyValidator) Check(value interface{}) (errFields []*FormErrorField, err
 	err = m.Validate.Struct(value)
 	if err != nil {
 		var valErrors validator.ValidationErrors
-		if !errors.As(err, &valErrors) {
+		if !std_errors.As(err, &valErrors) {
 			logger.Error(err)
-			return nil, errors.New("validate check exception")
+			return nil, std_errors.New("validate check exception")
 		}
 
 		for _, fieldError := range valErrors {
@@ -187,7 +187,7 @@ func (m *MyValidator) Check(value interface{}) (errFields []*FormErrorField, err
 			if len(errFields) == 1 {
 				errMsg = errFields[0].ErrorMsg
 			}
-			return errFields, myErrors.BadRequest(reason.RequestFormatError).WithMsg(errMsg)
+			return errFields, errors.BadRequest(reason.RequestFormatError).WithMsg(errMsg)
 		}
 	}
 
@@ -201,7 +201,7 @@ func (m *MyValidator) Check(value interface{}) (errFields []*FormErrorField, err
 			errField.ErrorMsg = translator.Tr(m.Lang, errField.ErrorMsg)
 			errMsg = errField.ErrorMsg
 		}
-		return errFields, myErrors.BadRequest(reason.RequestFormatError).WithMsg(errMsg)
+		return errFields, errors.BadRequest(reason.RequestFormatError).WithMsg(errMsg)
 	}
 	return nil, nil
 }
