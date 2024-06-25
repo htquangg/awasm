@@ -12,9 +12,9 @@ import (
 )
 
 var apiKeysCmd = &cobra.Command{
-	Example:               "awasm keys",
-	Use:                   "keys",
-	Short:                 "Used to manage api-keys",
+	Example:               "awasm apikeys",
+	Use:                   "apikeys",
+	Short:                 "Used to manage api keys",
 	DisableFlagsInUseLine: true,
 	Args:                  cobra.NoArgs,
 	PreRun: func(cmd *cobra.Command, args []string) {
