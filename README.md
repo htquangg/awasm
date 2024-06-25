@@ -19,10 +19,10 @@ Usage:
   awasm [command]
 
 Available Commands:
+  apikeys     Used to manage api keys
   deployments Used to manage deployments
   endpoints   Used to manage endpoints
   help        Help about any command
-  keys        Used to manage api-keys
   login       Login into your Awasm account
   reset       Used to delete all Awasm related data on your machine
   run         Run the application
