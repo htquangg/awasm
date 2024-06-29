@@ -27,7 +27,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.26
 	github.com/pressly/goose/v3 v3.19.2
 	github.com/prometheus/client_golang v1.19.0
-	github.com/redis/go-redis/v9 v9.5.1
+	github.com/redis/go-redis/v9 v9.5.3
 	github.com/segmentfault/pacman v1.0.5-0.20230822083413-c0075a2d401f
 	github.com/segmentfault/pacman/contrib/i18n v0.0.0-20230822083413-c0075a2d401f
 	github.com/spf13/cobra v1.8.0
