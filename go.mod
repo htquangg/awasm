@@ -16,7 +16,7 @@ require (
 	github.com/go-resty/resty/v2 v2.12.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
-	github.com/jackc/pgx/v5 v5.5.5
+	github.com/jackc/pgx/v5 v5.6.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/kong/go-srp v0.0.0-20191210190804-cde1efa3c083
 	github.com/labstack/echo-contrib v0.17.0
