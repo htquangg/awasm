@@ -20,7 +20,7 @@ require (
 	github.com/jinzhu/copier v0.4.0
 	github.com/kong/go-srp v0.0.0-20191210190804-cde1efa3c083
 	github.com/labstack/echo-contrib v0.17.0
-	github.com/labstack/echo/v4 v4.11.4
+	github.com/labstack/echo/v4 v4.12.0
 	github.com/lib/pq v1.10.9
 	github.com/lstoll/awskms v1.0.0
 	github.com/manifoldco/promptui v0.9.0
