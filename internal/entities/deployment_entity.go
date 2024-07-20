@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"time"
 
-	"github.com/htquangg/a-wasm/pkg/uid"
+	"github.com/htquangg/awasm/pkg/uid"
 )
 
 type Deployment struct {

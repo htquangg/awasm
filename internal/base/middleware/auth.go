@@ -7,11 +7,11 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/segmentfault/pacman/errors"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/base/reason"
-	"github.com/htquangg/a-wasm/internal/entities"
-	"github.com/htquangg/a-wasm/internal/services/session"
-	"github.com/htquangg/a-wasm/internal/services/user"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/internal/base/reason"
+	"github.com/htquangg/awasm/internal/entities"
+	"github.com/htquangg/awasm/internal/services/session"
+	"github.com/htquangg/awasm/internal/services/user"
 )
 
 var bearerRegexp = regexp.MustCompile(`^(?:B|b)earer (\S+$)`)

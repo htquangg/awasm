@@ -8,17 +8,17 @@ import (
 
 	"github.com/segmentfault/pacman/errors"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/base/handler"
-	"github.com/htquangg/a-wasm/internal/base/reason"
-	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/internal/entities"
-	"github.com/htquangg/a-wasm/internal/schemas"
-	"github.com/htquangg/a-wasm/internal/services/mailer"
-	"github.com/htquangg/a-wasm/internal/services/session"
-	"github.com/htquangg/a-wasm/pkg/converter"
-	"github.com/htquangg/a-wasm/pkg/crypto"
-	"github.com/htquangg/a-wasm/pkg/uid"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/internal/base/handler"
+	"github.com/htquangg/awasm/internal/base/reason"
+	"github.com/htquangg/awasm/internal/constants"
+	"github.com/htquangg/awasm/internal/entities"
+	"github.com/htquangg/awasm/internal/schemas"
+	"github.com/htquangg/awasm/internal/services/mailer"
+	"github.com/htquangg/awasm/internal/services/session"
+	"github.com/htquangg/awasm/pkg/converter"
+	"github.com/htquangg/awasm/pkg/crypto"
+	"github.com/htquangg/awasm/pkg/uid"
 )
 
 const retryLoopDuration = 5 * time.Second

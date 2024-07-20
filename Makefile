@@ -3,7 +3,7 @@ BIN=awasm
 
 GO_ENV=CGO_ENABLED=0 GO111MODULE=on
 Revision=$(shell git rev-parse --short HEAD 2>/dev/null || echo "")
-GO_FLAGS=-ldflags="-X github.com/htquangg/a-wasm/cmd.Version=$(VERSION) -X 'github.com/htquangg/a-wasm/cmd.Revision=$(Revision)' -X 'github.com/htquangg/a-wasm/cmd.Time=`date +%s`' -extldflags -static"
+GO_FLAGS=-ldflags="-X github.com/htquangg/awasm/cmd.Version=$(VERSION) -X 'github.com/htquangg/awasm/cmd.Revision=$(Revision)' -X 'github.com/htquangg/awasm/cmd.Time=`date +%s`' -extldflags -static"
 GO=$(GO_ENV) $(shell which go)
 
 ###############################################################################

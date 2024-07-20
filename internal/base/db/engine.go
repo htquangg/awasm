@@ -8,7 +8,7 @@ import (
 	"xorm.io/xorm"
 	"xorm.io/xorm/schemas"
 
-	"github.com/htquangg/a-wasm/config"
+	"github.com/htquangg/awasm/config"
 )
 
 // Engine represents a xorm engine or session.

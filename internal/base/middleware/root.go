@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/base/cache"
-	"github.com/htquangg/a-wasm/internal/repos"
-	"github.com/htquangg/a-wasm/internal/services"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/internal/base/cache"
+	"github.com/htquangg/awasm/internal/repos"
+	"github.com/htquangg/awasm/internal/services"
 )
 
 type Middleware struct {

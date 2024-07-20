@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
-	"github.com/htquangg/a-wasm/internal/schemas"
+	"github.com/htquangg/awasm/internal/schemas"
 )
 
 func CallAddDeployment(

@@ -14,7 +14,7 @@ import (
 	goredis_cache "github.com/go-redis/cache/v9"
 	goredis "github.com/redis/go-redis/v9"
 
-	"github.com/htquangg/a-wasm/config"
+	"github.com/htquangg/awasm/config"
 )
 
 var ErrMissingFetchFunc = fmt.Errorf("missing fetch function")

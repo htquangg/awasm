@@ -6,8 +6,8 @@ import (
 	"github.com/asynkron/protoactor-go/actor"
 	"github.com/asynkron/protoactor-go/cluster"
 
-	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/internal/protocluster/grains/messages"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
 const RequestRuntimeTimeout = 5 * time.Second

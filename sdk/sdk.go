@@ -11,7 +11,7 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
+	"github.com/htquangg/awasm/internal/protocluster/grains/messages"
 )
 
 type ResponseWriter struct {

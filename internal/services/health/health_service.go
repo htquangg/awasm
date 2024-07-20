@@ -3,7 +3,7 @@ package health
 import (
 	"context"
 
-	"github.com/htquangg/a-wasm/internal/schemas"
+	"github.com/htquangg/awasm/internal/schemas"
 )
 
 type HealthRepo interface {

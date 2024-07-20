@@ -6,8 +6,8 @@ import (
 
 	xormlog "xorm.io/xorm/log"
 
-	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/internal/constants"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
 type XORMLogBridge struct {

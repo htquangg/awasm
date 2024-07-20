@@ -3,7 +3,7 @@ package mailer
 import (
 	"context"
 
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
 type noopProvider struct{}

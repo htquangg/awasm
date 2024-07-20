@@ -17,9 +17,9 @@ import (
 	"github.com/segmentfault/pacman/errors"
 	"github.com/segmentfault/pacman/i18n"
 
-	"github.com/htquangg/a-wasm/internal/base/reason"
-	"github.com/htquangg/a-wasm/internal/base/translator"
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/internal/base/reason"
+	"github.com/htquangg/awasm/internal/base/translator"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
 type TranslatorLocal struct {

@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
-	"github.com/htquangg/a-wasm/internal/schemas"
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/internal/schemas"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
 func CallGetSRPAttribute(

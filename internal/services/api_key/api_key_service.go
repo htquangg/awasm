@@ -10,13 +10,13 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/segmentfault/pacman/errors"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/base/reason"
-	"github.com/htquangg/a-wasm/internal/entities"
-	"github.com/htquangg/a-wasm/internal/schemas"
-	"github.com/htquangg/a-wasm/pkg/converter"
-	"github.com/htquangg/a-wasm/pkg/crypto"
-	"github.com/htquangg/a-wasm/pkg/uid"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/internal/base/reason"
+	"github.com/htquangg/awasm/internal/entities"
+	"github.com/htquangg/awasm/internal/schemas"
+	"github.com/htquangg/awasm/pkg/converter"
+	"github.com/htquangg/awasm/pkg/crypto"
+	"github.com/htquangg/awasm/pkg/uid"
 )
 
 const (

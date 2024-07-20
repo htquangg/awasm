@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/htquangg/a-wasm/internal/cli"
+	"github.com/htquangg/awasm/internal/cli"
 )
 
 var resetCmd = &cobra.Command{

@@ -12,7 +12,7 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	"github.com/htquangg/a-wasm/config"
+	"github.com/htquangg/awasm/config"
 )
 
 type PostgresContainer struct {

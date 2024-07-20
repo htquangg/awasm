@@ -10,10 +10,10 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/base/db"
-	"github.com/htquangg/a-wasm/internal/repos/repo_test/container"
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/internal/base/db"
+	"github.com/htquangg/awasm/internal/repos/repo_test/container"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
 type Database struct {

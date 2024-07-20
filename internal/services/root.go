@@ -1,17 +1,17 @@
 package services
 
 import (
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/protocluster"
-	"github.com/htquangg/a-wasm/internal/repos"
-	"github.com/htquangg/a-wasm/internal/services/api_key"
-	"github.com/htquangg/a-wasm/internal/services/auth"
-	"github.com/htquangg/a-wasm/internal/services/deployment"
-	"github.com/htquangg/a-wasm/internal/services/endpoint"
-	"github.com/htquangg/a-wasm/internal/services/health"
-	"github.com/htquangg/a-wasm/internal/services/mailer"
-	"github.com/htquangg/a-wasm/internal/services/session"
-	"github.com/htquangg/a-wasm/internal/services/user"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/internal/protocluster"
+	"github.com/htquangg/awasm/internal/repos"
+	"github.com/htquangg/awasm/internal/services/api_key"
+	"github.com/htquangg/awasm/internal/services/auth"
+	"github.com/htquangg/awasm/internal/services/deployment"
+	"github.com/htquangg/awasm/internal/services/endpoint"
+	"github.com/htquangg/awasm/internal/services/health"
+	"github.com/htquangg/awasm/internal/services/mailer"
+	"github.com/htquangg/awasm/internal/services/session"
+	"github.com/htquangg/awasm/internal/services/user"
 )
 
 type Sevices struct {

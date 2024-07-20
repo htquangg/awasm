@@ -3,7 +3,7 @@ package web
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/htquangg/a-wasm/internal/controllers"
+	"github.com/htquangg/awasm/internal/controllers"
 )
 
 func bindHealthApi(g *echo.Group, c *controllers.Controllers) {

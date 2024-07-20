@@ -3,12 +3,12 @@ package controllers
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/htquangg/a-wasm/internal/base/handler"
-	"github.com/htquangg/a-wasm/internal/base/middleware"
-	"github.com/htquangg/a-wasm/internal/entities"
-	"github.com/htquangg/a-wasm/internal/schemas"
-	"github.com/htquangg/a-wasm/internal/services/user"
-	"github.com/htquangg/a-wasm/pkg/network"
+	"github.com/htquangg/awasm/internal/base/handler"
+	"github.com/htquangg/awasm/internal/base/middleware"
+	"github.com/htquangg/awasm/internal/entities"
+	"github.com/htquangg/awasm/internal/schemas"
+	"github.com/htquangg/awasm/internal/services/user"
+	"github.com/htquangg/awasm/pkg/network"
 )
 
 type UserController struct {

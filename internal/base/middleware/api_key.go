@@ -7,12 +7,12 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/segmentfault/pacman/errors"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/base/cache"
-	"github.com/htquangg/a-wasm/internal/base/reason"
-	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/internal/schemas"
-	"github.com/htquangg/a-wasm/internal/services/api_key"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/internal/base/cache"
+	"github.com/htquangg/awasm/internal/base/reason"
+	"github.com/htquangg/awasm/internal/constants"
+	"github.com/htquangg/awasm/internal/schemas"
+	"github.com/htquangg/awasm/internal/services/api_key"
 )
 
 const (

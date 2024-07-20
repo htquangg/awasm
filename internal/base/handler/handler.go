@@ -7,10 +7,10 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/segmentfault/pacman/errors"
 
-	"github.com/htquangg/a-wasm/internal/base/reason"
-	"github.com/htquangg/a-wasm/internal/base/validator"
-	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/internal/base/reason"
+	"github.com/htquangg/awasm/internal/base/validator"
+	"github.com/htquangg/awasm/internal/constants"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
 // HandleResponse Handle response body

@@ -11,10 +11,10 @@ import (
 	"github.com/asynkron/protoactor-go/actor"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
-	"github.com/htquangg/a-wasm/internal/protocluster/repos"
-	"github.com/htquangg/a-wasm/internal/runtime"
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/internal/protocluster/grains/messages"
+	"github.com/htquangg/awasm/internal/protocluster/repos"
+	"github.com/htquangg/awasm/internal/runtime"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
 const (

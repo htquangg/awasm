@@ -9,13 +9,13 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/cli"
-	"github.com/htquangg/a-wasm/internal/cli/api"
-	"github.com/htquangg/a-wasm/internal/schemas"
-	"github.com/htquangg/a-wasm/pkg/converter"
-	"github.com/htquangg/a-wasm/pkg/crypto"
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/internal/cli"
+	"github.com/htquangg/awasm/internal/cli/api"
+	"github.com/htquangg/awasm/internal/schemas"
+	"github.com/htquangg/awasm/pkg/converter"
+	"github.com/htquangg/awasm/pkg/crypto"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
 type Prompt string

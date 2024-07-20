@@ -12,7 +12,7 @@ import (
 	"xorm.io/xorm/names"
 	"xorm.io/xorm/schemas"
 
-	"github.com/htquangg/a-wasm/config"
+	"github.com/htquangg/awasm/config"
 )
 
 type (

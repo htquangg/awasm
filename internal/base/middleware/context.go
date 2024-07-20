@@ -4,8 +4,8 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 
-	"github.com/htquangg/a-wasm/internal/entities"
-	"github.com/htquangg/a-wasm/internal/schemas"
+	"github.com/htquangg/awasm/internal/entities"
+	"github.com/htquangg/awasm/internal/schemas"
 )
 
 const (

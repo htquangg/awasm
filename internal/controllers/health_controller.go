@@ -3,8 +3,8 @@ package controllers
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/htquangg/a-wasm/internal/base/handler"
-	"github.com/htquangg/a-wasm/internal/services/health"
+	"github.com/htquangg/awasm/internal/base/handler"
+	"github.com/htquangg/awasm/internal/services/health"
 )
 
 type HealthController struct {

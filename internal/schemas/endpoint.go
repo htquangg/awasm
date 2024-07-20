@@ -3,7 +3,7 @@ package schemas
 import (
 	"github.com/jinzhu/copier"
 
-	"github.com/htquangg/a-wasm/internal/entities"
+	"github.com/htquangg/awasm/internal/entities"
 )
 
 var Runtimes = map[string]bool{

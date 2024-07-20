@@ -6,8 +6,8 @@ import (
 
 	"golang.org/x/crypto/blake2b"
 
-	"github.com/htquangg/a-wasm/pkg/converter"
-	"github.com/htquangg/a-wasm/pkg/crypto"
+	"github.com/htquangg/awasm/pkg/converter"
+	"github.com/htquangg/awasm/pkg/crypto"
 )
 
 func main() {

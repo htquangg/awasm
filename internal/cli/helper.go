@@ -1,6 +1,6 @@
 package cli
 
-import "github.com/htquangg/a-wasm/internal/schemas"
+import "github.com/htquangg/awasm/internal/schemas"
 
 func CheckAuthentication() {
 	configFile, _ := GetConfigFile()

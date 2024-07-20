@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	"github.com/htquangg/a-wasm/internal/entities"
+	"github.com/htquangg/awasm/internal/entities"
 )
 
 type AuthRepo interface {

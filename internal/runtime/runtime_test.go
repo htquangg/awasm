@@ -10,8 +10,8 @@ import (
 	"github.com/tetratelabs/wazero"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
-	"github.com/htquangg/a-wasm/pkg/uid"
+	"github.com/htquangg/awasm/internal/protocluster/grains/messages"
+	"github.com/htquangg/awasm/pkg/uid"
 )
 
 func TestRuntimeInvoke(t *testing.T) {

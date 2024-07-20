@@ -8,9 +8,9 @@ import (
 	"github.com/segmentfault/pacman/errors"
 	"gopkg.in/gomail.v2"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/base/reason"
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/internal/base/reason"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
 type smtpProvider struct {

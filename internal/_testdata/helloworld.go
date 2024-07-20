@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/htquangg/a-wasm/sdk"
+	"github.com/htquangg/awasm/sdk"
 )
 
 func handle(w http.ResponseWriter, r *http.Request) {

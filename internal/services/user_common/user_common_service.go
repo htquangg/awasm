@@ -3,7 +3,7 @@ package user_common
 import (
 	"context"
 
-	"github.com/htquangg/a-wasm/internal/entities"
+	"github.com/htquangg/awasm/internal/entities"
 )
 
 type UserCommonRepo interface {

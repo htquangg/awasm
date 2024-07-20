@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/segmentfault/pacman/errors"
 
-	"github.com/htquangg/a-wasm/internal/base/reason"
+	"github.com/htquangg/awasm/internal/base/reason"
 )
 
 func IsNotfoundError(err error) bool {

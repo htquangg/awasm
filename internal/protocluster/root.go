@@ -9,11 +9,11 @@ import (
 	"github.com/asynkron/protoactor-go/cluster/identitylookup/disthash"
 	"github.com/asynkron/protoactor-go/remote"
 
-	"github.com/htquangg/a-wasm/internal/base/db"
-	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/internal/protocluster/grains"
-	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
-	"github.com/htquangg/a-wasm/internal/protocluster/repos"
+	"github.com/htquangg/awasm/internal/base/db"
+	"github.com/htquangg/awasm/internal/constants"
+	"github.com/htquangg/awasm/internal/protocluster/grains"
+	"github.com/htquangg/awasm/internal/protocluster/grains/messages"
+	"github.com/htquangg/awasm/internal/protocluster/repos"
 )
 
 type Cluster struct {

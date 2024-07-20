@@ -10,8 +10,8 @@ import (
 	"github.com/segmentfault/pacman/i18n"
 	"gopkg.in/yaml.v3"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
 var GlobalTrans i18n.Translator

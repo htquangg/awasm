@@ -8,9 +8,9 @@ import (
 
 	"github.com/zalando/go-keyring"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/cli/api"
-	"github.com/htquangg/a-wasm/internal/schemas"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/internal/cli/api"
+	"github.com/htquangg/awasm/internal/schemas"
 )
 
 const WarnAuthMessage = "not authenticated yet. Please run 'awasm login'"

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/htquangg/a-wasm/internal/services"
+	"github.com/htquangg/awasm/internal/services"
 )
 
 type Controllers struct {

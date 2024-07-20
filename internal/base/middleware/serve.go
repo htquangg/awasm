@@ -6,8 +6,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/segmentfault/pacman/errors"
 
-	"github.com/htquangg/a-wasm/internal/base/handler"
-	"github.com/htquangg/a-wasm/internal/base/reason"
+	"github.com/htquangg/awasm/internal/base/handler"
+	"github.com/htquangg/awasm/internal/base/reason"
 )
 
 func Serve(ctx echo.Context, status int, data []byte, header []byte) error {

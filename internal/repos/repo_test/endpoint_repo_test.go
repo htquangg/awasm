@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/htquangg/a-wasm/internal/entities"
-	"github.com/htquangg/a-wasm/internal/repos/endpoint"
-	"github.com/htquangg/a-wasm/pkg/uid"
+	"github.com/htquangg/awasm/internal/entities"
+	"github.com/htquangg/awasm/internal/repos/endpoint"
+	"github.com/htquangg/awasm/pkg/uid"
 )
 
 func buildEndpointEntity() *entities.Endpoint {

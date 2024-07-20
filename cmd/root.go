@@ -8,12 +8,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/internal/constants"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
-// go build -ldflags "-X github.com/htquangg/a-wasm/cmd.Version=x.y.z"
+// go build -ldflags "-X github.com/htquangg/awasm/cmd.Version=x.y.z"
 var (
 	Name      = "awasm"
 	Version   = "devel"

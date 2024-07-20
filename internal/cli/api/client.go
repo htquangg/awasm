@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/go-resty/resty/v2"
 
-	"github.com/htquangg/a-wasm/config"
+	"github.com/htquangg/awasm/config"
 )
 
 var RedactedHeaders = []string{" X-Request-Id"}

@@ -6,15 +6,15 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/segmentfault/pacman/errors"
 
-	"github.com/htquangg/a-wasm/config"
-	"github.com/htquangg/a-wasm/internal/base/reason"
-	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/internal/entities"
-	"github.com/htquangg/a-wasm/internal/protocluster"
-	"github.com/htquangg/a-wasm/internal/protocluster/grains/messages"
-	"github.com/htquangg/a-wasm/internal/schemas"
-	"github.com/htquangg/a-wasm/internal/services/endpoint_common"
-	"github.com/htquangg/a-wasm/pkg/uid"
+	"github.com/htquangg/awasm/config"
+	"github.com/htquangg/awasm/internal/base/reason"
+	"github.com/htquangg/awasm/internal/constants"
+	"github.com/htquangg/awasm/internal/entities"
+	"github.com/htquangg/awasm/internal/protocluster"
+	"github.com/htquangg/awasm/internal/protocluster/grains/messages"
+	"github.com/htquangg/awasm/internal/schemas"
+	"github.com/htquangg/awasm/internal/services/endpoint_common"
+	"github.com/htquangg/awasm/pkg/uid"
 )
 
 type (

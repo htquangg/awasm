@@ -5,10 +5,10 @@ import (
 
 	"github.com/segmentfault/pacman/errors"
 
-	"github.com/htquangg/a-wasm/internal/base/cache"
-	"github.com/htquangg/a-wasm/internal/base/db"
-	"github.com/htquangg/a-wasm/internal/base/reason"
-	"github.com/htquangg/a-wasm/internal/services/health"
+	"github.com/htquangg/awasm/internal/base/cache"
+	"github.com/htquangg/awasm/internal/base/db"
+	"github.com/htquangg/awasm/internal/base/reason"
+	"github.com/htquangg/awasm/internal/services/health"
 )
 
 type healthRepo struct {

@@ -6,12 +6,12 @@ import (
 
 	"github.com/segmentfault/pacman/errors"
 
-	"github.com/htquangg/a-wasm/internal/base/cache"
-	"github.com/htquangg/a-wasm/internal/base/db"
-	"github.com/htquangg/a-wasm/internal/base/reason"
-	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/internal/entities"
-	"github.com/htquangg/a-wasm/internal/services/auth"
+	"github.com/htquangg/awasm/internal/base/cache"
+	"github.com/htquangg/awasm/internal/base/db"
+	"github.com/htquangg/awasm/internal/base/reason"
+	"github.com/htquangg/awasm/internal/constants"
+	"github.com/htquangg/awasm/internal/entities"
+	"github.com/htquangg/awasm/internal/services/auth"
 )
 
 type authRepo struct {

@@ -9,9 +9,9 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/htquangg/a-wasm/internal/constants"
-	"github.com/htquangg/a-wasm/pkg/converter"
-	"github.com/htquangg/a-wasm/pkg/logger"
+	"github.com/htquangg/awasm/internal/constants"
+	"github.com/htquangg/awasm/pkg/converter"
+	"github.com/htquangg/awasm/pkg/logger"
 )
 
 var AwasmUrl string

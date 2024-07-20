@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/htquangg/a-wasm/cmd"
+	"github.com/htquangg/awasm/cmd"
 )
 
 func main() {

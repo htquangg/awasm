@@ -4,7 +4,7 @@ import (
 	"github.com/segmentfault/pacman/errors"
 	"github.com/segmentfault/pacman/i18n"
 
-	"github.com/htquangg/a-wasm/internal/base/translator"
+	"github.com/htquangg/awasm/internal/base/translator"
 )
 
 type RespBody struct {

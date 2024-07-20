@@ -6,12 +6,12 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/segmentfault/pacman/errors"
 
-	"github.com/htquangg/a-wasm/internal/base/handler"
-	"github.com/htquangg/a-wasm/internal/base/middleware"
-	"github.com/htquangg/a-wasm/internal/base/reason"
-	"github.com/htquangg/a-wasm/internal/entities"
-	"github.com/htquangg/a-wasm/internal/schemas"
-	"github.com/htquangg/a-wasm/internal/services/deployment"
+	"github.com/htquangg/awasm/internal/base/handler"
+	"github.com/htquangg/awasm/internal/base/middleware"
+	"github.com/htquangg/awasm/internal/base/reason"
+	"github.com/htquangg/awasm/internal/entities"
+	"github.com/htquangg/awasm/internal/schemas"
+	"github.com/htquangg/awasm/internal/services/deployment"
 )
 
 type DeploymentController struct {

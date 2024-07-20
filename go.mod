@@ -1,4 +1,4 @@
-module github.com/htquangg/a-wasm
+module github.com/htquangg/awasm
 
 go 1.21.6
 
