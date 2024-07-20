@@ -35,7 +35,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/supabase/hibp v1.0.0
 	github.com/testcontainers/testcontainers-go v0.31.0
-	github.com/tetratelabs/wazero v1.6.0
+	github.com/tetratelabs/wazero v1.7.3
 	github.com/zalando/go-keyring v0.2.4
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.24.0
