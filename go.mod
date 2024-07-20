@@ -30,7 +30,7 @@ require (
 	github.com/redis/go-redis/v9 v9.5.3
 	github.com/segmentfault/pacman v1.0.5-0.20230822083413-c0075a2d401f
 	github.com/segmentfault/pacman/contrib/i18n v0.0.0-20230822083413-c0075a2d401f
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
 	github.com/supabase/hibp v1.0.0
