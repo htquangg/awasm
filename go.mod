@@ -25,7 +25,7 @@ require (
 	github.com/lstoll/awskms v1.0.0
 	github.com/manifoldco/promptui v0.9.0
 	github.com/microcosm-cc/bluemonday v1.0.27
-	github.com/pressly/goose/v3 v3.19.2
+	github.com/pressly/goose/v3 v3.21.1
 	github.com/prometheus/client_golang v1.19.0
 	github.com/redis/go-redis/v9 v9.5.3
 	github.com/segmentfault/pacman v1.0.5-0.20230822083413-c0075a2d401f
@@ -158,7 +158,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.22.0 // indirect
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/exp v0.0.0-20240119083558-1b970713d09a // indirect
+	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8 // indirect
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
