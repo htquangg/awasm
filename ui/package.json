@@ -10,7 +10,7 @@
     "prettier": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}' --config ./.prettierrc.json"
   },
   "dependencies": {
-    "next": "14.2.3",
+    "next": "14.2.10",
     "react": "^18",
     "react-dom": "^18"
   },
